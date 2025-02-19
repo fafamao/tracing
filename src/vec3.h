@@ -60,6 +60,10 @@ namespace vec3
             return pos[0] * pos[0] + pos[1] * pos[1] + pos[2] * pos[2];
         }
     };
+    Vec3 operator+(const Vec3 &vec1, const Vec3 &vec2)
+    {
+        return Vec3(vec1.get_x() + vec2.get_x(), vec1.get_y() + vec2.get_y(), vec1.get_z() + vec2.get_z());
+    }
 }
 
 #endif // VEC3_H
