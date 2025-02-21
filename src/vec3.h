@@ -60,9 +60,33 @@ namespace vec3
             return pos[0] * pos[0] + pos[1] * pos[1] + pos[2] * pos[2];
         }
     };
-    Vec3 operator+(const Vec3 &vec1, const Vec3 &vec2)
+    inline Vec3 operator+(const Vec3 &vec1, const Vec3 &vec2)
     {
         return Vec3(vec1.get_x() + vec2.get_x(), vec1.get_y() + vec2.get_y(), vec1.get_z() + vec2.get_z());
+    }
+    inline Vec3 operator-(const Vec3 &vec1, const Vec3 &vec2)
+    {
+        return Vec3(vec1.get_x() - vec2.get_x(), vec1.get_y() - vec2.get_y(), vec1.get_z() - vec2.get_z());
+    }
+    inline Vec3 operator*(const Vec3 &vec1, const Vec3 &vec2)
+    {
+        return Vec3(vec1.get_x() * vec2.get_x(), vec1.get_y() * vec2.get_y(), vec1.get_z() * vec2.get_z());
+    }
+    inline Vec3 operator*(const double scale, const Vec3 &vec2)
+    {
+        return Vec3(scale * vec2.get_x(), scale * vec2.get_y(), scale * vec2.get_z());
+    }
+    inline Vec3 operator*(const Vec3 &vec, const double scale)
+    {
+        return scale * vec;
+    }
+    inline Vec3 operator/(const Vec3 &vec, double scale)
+    {
+        return (1 / scale) * vec;
+    }
+    inline double dot(const Vec3 &vec1, const Vec3 &vec2)
+    {
+        return vec1.get_x() * vec2.get_x() + vec1.get_y() * vec2.get_y() + vec1.get_z() * vec2.get_z();
     }
 }
 
