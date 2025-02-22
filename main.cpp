@@ -2,7 +2,7 @@
 
 using namespace color;
 
-void main()
+int main()
 {
     for (int j = 0; j < PIXEL_HEIGHT; j++)
     {
@@ -13,4 +13,5 @@ void main()
             pixel_color.display_color();
         }
     }
+    return 0;
 }
