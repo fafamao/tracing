@@ -24,9 +24,9 @@ namespace color
         // Method to generate pixel
         void display_color()
         {
-            int rp = int(PIXEL_SCALE * r);
-            int gp = int(PIXEL_SCALE * g);
-            int bp = int(PIXEL_SCALE * b);
+            int rp = int(PIXEL_FACTOR * r);
+            int gp = int(PIXEL_FACTOR * g);
+            int bp = int(PIXEL_FACTOR * b);
             std::cout << rp << ' ' << gp << ' ' << bp << '\n';
         }
     };
