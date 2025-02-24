@@ -1,8 +1,12 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
+// Picture size
 inline constexpr double PIXEL_FACTOR = 255.99;
 inline constexpr double PIXEL_SCALE = 16.0 / 9.0;
+
+// Focal length
+inline constexpr double FOCAL_LEN = 2.0;
 
 // TODO: Configure pixel size from static file
 inline constexpr int PIXEL_WIDTH = 480;

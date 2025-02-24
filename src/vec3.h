@@ -88,6 +88,9 @@ namespace vec3
     {
         return vec1.get_x() * vec2.get_x() + vec1.get_y() * vec2.get_y() + vec1.get_z() * vec2.get_z();
     }
+    inline Vec3 unit_vector(const Vec3& v) {
+        return v / v.get_length();
+    }
 }
 
 #endif // VEC3_H
