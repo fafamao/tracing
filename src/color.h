@@ -29,7 +29,19 @@ namespace color
             int bp = int(PIXEL_FACTOR * b);
             std::cout << rp << ' ' << gp << ' ' << bp << '\n';
         }
+
+        double get_r() const {return r;}
+        double get_g() const {return g;}
+        double get_b() const {return b;}
     };
+    // Operator to scale Color
+    inline Color operator*(const double t, const Color& color) {
+        return Color(t * color.get_r(), t * color.get_g(), t * color.get_b());
+    }
+    // Operator to add Color
+    inline Color operator+(const Color& color1, const Color& color2) {
+        return Color(color1.get_r() * color2.get_r(), color1.get_r() * color2.get_g(), color1.get_r() * color2.get_b());
+    }
 }
 
 #endif // COLOR_H
