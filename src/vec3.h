@@ -37,8 +37,8 @@ namespace vec3
         Vec3 &operator+=(const Vec3 &vec)
         {
             pos[0] += vec.get_x();
-            pos[0] += vec.get_y();
-            pos[0] += vec.get_z();
+            pos[1] += vec.get_y();
+            pos[2] += vec.get_z();
             return *this;
         }
 

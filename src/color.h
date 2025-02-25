@@ -33,6 +33,26 @@ namespace color
         double get_r() const {return r;}
         double get_g() const {return g;}
         double get_b() const {return b;}
+
+        Color& operator-=(const Color& color2) {
+            r = r - color2.get_r();
+            g = g - color2.get_g();
+            b = b - color2.get_b();
+            return *this;
+        }
+        Color& operator+=(const Color& color2) {
+            r = r + color2.get_r();
+            g = g + color2.get_g();
+            b = b + color2.get_b();
+            return *this;
+        }
+        Color& operator*=(const Color& color2) {
+            r = r * color2.get_r();
+            g = g * color2.get_g();
+            b = b * color2.get_b();
+            return *this;
+        }
+
     };
     // Operator to scale Color
     inline Color operator*(const double t, const Color& color) {
@@ -40,7 +60,11 @@ namespace color
     }
     // Operator to add Color
     inline Color operator+(const Color& color1, const Color& color2) {
-        return Color(color1.get_r() * color2.get_r(), color1.get_r() * color2.get_g(), color1.get_r() * color2.get_b());
+        return Color(color1.get_r() * color2.get_r(), color1.get_g() * color2.get_g(), color1.get_b() * color2.get_b());
+    }
+    // Operator to minus color
+    inline Color operator-(const Color& color1, const Color& color2) {
+        return Color(color1.get_r() - color2.get_r(), color1.get_g() - color2.get_g(), color1.get_b() - color2.get_b());
     }
 }
 

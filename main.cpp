@@ -4,11 +4,30 @@
 using namespace color;
 using namespace ray;
 
+bool hit_sphere(const Vec3& center, double radius, const Ray& r) {
+    Vec3 oc = center - r.get_origin();
+    auto a = dot(r.get_direction(), r.get_direction());
+    auto b = -2.0 * dot(r.get_direction(), oc);
+    auto c = dot(oc, oc) - radius*radius;
+    auto discriminant = b*b - 4*a*c;
+    if (discriminant < 0) {
+        return -1.0;
+    } else {
+        return (-b - std::sqrt(discriminant) ) / (2.0*a);
+    }
+}
+
 Color ray_color(const Ray& r) {
+    auto t = hit_sphere(Vec3(0,0,-1), 0.5, r);
+    if (t > 0.0) {
+        Vec3 N = unit_vector(r.at(t) - Color(0,0,-1));
+        return 0.5*Color(N.get_x()+1, N.get_y()+1, N.get_z()+1);
+    }
     Vec3 unit_direction = unit_vector(r.get_direction());
     auto a = 0.5 * (unit_direction.get_y() + 1.0);
     return (1.0 - a) * Color(1.0, 1.0, 1.0) + a * Color(0.5, 0.7, 1.0);
 }
+
 
 int main()
 {
