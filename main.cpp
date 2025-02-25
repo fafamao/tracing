@@ -23,6 +23,8 @@ int main()
     // Position of the top left pixel
     auto top_left_pixel = camera - Vec3(0, 0, FOCAL_LEN) - vec_u / 2 - vec_v / 2 + unit_vec_u / 2 + unit_vec_v / 2;
 
+    std::cout << "P3\n" << PIXEL_WIDTH << ' ' << PIXEL_HEIGHT << "\n255\n";
+    
     for (int j = 0; j < PIXEL_HEIGHT; j++)
     {
         std::clog << "\rScanlines remaining: " << (PIXEL_HEIGHT - j) << ' ' << std::flush;
