@@ -2,6 +2,7 @@
 #define COLOR_H
 
 #include <iostream>
+#include "vec3.h"
 #include "constants.h"
 
 namespace color
@@ -52,7 +53,10 @@ namespace color
             b = b * color2.get_b();
             return *this;
         }
-
+        // Operator to calculate color when the ray hit the surface
+        Color operator+(const vec3::Vec3& normal){
+            return Color(r + normal.get_x(), g + normal.get_y(), b + normal.get_z());
+        }
     };
     // Operator to scale Color
     inline Color operator*(const double t, const Color& color) {

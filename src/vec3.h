@@ -8,12 +8,11 @@ namespace vec3
     class Vec3
     {
     private:
-        double pos[3];
         double x, y, z;
 
     public:
         Vec3() {};
-        Vec3(double pos1, double pos2, double pos3) : pos{pos1, pos2, pos3} {};
+        Vec3(double pos1, double pos2, double pos3) : x{pos1}, y{pos2}, z{pos3} {};
         ~Vec3() {};
 
         double get_x() const
@@ -32,12 +31,6 @@ namespace vec3
         Vec3 operator-() const {
             return Vec3(-x, -y, -z);
         }
-
-        double operator[](int i) const
-        {
-            return pos[i];
-        }
-        double &operator[](int i) { return pos[i]; }
 
         Vec3 &operator+=(const Vec3 &vec)
         {
