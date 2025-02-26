@@ -18,4 +18,8 @@ inline constexpr double VIEWPORT_HEIGHT = VIEWPORT_WIDTH / (PIXEL_WIDTH / PIXEL_
 inline constexpr double VIEWPORT_HEIGHT = 2.0;
 inline constexpr double VIEWPORT_WIDTH = VIEWPORT_HEIGHT / (PIXEL_WIDTH / PIXEL_HEIGHT);
 
+// Math
+inline constexpr double PI = 3.1415926535897932385;
+inline constexpr double INFINITY = std::numeric_limits<double>::infinity();
+
 #endif // CONSTANTS_H

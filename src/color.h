@@ -58,11 +58,11 @@ namespace color
     inline Color operator*(const double t, const Color& color) {
         return Color(t * color.get_r(), t * color.get_g(), t * color.get_b());
     }
-    // Operator to add Color
+    // Operator to add
     inline Color operator+(const Color& color1, const Color& color2) {
         return Color(color1.get_r() * color2.get_r(), color1.get_g() * color2.get_g(), color1.get_b() * color2.get_b());
     }
-    // Operator to minus color
+    // Operator to minus
     inline Color operator-(const Color& color1, const Color& color2) {
         return Color(color1.get_r() - color2.get_r(), color1.get_g() - color2.get_g(), color1.get_b() - color2.get_b());
     }

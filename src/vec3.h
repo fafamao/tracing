@@ -9,6 +9,7 @@ namespace vec3
     {
     private:
         double pos[3];
+        double x, y, z;
 
     public:
         Vec3() {};
@@ -17,15 +18,19 @@ namespace vec3
 
         double get_x() const
         {
-            return pos[0];
+            return x;
         }
         double get_y() const
         {
-            return pos[1];
+            return y;
         }
         double get_z() const
         {
-            return pos[2];
+            return z;
+        }
+
+        Vec3 operator-() const {
+            return Vec3(-x, -y, -z);
         }
 
         double operator[](int i) const
@@ -36,17 +41,17 @@ namespace vec3
 
         Vec3 &operator+=(const Vec3 &vec)
         {
-            pos[0] += vec.get_x();
-            pos[1] += vec.get_y();
-            pos[2] += vec.get_z();
+            x += vec.get_x();
+            y += vec.get_y();
+            z += vec.get_z();
             return *this;
         }
 
         Vec3 &operator*=(const Vec3 &vec)
         {
-            pos[0] *= vec.get_x();
-            pos[1] *= vec.get_y();
-            pos[2] *= vec.get_z();
+            x *= vec.get_x();
+            y *= vec.get_y();
+            z *= vec.get_z();
             return *this;
         }
 
@@ -57,7 +62,7 @@ namespace vec3
 
         double length_squared() const
         {
-            return pos[0] * pos[0] + pos[1] * pos[1] + pos[2] * pos[2];
+            return x * x + y * y + z * z;
         }
     };
     inline Vec3 operator+(const Vec3 &vec1, const Vec3 &vec2)
