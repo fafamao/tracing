@@ -4,9 +4,6 @@
 #include <vector>
 #include "ray.h"
 
-using namespace vec3;
-using namespace ray;
-
 class hit_record
 {
 public:
@@ -16,7 +13,8 @@ public:
 
     bool front_face;
 
-    void set_face_normal(const Ray& r, const Vec3& outward_normal) {
+    void set_face_normal(const Ray &r, const Vec3 &outward_normal)
+    {
         // Sets the hit record normal vector.
         // NOTE: the parameter `outward_normal` is assumed to have unit length.
 
