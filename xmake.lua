@@ -3,6 +3,11 @@ target("camera_library")
     add_includedirs("src")
     add_files("src/camera.cpp")
 
+target("interval_library")
+    set_kind("static")
+    add_includedirs("src")
+    add_files("src/interval.cpp")
+
 target("tracing")
     set_kind("binary")
     add_includedirs("src")

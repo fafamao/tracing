@@ -36,8 +36,9 @@ void Camera::initialize()
 Color Camera::ray_color(const Ray &r, const hittable_list &world)
 {
     hit_record record;
+    Interval interval(0, RAY_INFINITY);
     // Check if ray hits the hittable list and save record
-    if (world.hit(r, 0, RAY_INFINITY, record))
+    if (world.hit(r, interval, record))
     {
         return 0.5 * (Color(1, 1, 1) + record.normal);
     }

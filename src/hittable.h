@@ -3,6 +3,7 @@
 
 #include <vector>
 #include "ray.h"
+#include "interval.h"
 
 class hit_record
 {
@@ -28,7 +29,7 @@ class hittable
 public:
     virtual ~hittable() = default;
 
-    virtual bool hit(const Ray &r, double ray_tmin, double ray_tmax, hit_record &rec) const = 0;
+    virtual bool hit(const Ray &r, Interval& interval, hit_record &rec) const = 0;
 };
 
 #endif // HITTABLE_H

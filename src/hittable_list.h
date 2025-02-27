@@ -2,6 +2,7 @@
 #define HITTABLE_LIST_H
 
 #include "hittable.h"
+#include "interval.h"
 
 #include <memory>
 #include <vector>
@@ -24,15 +25,16 @@ public:
         objects.push_back(object);
     }
 
-    bool hit(const Ray &r, double ray_tmin, double ray_tmax, hit_record &rec) const override
+    bool hit(const Ray &r, Interval& interval, hit_record &rec) const override
     {
         hit_record temp_rec;
         bool hit_anything = false;
-        auto closest_so_far = ray_tmax;
+        auto closest_so_far = interval.max;
 
         for (const auto &object : objects)
         {
-            if (object->hit(r, ray_tmin, closest_so_far, temp_rec))
+            auto new_interval = Interval(interval.min, closest_so_far);
+            if (object->hit(r, new_interval, temp_rec))
             {
                 hit_anything = true;
                 closest_so_far = temp_rec.t;

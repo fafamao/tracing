@@ -3,12 +3,13 @@
 
 #include "hittable.h"
 
+
 class sphere : public hittable
 {
 public:
     sphere(const Vec3 &center, double radius) : center(center), radius(std::fmax(0, radius)) {}
 
-    bool hit(const Ray &r, double ray_tmin, double ray_tmax, hit_record &rec) const override
+    bool hit(const Ray &r, Interval& interval, hit_record &rec) const override
     {
         Vec3 oc = center - r.get_origin();
         auto a = r.get_direction().length_squared();
@@ -24,10 +25,10 @@ public:
         // Find the nearest root that lies in the acceptable range.
         // TODO: optimization to let root fall within t range
         auto root = (h - sqrtd) / a;
-        if (root <= ray_tmin || ray_tmax <= root)
+        if (!interval.surrounds(root))
         {
             root = (h + sqrtd) / a;
-            if (root <= ray_tmin || ray_tmax <= root)
+            if (!interval.surrounds(root))
                 return false;
         }
 
