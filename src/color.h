@@ -4,6 +4,7 @@
 #include <iostream>
 #include "vec3.h"
 #include "constants.h"
+#include "interval.h"
 
 class Color
 {
@@ -23,9 +24,9 @@ public:
     // Method to generate pixel
     void display_color()
     {
-        int rp = int(PIXEL_FACTOR * r);
-        int gp = int(PIXEL_FACTOR * g);
-        int bp = int(PIXEL_FACTOR * b);
+        int rp = int(PIXEL_FACTOR * pixel_interval.clamp(r));
+        int gp = int(PIXEL_FACTOR * pixel_interval.clamp(g));
+        int bp = int(PIXEL_FACTOR * pixel_interval.clamp(b));
         std::cout << rp << ' ' << gp << ' ' << bp << '\n';
     }
 
