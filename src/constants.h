@@ -18,6 +18,9 @@ inline constexpr double FOCAL_LEN = 1.0;
 inline constexpr int PIXEL_WIDTH = 400;
 inline constexpr int PIXEL_HEIGHT = int(double(PIXEL_WIDTH) / PIXEL_SCALE);
 
+// Total ray bouncing
+inline constexpr int MAX_DEPTH = 10;
+
 // Viewport size
 /* inline constexpr double VIEWPORT_WIDTH = 4.8;
 inline constexpr double VIEWPORT_HEIGHT = VIEWPORT_WIDTH / (PIXEL_WIDTH / PIXEL_HEIGHT); */
@@ -36,9 +39,10 @@ inline double random_double()
     return distribution(generator);
 }
 
-inline double random_double(double min, double max) {
+inline double random_double(double min, double max)
+{
     // Returns a random real in [min,max).
-    return min + (max-min)*random_double();
+    return min + (max - min) * random_double();
 }
 
 #endif // CONSTANTS_H

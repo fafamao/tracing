@@ -14,7 +14,7 @@ void Camera::render(const hittable_list &world)
             for (int sample = 0; sample < PIXEL_NEIGHBOR; sample++)
             {
                 Ray r = get_ray(i, j);
-                pixel_color += ray_color(r, world);
+                pixel_color += ray_color(r, MAX_DEPTH, world);
             }
             pixel_color *= _pixel_scale;
             pixel_color.display_color();
@@ -38,7 +38,7 @@ void Camera::initialize()
     _pixel_scale = 1.0 / PIXEL_NEIGHBOR;
 }
 
-Color Camera::ray_color(const Ray &r, const hittable_list &world)
+Color Camera::ray_color(const Ray &r, const int depth, const hittable_list &world)
 {
     hit_record record;
     Interval interval(0, RAY_INFINITY);
@@ -46,7 +46,7 @@ Color Camera::ray_color(const Ray &r, const hittable_list &world)
     if (world.hit(r, interval, record))
     {
         Vec3 direction = random_on_hemisphere(record.normal);
-        return 0.5 * ray_color(Ray(record.p, direction), world);
+        return 0.5 * ray_color(Ray(record.p, direction), depth - 1, world);
     }
     Vec3 unit_direction = unit_vector(r.get_direction());
     auto a = 0.5 * (unit_direction.get_y() + 1.0);
