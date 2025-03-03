@@ -10,10 +10,13 @@ void Camera::render(const hittable_list &world)
         std::clog << "\rScanlines remaining: " << (PIXEL_HEIGHT - j) << ' ' << std::flush;
         for (int i = 0; i < PIXEL_WIDTH; i++)
         {
-            auto current_pixel = _top_left_pixel + j * _unit_vec_v + i * _unit_vec_u;
-            auto ray_direction = current_pixel - _camera;
-            Ray r(_camera, ray_direction);
-            auto pixel_color = ray_color(r, world);
+            Color pixel_color(0, 0, 0);
+            for (int sample = 0; sample < PIXEL_NEIGHBOR; sample++)
+            {
+                Ray r = get_ray(i, j);
+                pixel_color += ray_color(r, world);
+            }
+            pixel_color *= _pixel_scale;
             pixel_color.display_color();
         }
     }
@@ -31,6 +34,8 @@ void Camera::initialize()
     _unit_vec_v = vec_v / PIXEL_HEIGHT;
     // Position of the top left pixel
     _top_left_pixel = _camera - Vec3(0, 0, FOCAL_LEN) - vec_u / 2 - vec_v / 2 + _unit_vec_u / 2 + _unit_vec_v / 2;
+    // Color scale factor for a number of samples
+    _pixel_scale = 1.0 / PIXEL_NEIGHBOR;
 }
 
 Color Camera::ray_color(const Ray &r, const hittable_list &world)

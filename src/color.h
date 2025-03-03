@@ -60,6 +60,13 @@ public:
     {
         return Color(r + normal.get_x(), g + normal.get_y(), b + normal.get_z());
     }
+    // Operator to scale self
+    Color& operator*=(const double scale) {
+        r = r * scale;
+        g = g * scale;
+        b = b * scale;
+        return *this;
+    }
 };
 // Operator to scale Color
 inline Color operator*(const double t, const Color &color)

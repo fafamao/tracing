@@ -8,6 +8,9 @@
 inline constexpr int PIXEL_FACTOR = 256;
 inline constexpr double PIXEL_SCALE = 16.0 / 9.0;
 
+// Samples per pixel for anti-aliasing
+inline constexpr int PIXEL_NEIGHBOR = 10;
+
 // Focal length
 inline constexpr double FOCAL_LEN = 1.0;
 
@@ -25,6 +28,7 @@ inline constexpr double VIEWPORT_WIDTH = VIEWPORT_HEIGHT / (PIXEL_WIDTH / PIXEL_
 inline constexpr double PI = 3.1415926535897932385;
 inline constexpr double RAY_INFINITY = std::numeric_limits<double>::infinity();
 
+// Generate random data with random distribution between 0,1
 inline double random_double()
 {
     static std::uniform_real_distribution<double> distribution(0.0, 1.0);
