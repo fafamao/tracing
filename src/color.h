@@ -11,6 +11,14 @@ class Color
 private:
     double r, g, b;
 
+    inline double linear_to_gamma(double linear_component)
+    {
+        if (linear_component > 0)
+            return std::sqrt(linear_component);
+
+        return 0;
+    }
+
 public:
     Color() {};
     Color(double r1, double g1, double b1) : r(r1), g(g1), b(b1) {};
@@ -24,6 +32,11 @@ public:
     // Method to generate pixel
     void display_color()
     {
+        // Apply a linear to gamma transform for gamma 2
+        r = linear_to_gamma(r);
+        g = linear_to_gamma(g);
+        b = linear_to_gamma(b);
+
         int rp = int(PIXEL_FACTOR * pixel_interval.clamp(r));
         int gp = int(PIXEL_FACTOR * pixel_interval.clamp(g));
         int bp = int(PIXEL_FACTOR * pixel_interval.clamp(b));
