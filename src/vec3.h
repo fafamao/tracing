@@ -2,6 +2,7 @@
 #define VEC3_H
 
 #include <cmath>
+#include "constants.h"
 
 class Vec3
 {
@@ -57,10 +58,12 @@ public:
         return x * x + y * y + z * z;
     }
 
-    static Vec3 random() {
+    static Vec3 random()
+    {
         return Vec3(random_double(), random_double(), random_double());
     }
-    static Vec3 random(double min, double max) {
+    static Vec3 random(double min, double max)
+    {
         return Vec3(random_double(min, max), random_double(min, max), random_double(min, max));
     }
 };
@@ -95,6 +98,56 @@ inline double dot(const Vec3 &vec1, const Vec3 &vec2)
 inline Vec3 unit_vector(const Vec3 &v)
 {
     return v / v.get_length();
+}
+
+// Generate random unit vector
+inline Vec3 random_unit_vec_rejection_method()
+{
+    while (true)
+    {
+        auto p = Vec3::random(-1, 1);
+        auto lensq = p.length_squared();
+        if (1e-160 < lensq && lensq <= 1)
+            return p / sqrt(lensq);
+    }
+}
+
+inline Vec3 random_unit_vec_spherical_coordinates()
+{
+    double theta = random_double(0, 2 * PI);
+    double phi = acos(2 * random_double() - 1);
+    double x = sin(phi) * cos(theta);
+    double y = sin(phi) * sin(theta);
+    double z = cos(phi);
+    return Vec3(x, y, z);
+}
+
+inline Vec3 random_unit_vec_normal_distribution()
+{
+    while (true)
+    {
+        std::random_device rd;
+        std::mt19937 rng(rd());
+        std::normal_distribution<double> dist(0.0, 1.0);
+        double x = dist(rng);
+        double y = dist(rng);
+        double z = dist(rng);
+        auto vec = Vec3(x, y, z);
+        auto len = vec.length_squared();
+        if (1e-160 < len && len <= 1)
+        {
+            return vec / sqrt(len);
+        }
+    }
+}
+
+inline Vec3 random_on_hemisphere(const Vec3 &normal)
+{
+    Vec3 on_unit_sphere = random_unit_vec_rejection_method();
+    if (dot(on_unit_sphere, normal) > 0.0) // In the same hemisphere as the normal
+        return on_unit_sphere;
+    else
+        return -on_unit_sphere;
 }
 
 #endif // VEC3_H

@@ -45,7 +45,8 @@ Color Camera::ray_color(const Ray &r, const hittable_list &world)
     // Check if ray hits the hittable list and save record
     if (world.hit(r, interval, record))
     {
-        return 0.5 * (Color(1, 1, 1) + record.normal);
+        Vec3 direction = random_on_hemisphere(record.normal);
+        return 0.5 * ray_color(Ray(record.p, direction), world);
     }
     Vec3 unit_direction = unit_vector(r.get_direction());
     auto a = 0.5 * (unit_direction.get_y() + 1.0);
