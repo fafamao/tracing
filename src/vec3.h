@@ -56,6 +56,13 @@ public:
     {
         return x * x + y * y + z * z;
     }
+
+    static Vec3 random() {
+        return Vec3(random_double(), random_double(), random_double());
+    }
+    static Vec3 random(double min, double max) {
+        return Vec3(random_double(min, max), random_double(min, max), random_double(min, max));
+    }
 };
 inline Vec3 operator+(const Vec3 &vec1, const Vec3 &vec2)
 {
