@@ -40,8 +40,11 @@ void Camera::initialize()
 
 Color Camera::ray_color(const Ray &r, const int depth, const hittable_list &world)
 {
+    if (depth <= 0)
+        return Color(0, 0, 0);
     hit_record record;
-    Interval interval(0, RAY_INFINITY);
+    // Avoid floating point error to have 0.001
+    Interval interval(0.001, RAY_INFINITY);
     // Check if ray hits the hittable list and save record
     if (world.hit(r, interval, record))
     {

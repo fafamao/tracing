@@ -61,7 +61,8 @@ public:
         return Color(r + normal.get_x(), g + normal.get_y(), b + normal.get_z());
     }
     // Operator to scale self
-    Color& operator*=(const double scale) {
+    Color &operator*=(const double scale)
+    {
         r = r * scale;
         g = g * scale;
         b = b * scale;
@@ -76,7 +77,7 @@ inline Color operator*(const double t, const Color &color)
 // Operator to add
 inline Color operator+(const Color &color1, const Color &color2)
 {
-    return Color(color1.get_r() * color2.get_r(), color1.get_g() * color2.get_g(), color1.get_b() * color2.get_b());
+    return Color(color1.get_r() + color2.get_r(), color1.get_g() + color2.get_g(), color1.get_b() + color2.get_b());
 }
 // Operator to minus
 inline Color operator-(const Color &color1, const Color &color2)

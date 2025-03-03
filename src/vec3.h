@@ -141,6 +141,19 @@ inline Vec3 random_unit_vec_normal_distribution()
     }
 }
 
+inline Vec3 random_unit_vec_random_cosine_direction()
+{
+    double u = random_double();
+    double v = random_double();
+    double theta = acos(sqrt(1 - u));
+    double phi = 2 * M_PI * v;
+    double x = sin(theta) * cos(phi);
+    double y = sin(theta) * sin(phi);
+    double z = sqrt(u);
+    return Vec3(x, y, z);
+}
+
+// TODO: use reflection ray that is close to normal(random_cosine_direction)
 inline Vec3 random_on_hemisphere(const Vec3 &normal)
 {
     Vec3 on_unit_sphere = random_unit_vec_rejection_method();

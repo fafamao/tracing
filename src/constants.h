@@ -25,7 +25,7 @@ inline constexpr int MAX_DEPTH = 10;
 /* inline constexpr double VIEWPORT_WIDTH = 4.8;
 inline constexpr double VIEWPORT_HEIGHT = VIEWPORT_WIDTH / (PIXEL_WIDTH / PIXEL_HEIGHT); */
 inline constexpr double VIEWPORT_HEIGHT = 2.0;
-inline constexpr double VIEWPORT_WIDTH = VIEWPORT_HEIGHT / (PIXEL_WIDTH / PIXEL_HEIGHT);
+inline constexpr double VIEWPORT_WIDTH = VIEWPORT_HEIGHT * (double(PIXEL_WIDTH) / double(PIXEL_HEIGHT));
 
 // Math
 inline constexpr double PI = 3.1415926535897932385;
