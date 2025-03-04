@@ -66,6 +66,11 @@ public:
     {
         return Vec3(random_double(min, max), random_double(min, max), random_double(min, max));
     }
+    bool near_zero() const {
+        // Return true if the vector is close to zero in all dimensions.
+        auto s = 1e-8;
+        return (std::fabs(x) < s) && (std::fabs(y) < s) && (std::fabs(z) < s);
+    }
 };
 inline Vec3 operator+(const Vec3 &vec1, const Vec3 &vec2)
 {
@@ -98,6 +103,9 @@ inline double dot(const Vec3 &vec1, const Vec3 &vec2)
 inline Vec3 unit_vector(const Vec3 &v)
 {
     return v / v.get_length();
+}
+inline Vec3 reflect(const Vec3& v, const Vec3& n) {
+    return v - 2*dot(v,n)*n;
 }
 
 // Generate random unit vector

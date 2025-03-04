@@ -4,14 +4,18 @@
 #include <vector>
 #include "ray.h"
 #include "interval.h"
+#include "material.h"
+#include <memory>
+
+using std::shared_ptr;
 
 class hit_record
 {
 public:
     Vec3 p;
     Vec3 normal;
+    shared_ptr<Material> mat;
     double t;
-
     bool front_face;
 
     void set_face_normal(const Ray &r, const Vec3 &outward_normal)
@@ -29,7 +33,7 @@ class hittable
 public:
     virtual ~hittable() = default;
 
-    virtual bool hit(const Ray &r, Interval& interval, hit_record &rec) const = 0;
+    virtual bool hit(const Ray &r, Interval &interval, hit_record &rec) const = 0;
 };
 
 #endif // HITTABLE_H

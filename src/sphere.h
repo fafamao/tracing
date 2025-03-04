@@ -3,13 +3,15 @@
 
 #include "hittable.h"
 
-
 class sphere : public hittable
 {
 public:
-    sphere(const Vec3 &center, double radius) : center(center), radius(std::fmax(0, radius)) {}
+    sphere(const Vec3 &center, double radius, shared_ptr<Material> mat) : center(center), radius(std::fmax(0, radius)), mat(mat)
+    {
+        // TODO: dependency injection instead
+    }
 
-    bool hit(const Ray &r, Interval& interval, hit_record &rec) const override
+    bool hit(const Ray &r, Interval &interval, hit_record &rec) const override
     {
         Vec3 oc = center - r.get_origin();
         auto a = r.get_direction().length_squared();
@@ -43,6 +45,7 @@ public:
 private:
     Vec3 center;
     double radius;
+    shared_ptr<Material> mat;
 };
 
 #endif // SPHERE_H

@@ -5,6 +5,7 @@
 #include "constants.h"
 #include "color.h"
 #include "hittable_list.h"
+#include "material.h"
 
 class Camera
 {
