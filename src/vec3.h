@@ -107,6 +107,13 @@ inline Vec3 unit_vector(const Vec3 &v)
 inline Vec3 reflect(const Vec3& v, const Vec3& n) {
     return v - 2*dot(v,n)*n;
 }
+// TODO: validate calculation from Snil's law
+inline Vec3 refract(const Vec3& uv, const Vec3& n, double etai_over_etat) {
+    auto cos_theta = std::fmin(dot(-uv, n), 1.0);
+    Vec3 r_out_perp =  etai_over_etat * (uv + cos_theta*n);
+    Vec3 r_out_parallel = -std::sqrt(std::fabs(1.0 - r_out_perp.length_squared())) * n;
+    return r_out_perp + r_out_parallel;
+}
 
 // Generate random unit vector
 inline Vec3 random_unit_vec_rejection_method()

@@ -48,9 +48,14 @@ Color Camera::ray_color(const Ray &r, const int depth, const hittable_list &worl
     // Check if ray hits the hittable list and save record
     if (world.hit(r, interval, record))
     {
+        //Workaround to avoid circular dependency, construct a struct to replace record
+        record_content temp_record;
+        temp_record.front_face = record.front_face;
+        temp_record.normal = record.normal;
+        temp_record.p = record.p;
         Ray scattered;
         Color attenuation;
-        if (record.mat->scatter(r, record.normal, record.p, attenuation, scattered))
+        if (record.mat->scatter(r, temp_record, attenuation, scattered))
             return ray_color(scattered, depth - 1, world) *= attenuation;
         return Color(0, 0, 0);
     }
