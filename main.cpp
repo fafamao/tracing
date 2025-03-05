@@ -12,13 +12,15 @@ int main()
 
     auto material_ground = make_shared<Lambertian>(Color(0.8, 0.8, 0.0));
     auto material_center = make_shared<Lambertian>(Color(0.1, 0.2, 0.5));
-    auto material_left   = make_shared<dielectric>(1.50);
-    auto material_right  = make_shared<Metal>(Color(0.8, 0.6, 0.2), 1.0);
+    auto material_left = make_shared<dielectric>(1.50);
+    auto material_bubble = make_shared<dielectric>(1.00 / 1.50);
+    auto material_right = make_shared<Metal>(Color(0.8, 0.6, 0.2), 1.0);
 
-    world.add(make_shared<sphere>(Vec3( 0.0, -100.5, -1.0), 100.0, material_ground));
-    world.add(make_shared<sphere>(Vec3( 0.0,    0.0, -1.2),   0.5, material_center));
-    world.add(make_shared<sphere>(Vec3(-1.0,    0.0, -1.0),   0.5, material_left));
-    world.add(make_shared<sphere>(Vec3( 1.0,    0.0, -1.0),   0.5, material_right));
+    world.add(make_shared<sphere>(Vec3(0.0, -100.5, -1.0), 100.0, material_ground));
+    world.add(make_shared<sphere>(Vec3(0.0, 0.0, -1.2), 0.5, material_center));
+    world.add(make_shared<sphere>(Vec3(-1.0, 0.0, -1.0), 0.5, material_left));
+    world.add(make_shared<sphere>(Vec3(1.0, 0.0, -1.0), 0.5, material_right));
+    world.add(make_shared<sphere>(Vec3(-1.0, 0.0, -1.0), 0.4, material_bubble));
 
     Camera camera;
     camera.render(world);
