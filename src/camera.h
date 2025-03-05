@@ -14,12 +14,22 @@ private:
     double _pixel_scale;
     void initialize();
     Color ray_color(const Ray &r, const int depth, const hittable_list &world);
+    Vec3 u, v, w; // Camera frame basis vectors
 
 public:
+    // Angle between z direction ray and ray between origin and top edge of viewport * 2
+    double vfov = 90;
+    Vec3 lookfrom = Vec3(0, 0, 0); // Point camera is looking from
+    Vec3 lookat = Vec3(0, 0, -1);  // Point camera is looking at
+    Vec3 vup = Vec3(0, 1, 0);      // Camera-relative "up" direction
+
     Camera()
     {
         initialize();
     };
+    Camera(Vec3& origin, Vec3& dest, Vec3& up) : lookfrom(origin), lookat(dest), vup(up) {
+        initialize();
+    }
     void render(const hittable_list &world);
 
     // Generate vectors pointing to ([-0.5,0.5], [-0.5, 0.5], 0)

@@ -19,10 +19,19 @@ int main()
     world.add(make_shared<sphere>(Vec3(0.0, -100.5, -1.0), 100.0, material_ground));
     world.add(make_shared<sphere>(Vec3(0.0, 0.0, -1.2), 0.5, material_center));
     world.add(make_shared<sphere>(Vec3(-1.0, 0.0, -1.0), 0.5, material_left));
+    world.add(make_shared<sphere>(Vec3(-1.0, 0.0, -1.0), 0.4, material_bubble));
+    world.add(make_shared<sphere>(Vec3(1.0, 0.0, -1.0), 0.5, material_right));
+
+    world.add(make_shared<sphere>(Vec3(0.0, -100.5, -1.0), 100.0, material_ground));
+    world.add(make_shared<sphere>(Vec3(0.0, 0.0, -1.2), 0.5, material_center));
+    world.add(make_shared<sphere>(Vec3(-1.0, 0.0, -1.0), 0.5, material_left));
     world.add(make_shared<sphere>(Vec3(1.0, 0.0, -1.0), 0.5, material_right));
     world.add(make_shared<sphere>(Vec3(-1.0, 0.0, -1.0), 0.4, material_bubble));
 
-    Camera camera;
+    Vec3 camera_origin = Vec3(-2, 2, 1);
+    Vec3 camera_dest = Vec3(0, 0, -1);
+    Vec3 camera_up = Vec3(0, 1, 0);
+    Camera camera(camera_origin, camera_dest, camera_up);
     camera.render(world);
 
     return 0;

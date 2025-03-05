@@ -25,15 +25,25 @@ void Camera::render(const hittable_list &world)
 void Camera::initialize()
 {
     // Camera is placed at the origin of the axis
-    _camera = Vec3(0, 0, 0);
+    _camera = lookfrom;
+    // Determine focal length
+    auto focal_len = (lookfrom - lookat).get_length();
+    auto theta = degrees_to_radians(vfov);
+    auto h = std::tan(theta / 2);
+    auto viewport_height = 2 * h * focal_len;
+    auto viewport_width = viewport_height * (double(PIXEL_WIDTH)/double(PIXEL_HEIGHT));
+    // Calculate the u,v,w unit basis vectors for the camera coordinate frame.
+    w = unit_vector(lookfrom - lookat);
+    u = unit_vector(cross(vup, w));
+    v = cross(w, u);
     // Horizontal vector and vertical vector
-    auto vec_u = Vec3(VIEWPORT_WIDTH, 0, 0);
-    auto vec_v = Vec3(0, -VIEWPORT_HEIGHT, 0);
+    auto vec_u = u * viewport_width;
+    auto vec_v = -v * viewport_height;
     // Unit vector between pixels
     _unit_vec_u = vec_u / PIXEL_WIDTH;
     _unit_vec_v = vec_v / PIXEL_HEIGHT;
     // Position of the top left pixel
-    _top_left_pixel = _camera - Vec3(0, 0, FOCAL_LEN) - vec_u / 2 - vec_v / 2 + _unit_vec_u / 2 + _unit_vec_v / 2;
+    _top_left_pixel = _camera - focal_len * w - vec_u / 2 - vec_v / 2 + _unit_vec_u / 2 + _unit_vec_v / 2;
     // Color scale factor for a number of samples
     _pixel_scale = 1.0 / PIXEL_NEIGHBOR;
 }
@@ -48,7 +58,7 @@ Color Camera::ray_color(const Ray &r, const int depth, const hittable_list &worl
     // Check if ray hits the hittable list and save record
     if (world.hit(r, interval, record))
     {
-        //Workaround to avoid circular dependency, construct a struct to replace record
+        // Workaround to avoid circular dependency, construct a struct to replace record
         record_content temp_record;
         temp_record.front_face = record.front_face;
         temp_record.normal = record.normal;

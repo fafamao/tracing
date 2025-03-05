@@ -107,6 +107,11 @@ inline Vec3 unit_vector(const Vec3 &v)
 inline Vec3 reflect(const Vec3& v, const Vec3& n) {
     return v - 2*dot(v,n)*n;
 }
+inline Vec3 cross(const Vec3& u, const Vec3& v) {
+    return Vec3(u.get_y() * v.get_z() - u.get_z() * v.get_y(),
+                u.get_z() * v.get_x() - u.get_x() * v.get_z(),
+                u.get_x() * v.get_y() - u.get_y() * v.get_x());
+}
 // TODO: validate calculation from Snil's law
 inline Vec3 refract(const Vec3& uv, const Vec3& n, double etai_over_etat) {
     auto cos_theta = std::fmin(dot(-uv, n), 1.0);
