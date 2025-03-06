@@ -81,6 +81,14 @@ public:
         b = b * scale;
         return *this;
     }
+    static Color random_color()
+    {
+        return Color(random_double(), random_double(), random_double());
+    }
+    static Color random_color(double min, double max)
+    {
+        return Color(random_double(min, max), random_double(min, max), random_double(min, max));
+    }
 };
 // Operator to scale Color
 inline Color operator*(const double t, const Color &color)
