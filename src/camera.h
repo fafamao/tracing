@@ -6,6 +6,8 @@
 #include "color.h"
 #include "hittable_list.h"
 #include "material.h"
+#include "../utility/thread_pool.h"
+#include <functional>
 
 class Camera
 {
@@ -15,6 +17,7 @@ private:
     void initialize();
     Color ray_color(const Ray &r, const int depth, const hittable_list &world);
     Vec3 u, v, w; // Camera frame basis vectors
+    ThreadPool thread_pool;
 
 public:
     // Angle between z direction ray and ray between origin and top edge of viewport * 2

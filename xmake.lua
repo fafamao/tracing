@@ -1,6 +1,7 @@
 target("camera_library")
     set_kind("static")
     add_includedirs("src")
+    add_includedirs("utility")
     add_files("src/camera.cpp")
 
 target("interval_library")

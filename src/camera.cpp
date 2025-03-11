@@ -13,8 +13,13 @@ void Camera::render(const hittable_list &world)
             Color pixel_color(0, 0, 0);
             for (int sample = 0; sample < PIXEL_NEIGHBOR; sample++)
             {
-                Ray r = get_ray(i, j);
-                pixel_color += ray_color(r, MAX_DEPTH, world);
+                std::function<void()> rendering = [&i, &j, &world, &pixel_color, this]()
+                {
+                    Ray r = get_ray(i, j);
+                    pixel_color += ray_color(r, MAX_DEPTH, world);
+                };
+                thread_pool.enqueue(rendering);
+
             }
             pixel_color *= _pixel_scale;
             pixel_color.display_color();
@@ -31,7 +36,7 @@ void Camera::initialize()
     auto theta = degrees_to_radians(vfov);
     auto h = std::tan(theta / 2);
     auto viewport_height = 2 * h * focal_len;
-    auto viewport_width = viewport_height * (double(PIXEL_WIDTH)/double(PIXEL_HEIGHT));
+    auto viewport_width = viewport_height * (double(PIXEL_WIDTH) / double(PIXEL_HEIGHT));
     // Calculate the u,v,w unit basis vectors for the camera coordinate frame.
     w = unit_vector(lookfrom - lookat);
     u = unit_vector(cross(vup, w));
