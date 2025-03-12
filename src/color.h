@@ -29,10 +29,8 @@ public:
         b = color.b;
     }
 
-    // Method to generate pixel
-    void display_color()
-    {
-        // Apply a linear to gamma transform for gamma 2
+    // Write color to memory
+    void write_color(int i, int j, char* ptr) {
         r = linear_to_gamma(r);
         g = linear_to_gamma(g);
         b = linear_to_gamma(b);
@@ -40,7 +38,12 @@ public:
         int rp = int(PIXEL_FACTOR * pixel_interval.clamp(r));
         int gp = int(PIXEL_FACTOR * pixel_interval.clamp(g));
         int bp = int(PIXEL_FACTOR * pixel_interval.clamp(b));
-        std::cout << rp << ' ' << gp << ' ' << bp << '\n';
+
+        int step = sizeof(int) / sizeof(char);
+
+        *(ptr + (i + j * PIXEL_WIDTH) * step) = rp;
+        *(ptr + (i + j * PIXEL_WIDTH + 1) * step) = gp;
+        *(ptr + (i + j * PIXEL_WIDTH + 2) * step) = bp;
     }
 
     double get_r() const { return r; }

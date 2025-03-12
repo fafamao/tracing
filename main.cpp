@@ -4,9 +4,17 @@
 #include "sphere.h"
 #include "camera.h"
 #include "material.h"
+#include "mem_pool.h"
 
 int main()
 {
+    // Instantiate memory pool
+    // TODO: fix this
+    size_t rgb_size = PIXEL_HEIGHT * PIXEL_WIDTH * (sizeof(int) / sizeof(char)) * 3;
+    size_t pool_siz = rgb_size * 2;
+    MemoryPool mem_pool(pool_siz);
+    char* pixel_buffer = mem_pool.allocate(rgb_size);
+
     // Add earth and universe
     hittable_list world;
 
@@ -55,7 +63,7 @@ int main()
     Vec3 camera_dest = Vec3(0, 0, 0);
     Vec3 camera_up = Vec3(0, 1, 0);
     Camera camera(camera_origin, camera_dest, camera_up);
-    camera.render(world);
+    camera.render(world, pixel_buffer);
 
     return 0;
 }

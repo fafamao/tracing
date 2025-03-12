@@ -13,10 +13,10 @@ class Camera
 {
 private:
     Vec3 _top_left_pixel, _unit_vec_v, _unit_vec_u, _camera;
+    Vec3 u, v, w; // Camera frame basis vectors
     double _pixel_scale;
     void initialize();
     Color ray_color(const Ray &r, const int depth, const hittable_list &world);
-    Vec3 u, v, w; // Camera frame basis vectors
     ThreadPool thread_pool;
 
 public:
@@ -30,10 +30,11 @@ public:
     {
         initialize();
     };
-    Camera(Vec3& origin, Vec3& dest, Vec3& up) : lookfrom(origin), lookat(dest), vup(up) {
+    Camera(Vec3 &origin, Vec3 &dest, Vec3 &up) : lookfrom(origin), lookat(dest), vup(up)
+    {
         initialize();
     }
-    void render(const hittable_list &world);
+    void render(const hittable_list &world, char* ptr);
 
     // Generate vectors pointing to ([-0.5,0.5], [-0.5, 0.5], 0)
     Vec3 sample_square() const

@@ -1,6 +1,6 @@
 #include "camera.h"
 
-void Camera::render(const hittable_list &world)
+void Camera::render(const hittable_list &world, char* ptr)
 {
     std::cout << "P3\n"
               << PIXEL_WIDTH << ' ' << PIXEL_HEIGHT << "\n255\n";
@@ -11,18 +11,18 @@ void Camera::render(const hittable_list &world)
         for (int i = 0; i < PIXEL_WIDTH; i++)
         {
             Color pixel_color(0, 0, 0);
-            for (int sample = 0; sample < PIXEL_NEIGHBOR; sample++)
+            std::function<void()> rendering = [&i, &j, &world, ptr, &pixel_color, this]()
             {
-                std::function<void()> rendering = [&i, &j, &world, &pixel_color, this]()
+                for (int sample = 0; sample < PIXEL_NEIGHBOR; sample++)
                 {
+
                     Ray r = get_ray(i, j);
                     pixel_color += ray_color(r, MAX_DEPTH, world);
-                };
-                thread_pool.enqueue(rendering);
-
-            }
-            pixel_color *= _pixel_scale;
-            pixel_color.display_color();
+                }
+                pixel_color *= _pixel_scale;
+                pixel_color.write_color(i, j, ptr);
+            };
+            thread_pool.enqueue(rendering);
         }
     }
 }
