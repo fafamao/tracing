@@ -3,20 +3,22 @@
 
 #include <cmath>
 #include <random>
+#include <iostream>
+#include <fstream>
 
 // Picture size
 inline constexpr int PIXEL_FACTOR = 256;
 inline constexpr double PIXEL_SCALE = 16.0 / 9.0;
 
 // Samples per pixel for anti-aliasing
-inline constexpr int PIXEL_NEIGHBOR = 10;
+inline constexpr int PIXEL_NEIGHBOR = 500;
 
 // TODO: Configure pixel size from static file
 inline constexpr int PIXEL_WIDTH = 1200;
 inline constexpr int PIXEL_HEIGHT = int(double(PIXEL_WIDTH) / PIXEL_SCALE);
 
 // Total ray bouncing
-inline constexpr int MAX_DEPTH = 10;
+inline constexpr int MAX_DEPTH = 500;
 
 // Math
 inline constexpr double PI = 3.1415926535897932385;
@@ -38,6 +40,18 @@ inline double random_double(double min, double max)
 {
     // Returns a random real in [min,max).
     return min + (max - min) * random_double();
+}
+
+inline void generate_ppm_6(char* ptr) {
+    std::ofstream ppmFile("image.ppm", std::ios::out | std::ios::binary);
+    if (!ppmFile.is_open()) {
+        std::cerr << "Error: could not open file image.ppm" << std::endl;
+        return;
+    }
+    ppmFile << "P6\n" << PIXEL_WIDTH << " " << PIXEL_HEIGHT << "\n255\n";
+    ppmFile.write(ptr, PIXEL_HEIGHT * PIXEL_WIDTH * 3);
+    ppmFile.close();
+    std::cout << "PPM file written successfully: image.ppm" << std::endl;
 }
 
 #endif // CONSTANTS_H

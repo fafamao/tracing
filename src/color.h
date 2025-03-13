@@ -31,19 +31,21 @@ public:
 
     // Write color to memory
     void write_color(int i, int j, char* ptr) {
+        printf("i=%d, j=%d, ptr=%p\n", i, j, ptr);
         r = linear_to_gamma(r);
         g = linear_to_gamma(g);
         b = linear_to_gamma(b);
 
-        int rp = int(PIXEL_FACTOR * pixel_interval.clamp(r));
-        int gp = int(PIXEL_FACTOR * pixel_interval.clamp(g));
-        int bp = int(PIXEL_FACTOR * pixel_interval.clamp(b));
+        char rp = char(PIXEL_FACTOR * pixel_interval.clamp(r));
+        char gp = char(PIXEL_FACTOR * pixel_interval.clamp(g));
+        char bp = char(PIXEL_FACTOR * pixel_interval.clamp(b));
 
-        int step = sizeof(int) / sizeof(char);
+        // 3 for r,g,b
+        int buff_pos = (i + j * PIXEL_WIDTH) * 3;
 
-        *(ptr + (i + j * PIXEL_WIDTH) * step) = rp;
-        *(ptr + (i + j * PIXEL_WIDTH + 1) * step) = gp;
-        *(ptr + (i + j * PIXEL_WIDTH + 2) * step) = bp;
+        *(ptr + buff_pos) = rp;
+        *(ptr + (buff_pos + 1)) = gp;
+        *(ptr + (buff_pos + 2)) = bp;
     }
 
     double get_r() const { return r; }

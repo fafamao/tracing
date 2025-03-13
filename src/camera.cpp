@@ -2,12 +2,8 @@
 
 void Camera::render(const hittable_list &world, char* ptr)
 {
-    std::cout << "P3\n"
-              << PIXEL_WIDTH << ' ' << PIXEL_HEIGHT << "\n255\n";
-
     for (int j = 0; j < PIXEL_HEIGHT; j++)
     {
-        std::clog << "\rScanlines remaining: " << (PIXEL_HEIGHT - j) << ' ' << std::flush;
         for (int i = 0; i < PIXEL_WIDTH; i++)
         {
             Color pixel_color(0, 0, 0);
@@ -25,6 +21,12 @@ void Camera::render(const hittable_list &world, char* ptr)
             thread_pool.enqueue(rendering);
         }
     }
+
+    //generate_ppm_6(ptr);
+}
+
+void Camera::redering_done() {
+
 }
 
 void Camera::initialize()

@@ -52,7 +52,8 @@ public:
         auto ray_direction = pixel_sample - ray_origin;
 
         return Ray(ray_origin, ray_direction);
-    }
+    };
+    void redering_done();
 };
 
 #endif // CAMERA_H_

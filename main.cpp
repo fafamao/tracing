@@ -10,7 +10,7 @@ int main()
 {
     // Instantiate memory pool
     // TODO: fix this
-    size_t rgb_size = PIXEL_HEIGHT * PIXEL_WIDTH * (sizeof(int) / sizeof(char)) * 3;
+    size_t rgb_size = PIXEL_HEIGHT * PIXEL_WIDTH * 3;
     size_t pool_siz = rgb_size * 2;
     MemoryPool mem_pool(pool_siz);
     char* pixel_buffer = mem_pool.allocate(rgb_size);

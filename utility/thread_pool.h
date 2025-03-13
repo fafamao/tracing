@@ -7,6 +7,7 @@
 #include <mutex>
 #include <queue>
 #include <thread>
+#include <chrono>
 
 using namespace std;
 
@@ -15,16 +16,28 @@ class ThreadPool
 public:
     // // Constructor to creates a thread pool with given
     // number of threads
-    ThreadPool(size_t num_threads = thread::hardware_concurrency())
+    // TODO: fix argument flexibility
+    ThreadPool(size_t num_threads = thread::hardware_concurrency(), bool see_progress = true)
     {
-        if (num_threads == 0) {
+        if (num_threads == 0)
+        {
             printf("Number of thread is 0, aborting\n");
             abort();
         }
-        // Creating worker threads
-        for (size_t i = 0; i < num_threads; ++i)
+        size_t worker_thread;
+        if (see_progress)
         {
-            threads_.emplace_back([this]
+            worker_thread = num_threads - 1;
+            progress_thread_ = thread([this](){display_progress();});
+        }
+        else
+        {
+            worker_thread = num_threads;
+        }
+        // Creating worker threads
+        for (size_t i = 0; i < worker_thread; ++i)
+        {
+            worker_thread_.emplace_back([this]
                                   {
                     while (true) {
                         function<void()> task;
@@ -58,7 +71,7 @@ public:
                         task();
                     } });
         }
-    }
+    };
 
     // Destructor to stop the thread pool
     ~ThreadPool()
@@ -74,11 +87,12 @@ public:
 
         // Joining all worker threads to ensure they have
         // completed their tasks
-        for (auto &thread : threads_)
+        for (auto &thread : worker_thread_)
         {
             thread.join();
         }
-    }
+        progress_thread_.join();
+    };
 
     // Enqueue task for execution by the thread pool
     void enqueue(function<void()> task)
@@ -88,17 +102,34 @@ public:
             tasks_.emplace(move(task));
         }
         cv_.notify_one();
-    }
+    };
+
+    // Monitor progress
+    void display_progress()
+    {
+        while (!stop_)
+        {
+            {
+                std::unique_lock<std::mutex> lock(stats_mutex_);
+                std::cout << "Tasks remaining: " << tasks_.size() << std::endl;
+            }
+            std::this_thread::sleep_for(std::chrono::seconds(10));
+        }
+    };
 
 private:
     // Vector to store worker threads
-    vector<thread> threads_;
+    vector<thread> worker_thread_;
+    // Monitor thread
+    thread progress_thread_;
 
     // Queue of tasks
     queue<function<void()>> tasks_;
 
     // Mutex to synchronize access to shared data
     mutex queue_mutex_;
+    // Mutex to monitor thread statistics
+    mutex stats_mutex_;
 
     // Condition variable to signal changes in the state of
     // the tasks queue
