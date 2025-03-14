@@ -8,6 +8,7 @@
 #include <queue>
 #include <thread>
 #include <chrono>
+#include <atomic>
 
 using namespace std;
 
@@ -28,7 +29,8 @@ public:
         if (see_progress)
         {
             worker_thread = num_threads - 1;
-            progress_thread_ = thread([this](){display_progress();});
+            progress_thread_ = thread([this]()
+                                      { display_progress(); });
         }
         else
         {
@@ -38,7 +40,7 @@ public:
         for (size_t i = 0; i < worker_thread; ++i)
         {
             worker_thread_.emplace_back([this]
-                                  {
+                                        {
                     while (true) {
                         function<void()> task;
                         // The reason for putting the below code
@@ -67,8 +69,10 @@ public:
                             task = move(tasks_.front());
                             tasks_.pop();
                         }
-    
+                        active_threads++;
                         task();
+                        active_threads--;
+                        cv_signal_.notify_one();
                     } });
         }
     };
@@ -76,6 +80,7 @@ public:
     // Destructor to stop the thread pool
     ~ThreadPool()
     {
+        threads_on = false;
         {
             // Lock the queue to update the stop flag safely
             unique_lock<mutex> lock(queue_mutex_);
@@ -90,8 +95,12 @@ public:
         for (auto &thread : worker_thread_)
         {
             thread.join();
+            std::cout << "Join thread" << std::endl;
         }
+        bool tmp = progress_thread_.joinable();
+        std::cout << "Monitor thread joinable: " << tmp << std::endl;
         progress_thread_.join();
+        std::cout << "Thread pool: destructor called" << std::endl;
     };
 
     // Enqueue task for execution by the thread pool
@@ -107,15 +116,25 @@ public:
     // Monitor progress
     void display_progress()
     {
-        while (!stop_)
+        while (threads_on)
         {
             {
-                std::unique_lock<std::mutex> lock(stats_mutex_);
-                std::cout << "Tasks remaining: " << tasks_.size() << std::endl;
+                // std::unique_lock<std::mutex> lock(stats_mutex_);
+                std::cout << "task remaining: " << tasks_.size() << " active threads: " << active_threads << std::endl;
             }
-            std::this_thread::sleep_for(std::chrono::seconds(10));
+            std::this_thread::sleep_for(std::chrono::seconds(2));
         }
     };
+
+    void wait_all()
+    {
+        {
+            std::unique_lock<std::mutex> lock(queue_mutex_);
+            cv_signal_.wait(lock, [this]()
+                     { return tasks_.empty() && active_threads == 0; });
+            std::cout << "WAIT_ALL: task remaining: " << tasks_.size() << " active threads: " << active_threads << std::endl;
+        }
+    }
 
 private:
     // Vector to store worker threads
@@ -128,16 +147,20 @@ private:
 
     // Mutex to synchronize access to shared data
     mutex queue_mutex_;
-    // Mutex to monitor thread statistics
-    mutex stats_mutex_;
+    
+    std::atomic<bool> threads_on = true;
 
     // Condition variable to signal changes in the state of
     // the tasks queue
     condition_variable cv_;
 
+    condition_variable cv_signal_;
+
     // Flag to indicate whether the thread pool should stop
     // or not
     bool stop_ = false;
+
+    std::atomic<int> active_threads = 0;
 };
 
 #endif // THREAD_POOL_H_

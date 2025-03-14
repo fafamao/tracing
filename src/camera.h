@@ -34,6 +34,9 @@ public:
     {
         initialize();
     }
+    ~Camera() {
+        printf("Camera: destructor called\n");
+    }
     void render(const hittable_list &world, char* ptr);
 
     // Generate vectors pointing to ([-0.5,0.5], [-0.5, 0.5], 0)

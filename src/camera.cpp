@@ -6,9 +6,9 @@ void Camera::render(const hittable_list &world, char* ptr)
     {
         for (int i = 0; i < PIXEL_WIDTH; i++)
         {
-            Color pixel_color(0, 0, 0);
-            std::function<void()> rendering = [&i, &j, &world, ptr, &pixel_color, this]()
+            std::function<void()> rendering = [i, j, &world, ptr, this]()
             {
+                Color pixel_color(0, 0, 0);
                 for (int sample = 0; sample < PIXEL_NEIGHBOR; sample++)
                 {
 
@@ -21,6 +21,7 @@ void Camera::render(const hittable_list &world, char* ptr)
             thread_pool.enqueue(rendering);
         }
     }
+    thread_pool.wait_all();
 
     //generate_ppm_6(ptr);
 }

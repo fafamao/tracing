@@ -65,5 +65,7 @@ int main()
     Camera camera(camera_origin, camera_dest, camera_up);
     camera.render(world, pixel_buffer);
 
+    printf("Rendering ends\n");
+
     return 0;
 }

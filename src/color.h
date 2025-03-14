@@ -31,7 +31,6 @@ public:
 
     // Write color to memory
     void write_color(int i, int j, char* ptr) {
-        printf("i=%d, j=%d, ptr=%p\n", i, j, ptr);
         r = linear_to_gamma(r);
         g = linear_to_gamma(g);
         b = linear_to_gamma(b);

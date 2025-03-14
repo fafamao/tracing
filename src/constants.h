@@ -11,14 +11,14 @@ inline constexpr int PIXEL_FACTOR = 256;
 inline constexpr double PIXEL_SCALE = 16.0 / 9.0;
 
 // Samples per pixel for anti-aliasing
-inline constexpr int PIXEL_NEIGHBOR = 500;
+inline constexpr int PIXEL_NEIGHBOR = 10;
 
 // TODO: Configure pixel size from static file
 inline constexpr int PIXEL_WIDTH = 1200;
 inline constexpr int PIXEL_HEIGHT = int(double(PIXEL_WIDTH) / PIXEL_SCALE);
 
 // Total ray bouncing
-inline constexpr int MAX_DEPTH = 500;
+inline constexpr int MAX_DEPTH = 10;
 
 // Math
 inline constexpr double PI = 3.1415926535897932385;
