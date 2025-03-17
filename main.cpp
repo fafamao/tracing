@@ -15,6 +15,9 @@ int main()
     MemoryPool mem_pool(pool_siz);
     char* pixel_buffer = mem_pool.allocate(rgb_size);
 
+    // Instantiate thread pool
+    ThreadPool tp;
+
     // Add earth and universe
     hittable_list world;
 
@@ -62,7 +65,7 @@ int main()
     Vec3 camera_origin = Vec3(13, 2, 3);
     Vec3 camera_dest = Vec3(0, 0, 0);
     Vec3 camera_up = Vec3(0, 1, 0);
-    Camera camera(camera_origin, camera_dest, camera_up);
+    Camera camera(camera_origin, camera_dest, camera_up, &tp);
     camera.render(world, pixel_buffer);
 
     printf("Rendering ends\n");

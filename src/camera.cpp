@@ -18,12 +18,12 @@ void Camera::render(const hittable_list &world, char* ptr)
                 pixel_color *= _pixel_scale;
                 pixel_color.write_color(i, j, ptr);
             };
-            thread_pool.enqueue(rendering);
+            thread_pool->enqueue(rendering);
         }
     }
-    thread_pool.wait_all();
+    thread_pool->wait_all();
 
-    //generate_ppm_6(ptr);
+    generate_ppm_6(ptr);
 }
 
 void Camera::redering_done() {

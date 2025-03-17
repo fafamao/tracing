@@ -17,7 +17,7 @@ private:
     double _pixel_scale;
     void initialize();
     Color ray_color(const Ray &r, const int depth, const hittable_list &world);
-    ThreadPool thread_pool;
+    ThreadPool *thread_pool;
 
 public:
     // Angle between z direction ray and ray between origin and top edge of viewport * 2
@@ -26,18 +26,15 @@ public:
     Vec3 lookat = Vec3(0, 0, -1);  // Point camera is looking at
     Vec3 vup = Vec3(0, 1, 0);      // Camera-relative "up" direction
 
-    Camera()
-    {
-        initialize();
-    };
-    Camera(Vec3 &origin, Vec3 &dest, Vec3 &up) : lookfrom(origin), lookat(dest), vup(up)
+    Camera(Vec3 &origin, Vec3 &dest, Vec3 &up, ThreadPool *tp) : lookfrom(origin), lookat(dest), vup(up), thread_pool(tp)
     {
         initialize();
     }
-    ~Camera() {
+    ~Camera()
+    {
         printf("Camera: destructor called\n");
     }
-    void render(const hittable_list &world, char* ptr);
+    void render(const hittable_list &world, char *ptr);
 
     // Generate vectors pointing to ([-0.5,0.5], [-0.5, 0.5], 0)
     Vec3 sample_square() const

@@ -95,10 +95,8 @@ public:
         for (auto &thread : worker_thread_)
         {
             thread.join();
-            std::cout << "Join thread" << std::endl;
         }
         bool tmp = progress_thread_.joinable();
-        std::cout << "Monitor thread joinable: " << tmp << std::endl;
         progress_thread_.join();
         std::cout << "Thread pool: destructor called" << std::endl;
     };

@@ -12,6 +12,7 @@ public:
     MemoryPool(size_t pool_size)
     {
         _ptr = new (std::nothrow) char[pool_size];
+        _ptr_origin= _ptr;
         _allocated = 0;
         _remain = pool_size;
         if (_ptr == nullptr)
@@ -36,7 +37,7 @@ public:
 
     ~MemoryPool()
     {
-        delete[] _ptr;
+        delete[] _ptr_origin;
     };
 
     void getMemoryInfo()
@@ -53,6 +54,7 @@ private:
     size_t _allocated;
     size_t _remain;
     char *_ptr;
+    const char* _ptr_origin;
 };
 
 #endif // MEM_POOL_H_
