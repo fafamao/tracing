@@ -1,3 +1,8 @@
+if is_mode("profile") then
+    set_symbols("debug")
+    add_cxflags("-pg")
+    add_ldflags("-pg")
+end
 target("camera_library")
     set_kind("static")
     add_includedirs("src")
