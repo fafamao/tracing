@@ -3,14 +3,13 @@ if is_mode("profile") then
     add_cxflags("-pg")
     add_ldflags("-pg")
 end
-<<<<<<< Updated upstream
-=======
+
 if is_mode("release") then
     set_symbols("hidden")
     set_optimize("fastest")
     set_strip("all")
 end
->>>>>>> Stashed changes
+
 target("camera_library")
     set_kind("static")
     add_includedirs("src")
