@@ -5,6 +5,7 @@
 #include "ray.h"
 #include "interval.h"
 #include "material.h"
+#include "aabb.h"
 #include <memory>
 
 using std::shared_ptr;
@@ -34,6 +35,8 @@ public:
     virtual ~hittable() = default;
 
     virtual bool hit(const Ray &r, Interval &interval, hit_record &rec) const = 0;
+
+    virtual aabb bounding_box() const = 0;
 };
 
 #endif // HITTABLE_H

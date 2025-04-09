@@ -2,6 +2,7 @@
 #define VEC3_H
 
 #include <cmath>
+#include <stdexcept>
 #include "constants.h"
 
 class Vec3
@@ -25,6 +26,21 @@ public:
     double get_z() const
     {
         return z;
+    }
+
+    double operator[](size_t i) const
+    {
+        switch (i)
+        {
+        case 0:
+            return x;
+        case 1:
+            return y;
+        case 2:
+            return z;
+        default:
+            throw std::out_of_range("Index out of range for Vec3");
+        };
     }
 
     Vec3 operator-() const
@@ -66,7 +82,8 @@ public:
     {
         return Vec3(random_double(min, max), random_double(min, max), random_double(min, max));
     }
-    bool near_zero() const {
+    bool near_zero() const
+    {
         // Return true if the vector is close to zero in all dimensions.
         auto s = 1e-8;
         return (std::fabs(x) < s) && (std::fabs(y) < s) && (std::fabs(z) < s);
@@ -104,18 +121,21 @@ inline Vec3 unit_vector(const Vec3 &v)
 {
     return v / v.get_length();
 }
-inline Vec3 reflect(const Vec3& v, const Vec3& n) {
-    return v - 2*dot(v,n)*n;
+inline Vec3 reflect(const Vec3 &v, const Vec3 &n)
+{
+    return v - 2 * dot(v, n) * n;
 }
-inline Vec3 cross(const Vec3& u, const Vec3& v) {
+inline Vec3 cross(const Vec3 &u, const Vec3 &v)
+{
     return Vec3(u.get_y() * v.get_z() - u.get_z() * v.get_y(),
                 u.get_z() * v.get_x() - u.get_x() * v.get_z(),
                 u.get_x() * v.get_y() - u.get_y() * v.get_x());
 }
 // TODO: validate calculation from Snil's law
-inline Vec3 refract(const Vec3& uv, const Vec3& n, double etai_over_etat) {
+inline Vec3 refract(const Vec3 &uv, const Vec3 &n, double etai_over_etat)
+{
     auto cos_theta = std::fmin(dot(-uv, n), 1.0);
-    Vec3 r_out_perp =  etai_over_etat * (uv + cos_theta*n);
+    Vec3 r_out_perp = etai_over_etat * (uv + cos_theta * n);
     Vec3 r_out_parallel = -std::sqrt(std::fabs(1.0 - r_out_perp.length_squared())) * n;
     return r_out_perp + r_out_parallel;
 }

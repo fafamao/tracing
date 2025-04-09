@@ -2,17 +2,22 @@
 #define SPHERE_H
 
 #include "hittable.h"
+#include "aabb.h"
 
 class sphere : public hittable
 {
 public:
     sphere(const Vec3 &center, double radius, shared_ptr<Material> mat) : center(center, Vec3(0, 0, 0)), radius(std::fmax(0, radius)), mat(mat)
     {
-        // TODO: dependency injection instead
+        auto rvec = Vec3(radius, radius, radius);
+        box = aabb(center - rvec, center + rvec);
     }
     sphere(const Vec3 &center1, const Vec3 &center2, double radius, shared_ptr<Material> mat) : center(center1, center2 - center1), radius(std::fmax(0, radius)), mat(mat)
     {
-        // TODO: dependency injection instead
+        auto rvec = Vec3(radius, radius, radius);
+        aabb box1(center.at(0) - rvec, center.at(0) + rvec);
+        aabb box2(center.at(1) - rvec, center.at(1) + rvec);
+        box = aabb(box1, box2);
     }
 
     bool hit(const Ray &r, Interval &interval, hit_record &rec) const override
@@ -48,10 +53,16 @@ public:
         return true;
     }
 
+    aabb bounding_box() const override
+    {
+        return box;
+    }
+
 private:
     Ray center;
     double radius;
     shared_ptr<Material> mat;
+    aabb box;
 };
 
 #endif // SPHERE_H

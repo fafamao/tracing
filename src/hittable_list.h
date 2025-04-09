@@ -3,6 +3,7 @@
 
 #include "hittable.h"
 #include "interval.h"
+#include "aabb.h"
 
 #include <memory>
 #include <vector>
@@ -12,6 +13,9 @@ using std::shared_ptr;
 
 class hittable_list : public hittable
 {
+private:
+    aabb box;
+
 public:
     std::vector<shared_ptr<hittable>> objects;
 
@@ -20,12 +24,18 @@ public:
 
     void clear() { objects.clear(); }
 
+    aabb bounding_box() const override
+    {
+        return box;
+    }
+
     void add(shared_ptr<hittable> object)
     {
         objects.push_back(object);
+        box = aabb(box, object->bounding_box());
     }
 
-    bool hit(const Ray &r, Interval& interval, hit_record &rec) const override
+    bool hit(const Ray &r, Interval &interval, hit_record &rec) const override
     {
         hit_record temp_rec;
         bool hit_anything = false;
