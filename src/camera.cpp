@@ -1,6 +1,6 @@
 #include "camera.h"
 
-void Camera::render(const hittable_list &world, char* ptr)
+void Camera::render(const hittable_list &world, char *ptr)
 {
     for (int j = 0; j < PIXEL_HEIGHT; j++)
     {
@@ -24,10 +24,6 @@ void Camera::render(const hittable_list &world, char* ptr)
     thread_pool->wait_all();
 
     generate_ppm_6(ptr);
-}
-
-void Camera::redering_done() {
-
 }
 
 void Camera::initialize()

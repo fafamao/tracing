@@ -5,7 +5,8 @@
 #include "ray.h"
 #include "color.h"
 
-typedef struct {
+typedef struct
+{
     Vec3 p;
     Vec3 normal;
     bool front_face;
@@ -34,7 +35,7 @@ public:
         auto scatter_direction = record.normal + random_unit_vec_rejection_method();
         if (scatter_direction.near_zero())
             scatter_direction = record.normal;
-        scattered = Ray(record.p, scatter_direction);
+        scattered = Ray(record.p, scatter_direction, r_in.get_time());
         attenuation = albedo;
         return true;
     }
@@ -54,7 +55,7 @@ public:
         Vec3 reflected = reflect(r_in.get_direction(), record.normal);
         // Fuzz reflection
         reflected = unit_vector(reflected) + (fuzz * random_unit_vec_rejection_method());
-        scattered = Ray(record.p, reflected);
+        scattered = Ray(record.p, reflected, r_in.get_time());
         attenuation = albedo;
         return (dot(scattered.get_direction(), record.normal) > 0);
     }
@@ -77,7 +78,7 @@ public:
 
         Vec3 unit_direction = unit_vector(r_in.get_direction());
         double cos_theta = std::fmin(dot(-unit_direction, record.normal), 1.0);
-        double sin_theta = std::sqrt(1.0 - cos_theta*cos_theta);
+        double sin_theta = std::sqrt(1.0 - cos_theta * cos_theta);
 
         bool cannot_refract = ri * sin_theta > 1.0;
         Vec3 direction;
@@ -87,7 +88,7 @@ public:
         else
             direction = refract(unit_direction, record.normal, ri);
 
-        scattered = Ray(record.p, direction);
+        scattered = Ray(record.p, direction, r_in.get_time());
         return true;
     }
 
@@ -96,11 +97,12 @@ private:
     // the refractive index of the enclosing media
     double refraction_index;
 
-    static double reflectance(double cosine, double refraction_index) {
+    static double reflectance(double cosine, double refraction_index)
+    {
         // Use Schlick's approximation for reflectance.
         auto r0 = (1 - refraction_index) / (1 + refraction_index);
-        r0 = r0*r0;
-        return r0 + (1-r0)*std::pow((1 - cosine),5);
+        r0 = r0 * r0;
+        return r0 + (1 - r0) * std::pow((1 - cosine), 5);
     }
 };
 

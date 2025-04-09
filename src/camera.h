@@ -51,9 +51,10 @@ public:
         auto ray_origin = _camera;
         auto ray_direction = pixel_sample - ray_origin;
 
-        return Ray(ray_origin, ray_direction);
+        auto random_time = random_double();
+
+        return Ray(ray_origin, ray_direction, random_time);
     };
-    void redering_done();
 };
 
 #endif // CAMERA_H_

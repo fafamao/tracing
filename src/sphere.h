@@ -6,14 +6,19 @@
 class sphere : public hittable
 {
 public:
-    sphere(const Vec3 &center, double radius, shared_ptr<Material> mat) : center(center), radius(std::fmax(0, radius)), mat(mat)
+    sphere(const Vec3 &center, double radius, shared_ptr<Material> mat) : center(center, Vec3(0, 0, 0)), radius(std::fmax(0, radius)), mat(mat)
+    {
+        // TODO: dependency injection instead
+    }
+    sphere(const Vec3 &center1, const Vec3 &center2, double radius, shared_ptr<Material> mat) : center(center1, center2 - center1), radius(std::fmax(0, radius)), mat(mat)
     {
         // TODO: dependency injection instead
     }
 
     bool hit(const Ray &r, Interval &interval, hit_record &rec) const override
     {
-        Vec3 oc = center - r.get_origin();
+        Vec3 current_center = center.at(r.get_time());
+        Vec3 oc = current_center - r.get_origin();
         auto a = r.get_direction().length_squared();
         auto h = dot(r.get_direction(), oc);
         auto c = oc.length_squared() - radius * radius;
@@ -36,7 +41,7 @@ public:
 
         rec.t = root;
         rec.p = r.at(rec.t);
-        Vec3 outward_normal = (rec.p - center) / radius;
+        Vec3 outward_normal = (rec.p - current_center) / radius;
         rec.set_face_normal(r, outward_normal);
         rec.mat = mat;
 
@@ -44,7 +49,7 @@ public:
     }
 
 private:
-    Vec3 center;
+    Ray center;
     double radius;
     shared_ptr<Material> mat;
 };

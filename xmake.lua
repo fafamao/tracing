@@ -10,6 +10,11 @@ if is_mode("release") then
     set_strip("all")
 end
 
+if is_mode("debug") then
+    set_symbols("debug")
+    set_optimize("none")
+end
+
 target("camera_library")
     set_kind("static")
     add_includedirs("src")
