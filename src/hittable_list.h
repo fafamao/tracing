@@ -35,7 +35,7 @@ public:
         box = aabb(box, object->bounding_box());
     }
 
-    bool hit(const Ray &r, Interval &interval, hit_record &rec) const override
+    bool hit(const Ray &r, Interval interval, hit_record &rec) const override
     {
         hit_record temp_rec;
         bool hit_anything = false;
@@ -43,8 +43,7 @@ public:
 
         for (const auto &object : objects)
         {
-            auto new_interval = Interval(interval.min, closest_so_far);
-            if (object->hit(r, new_interval, temp_rec))
+            if (object->hit(r, Interval(interval.min, closest_so_far), temp_rec))
             {
                 hit_anything = true;
                 closest_so_far = temp_rec.t;

@@ -20,7 +20,7 @@ public:
         box = aabb(box1, box2);
     }
 
-    bool hit(const Ray &r, Interval &interval, hit_record &rec) const override
+    bool hit(const Ray &r, Interval interval, hit_record &rec) const override
     {
         Vec3 current_center = center.at(r.get_time());
         Vec3 oc = current_center - r.get_origin();

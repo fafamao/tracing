@@ -33,7 +33,7 @@ public:
         z = Interval(box1.z, box2.z);
     }
 
-    const Interval &axis_Interval(int n) const
+    const Interval &axis_interval(int n) const
     {
         if (n == 1)
             return y;
@@ -49,7 +49,7 @@ public:
 
         for (int axis = 0; axis < 3; axis++)
         {
-            const Interval &ax = axis_Interval(axis);
+            const Interval &ax = axis_interval(axis);
             const double adinv = 1.0 / ray_dir[axis];
 
             auto t0 = (ax.min - ray_orig[axis]) * adinv;

@@ -32,7 +32,8 @@ inline double random_double()
     return distribution(generator);
 }
 
-inline double degrees_to_radians(double degrees) {
+inline double degrees_to_radians(double degrees)
+{
     return degrees * PI / 180.0;
 }
 
@@ -42,13 +43,22 @@ inline double random_double(double min, double max)
     return min + (max - min) * random_double();
 }
 
-inline void generate_ppm_6(char* ptr) {
+inline int random_int(int min, int max)
+{
+    // Returns a random integer in [min,max].
+    return int(random_double(min, max + 1));
+}
+
+inline void generate_ppm_6(char *ptr)
+{
     std::ofstream ppmFile("image.ppm", std::ios::out | std::ios::binary);
-    if (!ppmFile.is_open()) {
+    if (!ppmFile.is_open())
+    {
         std::cerr << "Error: could not open file image.ppm" << std::endl;
         return;
     }
-    ppmFile << "P6\n" << PIXEL_WIDTH << " " << PIXEL_HEIGHT << "\n255\n";
+    ppmFile << "P6\n"
+            << PIXEL_WIDTH << " " << PIXEL_HEIGHT << "\n255\n";
     ppmFile.write(ptr, PIXEL_HEIGHT * PIXEL_WIDTH * 3);
     ppmFile.close();
     std::cout << "PPM file written successfully: image.ppm" << std::endl;
