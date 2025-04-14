@@ -5,6 +5,7 @@
 #include "camera.h"
 #include "material.h"
 #include "mem_pool.h"
+#include "bvh_node.h"
 
 int main()
 {
@@ -70,6 +71,8 @@ int main()
 
     auto material3 = make_shared<Metal>(Color(0.7, 0.6, 0.5), 0.0);
     world.add(make_shared<sphere>(Vec3(4, 1, 0), 1.0, material3));
+
+    world = hittable_list(make_shared<bvh_node>(world));
 
     Vec3 camera_origin = Vec3(13, 2, 3);
     Vec3 camera_dest = Vec3(0, 0, 0);
