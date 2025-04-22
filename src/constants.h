@@ -5,6 +5,13 @@
 #include <random>
 #include <iostream>
 #include <fstream>
+#include <string_view>
+
+// Frame rate
+inline constexpr int FRAME_RATE = 30;
+
+// Pixel format for ffmpeg
+inline constexpr std::string_view PIXEL_FORMAT = "rgb24";
 
 // Picture size
 inline constexpr int PIXEL_FACTOR = 256;

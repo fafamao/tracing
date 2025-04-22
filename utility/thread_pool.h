@@ -18,8 +18,9 @@ public:
     // // Constructor to creates a thread pool with given
     // number of threads
     // TODO: fix argument flexibility
-    ThreadPool(size_t num_threads = thread::hardware_concurrency(), bool see_progress = true)
+    ThreadPool(size_t num_threads = thread::hardware_concurrency(), bool see_progress = false)
     {
+        see_progress_ = see_progress;
         if (num_threads == 0)
         {
             printf("Number of thread is 0, aborting\n");
@@ -97,7 +98,10 @@ public:
             thread.join();
         }
         bool tmp = progress_thread_.joinable();
-        progress_thread_.join();
+        if (see_progress_)
+        {
+            progress_thread_.join();
+        }
         std::cout << "Thread pool: destructor called" << std::endl;
     };
 
@@ -129,8 +133,8 @@ public:
         {
             std::unique_lock<std::mutex> lock(queue_mutex_);
             cv_signal_.wait(lock, [this]()
-                     { return tasks_.empty() && active_threads == 0; });
-            std::cout << "WAIT_ALL: task remaining: " << tasks_.size() << " active threads: " << active_threads << std::endl;
+                            { return tasks_.empty() && active_threads == 0; });
+            // std::cout << "WAIT_ALL: task remaining: " << tasks_.size() << " active threads: " << active_threads << std::endl;
         }
     }
 
@@ -145,7 +149,7 @@ private:
 
     // Mutex to synchronize access to shared data
     mutex queue_mutex_;
-    
+
     std::atomic<bool> threads_on = true;
 
     // Condition variable to signal changes in the state of
@@ -157,6 +161,8 @@ private:
     // Flag to indicate whether the thread pool should stop
     // or not
     bool stop_ = false;
+
+    bool see_progress_;
 
     std::atomic<int> active_threads = 0;
 };

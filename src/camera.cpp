@@ -2,6 +2,7 @@
 
 void Camera::render(const hittable_list &world, char *ptr)
 {
+    auto start_time = std::chrono::steady_clock::now();
     for (int j = 0; j < PIXEL_HEIGHT; j++)
     {
         for (int i = 0; i < PIXEL_WIDTH; i++)
@@ -22,6 +23,11 @@ void Camera::render(const hittable_list &world, char *ptr)
         }
     }
     thread_pool->wait_all();
+    auto end_time = std::chrono::steady_clock::now();
+    auto duration = end_time - start_time;
+    auto duration_ms = std::chrono::duration_cast<std::chrono::milliseconds>(duration);
+    std::cout << "Frame generation took: "
+              << duration_ms.count() << " milliseconds" << std::endl;
 
     generate_ppm_6(ptr);
 }

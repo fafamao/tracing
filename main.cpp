@@ -6,6 +6,7 @@
 #include "material.h"
 #include "mem_pool.h"
 #include "bvh_node.h"
+#include <cstring>
 
 int main()
 {
@@ -15,6 +16,37 @@ int main()
     size_t pool_siz = rgb_size * 2;
     MemoryPool mem_pool(pool_siz);
     char *pixel_buffer = mem_pool.allocate(rgb_size);
+
+    // Initialize pixel_buffer all white
+    memset(pixel_buffer, 255, rgb_size);
+
+    // --- Construct the ffplay command ---
+    std::string cmd = "ffplay ";
+    cmd += "-v error "; // Quieter log level (shows errors only)
+    // Input options - must match the data being piped
+    cmd += "-f rawvideo ";
+    cmd += "-pixel_format rgb24 "; // TODO: define format in constants.h
+    cmd += "-video_size " + std::to_string(PIXEL_WIDTH) + "x" + std::to_string(PIXEL_HEIGHT) + " ";
+    cmd += "-framerate " + std::to_string(FRAME_RATE) + " ";
+    // Other options
+    cmd += "-window_title \"Ray Tracer Output (ffplay)\" "; // Optional: Set window title
+    cmd += "-i - ";                                         // Read input from stdin
+
+    std::cout << "Executing command: " << cmd << std::endl;
+
+    FILE *pipe = nullptr;
+
+    pipe = popen(cmd.c_str(), "w");
+    if (!pipe)
+    {
+        throw std::runtime_error("popen() to ffplay failed! Is ffplay installed and in PATH?");
+    }
+    std::cout << "ffplay process started. Rendering frames..." << std::endl;
+
+    if (pipe)
+    {
+        pclose(pipe);
+    }
 
     // Instantiate thread pool
     ThreadPool tp;

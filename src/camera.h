@@ -8,6 +8,8 @@
 #include "material.h"
 #include "../utility/thread_pool.h"
 #include <functional>
+#include <chrono>
+#include <thread>
 
 class Camera
 {
