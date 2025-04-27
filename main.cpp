@@ -20,7 +20,7 @@ int main()
     // Initialize pixel_buffer all white
     memset(pixel_buffer, 255, rgb_size);
 
-    // --- Construct the ffplay command ---
+/*     // --- Construct the ffplay command ---
     std::string cmd = "ffplay ";
     cmd += "-v error "; // Quieter log level (shows errors only)
     // Input options - must match the data being piped
@@ -46,7 +46,7 @@ int main()
     if (pipe)
     {
         pclose(pipe);
-    }
+    } */
 
     // Instantiate thread pool
     ThreadPool tp;
