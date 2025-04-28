@@ -53,7 +53,7 @@ public:
         auto ray_origin = _camera;
         auto ray_direction = pixel_sample - ray_origin;
 
-        auto random_time = random_double();
+        auto random_time = 0;//random_double();
 
         return Ray(ray_origin, ray_direction, random_time);
     };

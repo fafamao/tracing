@@ -8,59 +8,49 @@
 class Vec3
 {
 private:
-    double x, y, z;
+    double x[3];
 
 public:
     Vec3() {};
-    Vec3(double pos1, double pos2, double pos3) : x{pos1}, y{pos2}, z{pos3} {};
+    Vec3(double pos1, double pos2, double pos3) : x{pos1, pos2, pos3} {};
     ~Vec3() {};
 
     double get_x() const
     {
-        return x;
+        return x[0];
     }
     double get_y() const
     {
-        return y;
+        return x[1];
     }
     double get_z() const
     {
-        return z;
+        return x[2];
     }
 
     double operator[](size_t i) const
     {
-        switch (i)
-        {
-        case 0:
-            return x;
-        case 1:
-            return y;
-        case 2:
-            return z;
-        default:
-            throw std::out_of_range("Index out of range for Vec3");
-        };
+        return x[i];
     }
 
     Vec3 operator-() const
     {
-        return Vec3(-x, -y, -z);
+        return Vec3(-x[0], -x[1], -x[2]);
     }
 
     Vec3 &operator+=(const Vec3 &vec)
     {
-        x += vec.get_x();
-        y += vec.get_y();
-        z += vec.get_z();
+        x[0] += vec.get_x();
+        x[1] += vec.get_y();
+        x[2] += vec.get_z();
         return *this;
     }
 
     Vec3 &operator*=(const Vec3 &vec)
     {
-        x *= vec.get_x();
-        y *= vec.get_y();
-        z *= vec.get_z();
+        x[0] *= vec.get_x();
+        x[1] *= vec.get_y();
+        x[2] *= vec.get_z();
         return *this;
     }
 
@@ -71,7 +61,7 @@ public:
 
     double length_squared() const
     {
-        return x * x + y * y + z * z;
+        return x[0] * x[0] + x[1] * x[1] + x[2] * x[2];
     }
 
     static Vec3 random()
@@ -86,7 +76,7 @@ public:
     {
         // Return true if the vector is close to zero in all dimensions.
         auto s = 1e-8;
-        return (std::fabs(x) < s) && (std::fabs(y) < s) && (std::fabs(z) < s);
+        return (std::fabs(x[0]) < s) && (std::fabs(x[1]) < s) && (std::fabs(x[2]) < s);
     }
 };
 inline Vec3 operator+(const Vec3 &vec1, const Vec3 &vec2)
@@ -156,10 +146,8 @@ inline Vec3 random_unit_vec_spherical_coordinates()
 {
     double theta = random_double(0, 2 * PI);
     double phi = acos(2 * random_double() - 1);
-    double x = sin(phi) * cos(theta);
-    double y = sin(phi) * sin(theta);
-    double z = cos(phi);
-    return Vec3(x, y, z);
+    double x[3] = {sin(phi) * cos(theta), sin(phi) * sin(theta), cos(phi)};
+    return Vec3(x[0], x[1], x[2]);
 }
 
 inline Vec3 random_unit_vec_normal_distribution()
@@ -169,10 +157,8 @@ inline Vec3 random_unit_vec_normal_distribution()
         std::random_device rd;
         std::mt19937 rng(rd());
         std::normal_distribution<double> dist(0.0, 1.0);
-        double x = dist(rng);
-        double y = dist(rng);
-        double z = dist(rng);
-        auto vec = Vec3(x, y, z);
+        double x[3] = {dist(rng), dist(rng), dist(rng)};
+        auto vec = Vec3(x[0], x[1], x[2]);
         auto len = vec.length_squared();
         if (1e-160 < len && len <= 1)
         {
@@ -187,10 +173,8 @@ inline Vec3 random_unit_vec_random_cosine_direction()
     double v = random_double();
     double theta = acos(sqrt(1 - u));
     double phi = 2 * M_PI * v;
-    double x = sin(theta) * cos(phi);
-    double y = sin(theta) * sin(phi);
-    double z = sqrt(u);
-    return Vec3(x, y, z);
+    double x[3] = {sin(theta) * cos(phi), sin(theta) * sin(phi), sqrt(u)};
+    return Vec3(x[0], x[1], x[2]);
 }
 
 // TODO: use reflection ray that is close to normal(random_cosine_direction)
