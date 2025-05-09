@@ -8,12 +8,18 @@ class Ray
 private:
   Vec3 origin;
   Vec3 dir;
+  // For AABB calculation
+  Vec3 adinv;
   double time_;
 
 public:
   Ray() {};
-  Ray(const Vec3 &ori, const Vec3 &di, double time) : origin(ori), dir(di), time_(time) {};
-  Ray(const Vec3 &ori, const Vec3 &di) : origin(ori), dir(di), time_(0.0) {};
+  Ray(const Vec3 &ori, const Vec3 &di, double time) : origin(ori), dir(di), time_(time) {
+    adinv = Vec3(1.0/di[0], 1.0/di[1], 1.0/di[2]);
+  };
+  Ray(const Vec3 &ori, const Vec3 &di) : origin(ori), dir(di), time_(0.0) {
+    adinv = Vec3(1.0/di[0], 1.0/di[1], 1.0/di[2]);
+  };
   const Vec3 &get_origin() const { return origin; }
   const Vec3 &get_direction() const { return dir; }
 
@@ -26,6 +32,7 @@ public:
   {
     return time_;
   }
+  const Vec3& get_inv_direction() const { return adinv; }
 };
 
 #endif

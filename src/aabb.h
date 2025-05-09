@@ -5,16 +5,22 @@
 #include "ray.h"
 #include "vec3.h"
 #include <algorithm>
+#include <immintrin.h>
 
 class aabb
 {
 public:
     Interval x, y, z;
 
+    Vec3 p_min, p_max;
+
     aabb() {} // The default AABB is empty, since Intervals are empty by default.
 
     aabb(const Interval &x, const Interval &y, const Interval &z)
-        : x(x), y(y), z(z) {}
+        : x(x), y(y), z(z) {
+            p_min = Vec3(x.min, y.min, z.min);
+            p_max = Vec3(x.max, y.max, z.max);
+        }
 
     aabb(const Vec3 &a, const Vec3 &b)
     {
@@ -46,6 +52,7 @@ public:
     {
         const Vec3 &ray_orig = r.get_origin();
         const Vec3 &ray_dir = r.get_direction();
+        const Vec3 &ray_inv = r.get_inv_direction();
 
         for (int axis = 0; axis < 3; axis++)
         {
