@@ -14,7 +14,7 @@ bool is_gpu_available() {
     cudaError_t error_id = cudaGetDeviceCount(&deviceCount);
 
     if(error_id != cudaSuccess) {
-        printf("GPU card is not available.");
+        printf("GPU card is not available.\n");
         return false;
     }
     return deviceCount > 0;
@@ -22,6 +22,9 @@ bool is_gpu_available() {
 
 int main()
 {
+    // Check GPU availability
+    bool is_gpu_ready = is_gpu_available();
+
     // Instantiate memory pool
     // TODO: fix this
     size_t rgb_size = PIXEL_HEIGHT * PIXEL_WIDTH * 3;

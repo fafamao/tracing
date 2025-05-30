@@ -1,5 +1,3 @@
-add_requires("cuda")
-
 if is_mode("profile") then
     set_symbols("debug")
     add_cxflags("-pg")
@@ -32,9 +30,11 @@ target("tracing")
     set_kind("binary")
     add_includedirs("src")
     add_includedirs("utility")
+    add_includedirs("/usr/local/cuda-12.9/include/")
     add_files("main.cpp")
     add_deps("camera_library")
     add_deps("interval_library")
-
     set_targetdir("bin")
     set_basename("tracing")
+    add_linkdirs("/usr/local/cuda-12.9/lib64/")
+    add_links("cudart")
