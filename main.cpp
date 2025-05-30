@@ -6,7 +6,19 @@
 #include "material.h"
 #include "mem_pool.h"
 #include "bvh_node.h"
+#include <cuda_runtime.h>
 #include <cstring>
+
+bool is_gpu_available() {
+    int deviceCount = 0;
+    cudaError_t error_id = cudaGetDeviceCount(&deviceCount);
+
+    if(error_id != cudaSuccess) {
+        printf("GPU card is not available.");
+        return false;
+    }
+    return deviceCount > 0;
+}
 
 int main()
 {

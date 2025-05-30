@@ -1,3 +1,5 @@
+add_requires("cuda")
+
 if is_mode("profile") then
     set_symbols("debug")
     add_cxflags("-pg")
@@ -32,3 +34,7 @@ target("tracing")
     add_includedirs("utility")
     add_files("main.cpp")
     add_deps("camera_library")
+    add_deps("interval_library")
+
+    set_targetdir("bin")
+    set_basename("tracing")
