@@ -18,7 +18,7 @@ inline constexpr int PIXEL_FACTOR = 256;
 inline constexpr double PIXEL_SCALE = 16.0 / 9.0;
 
 // Samples per pixel for anti-aliasing
-inline constexpr int PIXEL_NEIGHBOR = 1;
+inline constexpr int PIXEL_NEIGHBOR = 10;
 
 // TODO: Configure pixel size from static file
 inline constexpr int PIXEL_WIDTH = 1280;
