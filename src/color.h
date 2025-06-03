@@ -30,15 +30,15 @@ public:
     }
 
     // Write color to memory
-    void write_color(int i, int j, char* ptr) {
+    void write_color(int i, int j, char *ptr)
+    {
         r = linear_to_gamma(r);
         g = linear_to_gamma(g);
         b = linear_to_gamma(b);
 
-        char rp = char(PIXEL_FACTOR * get_pixel_interval().clamp(r));
-        char gp = char(PIXEL_FACTOR * get_pixel_interval().clamp(g));
-        char bp = char(PIXEL_FACTOR * get_pixel_interval().clamp(b));
-
+        unsigned char rp = static_cast<unsigned char>(PIXEL_FACTOR * get_pixel_interval().clamp(r));
+        unsigned char gp = static_cast<unsigned char>(PIXEL_FACTOR * get_pixel_interval().clamp(g));
+        unsigned char bp = static_cast<unsigned char>(PIXEL_FACTOR * get_pixel_interval().clamp(b));
         // 3 for r,g,b
         int buff_pos = (i + j * PIXEL_WIDTH) * 3;
 
