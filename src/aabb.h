@@ -11,12 +11,12 @@ class aabb
 public:
     Interval x, y, z;
 
-    aabb() {} // The default AABB is empty, since Intervals are empty by default.
+    __host__ __device__ aabb() {} // The default AABB is empty, since Intervals are empty by default.
 
-    aabb(const Interval &x, const Interval &y, const Interval &z)
+    __host__ __device__ aabb(const Interval &x, const Interval &y, const Interval &z)
         : x(x), y(y), z(z) {}
 
-    aabb(const Vec3 &a, const Vec3 &b)
+    __host__ __device__ aabb(const Vec3 &a, const Vec3 &b)
     {
         // Treat the two points a and b as extrema for the bounding box, so we don't require a
         // particular minimum/maximum coordinate order.
@@ -26,14 +26,14 @@ public:
         z = (a.get_z() <= b.get_z()) ? Interval(a.get_z(), b.get_z()) : Interval(b.get_z(), a.get_z());
     }
 
-    aabb(const aabb &box1, const aabb &box2)
+    __host__ __device__ aabb(const aabb &box1, const aabb &box2)
     {
         x = Interval(box1.x, box2.x);
         y = Interval(box1.y, box2.y);
         z = Interval(box1.z, box2.z);
     }
 
-    const Interval &axis_interval(int n) const
+    __host__ __device__ const Interval &axis_interval(int n) const
     {
         if (n == 1)
             return y;
@@ -42,7 +42,7 @@ public:
         return x;
     }
 
-    bool hit(const Ray &r, Interval ray_t) const
+    __host__ __device__ bool hit(const Ray &r, Interval ray_t) const
     {
         const Vec3 &ray_orig = r.get_origin();
         const Vec3 &ray_dir = r.get_direction();
