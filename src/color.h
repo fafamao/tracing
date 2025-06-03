@@ -35,9 +35,9 @@ public:
         g = linear_to_gamma(g);
         b = linear_to_gamma(b);
 
-        char rp = char(PIXEL_FACTOR * pixel_interval.clamp(r));
-        char gp = char(PIXEL_FACTOR * pixel_interval.clamp(g));
-        char bp = char(PIXEL_FACTOR * pixel_interval.clamp(b));
+        char rp = char(PIXEL_FACTOR * get_pixel_interval().clamp(r));
+        char gp = char(PIXEL_FACTOR * get_pixel_interval().clamp(g));
+        char bp = char(PIXEL_FACTOR * get_pixel_interval().clamp(b));
 
         // 3 for r,g,b
         int buff_pos = (i + j * PIXEL_WIDTH) * 3;

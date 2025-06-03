@@ -25,7 +25,7 @@ inline constexpr int PIXEL_WIDTH = 1280;
 inline constexpr int PIXEL_HEIGHT = int(double(PIXEL_WIDTH) / PIXEL_SCALE);
 
 // Total ray bouncing
-inline constexpr int MAX_DEPTH = 1;
+inline constexpr int MAX_DEPTH = 10;
 
 // Math
 inline constexpr double PI = 3.1415926535897932385;

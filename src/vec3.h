@@ -11,34 +11,34 @@ private:
     double x[3];
 
 public:
-    Vec3() {};
-    Vec3(double pos1, double pos2, double pos3) : x{pos1, pos2, pos3} {};
+    __host__ __device__ Vec3() {};
+    __host__ __device__ Vec3(double pos1, double pos2, double pos3) : x{pos1, pos2, pos3} {};
     ~Vec3() {};
 
-    double get_x() const
+    __host__ __device__ double get_x() const
     {
         return x[0];
     }
-    double get_y() const
+    __host__ __device__ double get_y() const
     {
         return x[1];
     }
-    double get_z() const
+    __host__ __device__ double get_z() const
     {
         return x[2];
     }
 
-    double operator[](size_t i) const
+    __host__ __device__ double operator[](size_t i) const
     {
         return x[i];
     }
 
-    Vec3 operator-() const
+    __host__ __device__ Vec3 operator-() const
     {
         return Vec3(-x[0], -x[1], -x[2]);
     }
 
-    Vec3 &operator+=(const Vec3 &vec)
+    __host__ __device__ Vec3 &operator+=(const Vec3 &vec)
     {
         x[0] += vec.get_x();
         x[1] += vec.get_y();
@@ -46,7 +46,7 @@ public:
         return *this;
     }
 
-    Vec3 &operator*=(const Vec3 &vec)
+    __host__ __device__ Vec3 &operator*=(const Vec3 &vec)
     {
         x[0] *= vec.get_x();
         x[1] *= vec.get_y();
@@ -54,12 +54,12 @@ public:
         return *this;
     }
 
-    double get_length() const
+    __host__ __device__ double get_length() const
     {
         return std::sqrt(length_squared());
     }
 
-    double length_squared() const
+    __host__ __device__ double length_squared() const
     {
         return x[0] * x[0] + x[1] * x[1] + x[2] * x[2];
     }
@@ -72,57 +72,57 @@ public:
     {
         return Vec3(random_double(min, max), random_double(min, max), random_double(min, max));
     }
-    bool near_zero() const
+    __host__ __device__ bool near_zero() const
     {
         // Return true if the vector is close to zero in all dimensions.
         auto s = 1e-8;
         return (std::fabs(x[0]) < s) && (std::fabs(x[1]) < s) && (std::fabs(x[2]) < s);
     }
 };
-inline Vec3 operator+(const Vec3 &vec1, const Vec3 &vec2)
+__host__ __device__ inline Vec3 operator+(const Vec3 &vec1, const Vec3 &vec2)
 {
     return Vec3(vec1.get_x() + vec2.get_x(), vec1.get_y() + vec2.get_y(), vec1.get_z() + vec2.get_z());
 }
-inline Vec3 operator-(const Vec3 &vec1, const Vec3 &vec2)
+__host__ __device__ inline Vec3 operator-(const Vec3 &vec1, const Vec3 &vec2)
 {
     return Vec3(vec1.get_x() - vec2.get_x(), vec1.get_y() - vec2.get_y(), vec1.get_z() - vec2.get_z());
 }
-inline Vec3 operator*(const Vec3 &vec1, const Vec3 &vec2)
+__host__ __device__ inline Vec3 operator*(const Vec3 &vec1, const Vec3 &vec2)
 {
     return Vec3(vec1.get_x() * vec2.get_x(), vec1.get_y() * vec2.get_y(), vec1.get_z() * vec2.get_z());
 }
-inline Vec3 operator*(const double scale, const Vec3 &vec2)
+__host__ __device__ inline Vec3 operator*(const double scale, const Vec3 &vec2)
 {
     return Vec3(scale * vec2.get_x(), scale * vec2.get_y(), scale * vec2.get_z());
 }
-inline Vec3 operator*(const Vec3 &vec, const double scale)
+__host__ __device__ inline Vec3 operator*(const Vec3 &vec, const double scale)
 {
     return scale * vec;
 }
-inline Vec3 operator/(const Vec3 &vec, double scale)
+__host__ __device__ inline Vec3 operator/(const Vec3 &vec, double scale)
 {
     return (1 / scale) * vec;
 }
-inline double dot(const Vec3 &vec1, const Vec3 &vec2)
+__host__ __device__ inline double dot(const Vec3 &vec1, const Vec3 &vec2)
 {
     return vec1.get_x() * vec2.get_x() + vec1.get_y() * vec2.get_y() + vec1.get_z() * vec2.get_z();
 }
-inline Vec3 unit_vector(const Vec3 &v)
+__host__ __device__ inline Vec3 unit_vector(const Vec3 &v)
 {
     return v / v.get_length();
 }
-inline Vec3 reflect(const Vec3 &v, const Vec3 &n)
+__host__ __device__ inline Vec3 reflect(const Vec3 &v, const Vec3 &n)
 {
     return v - 2 * dot(v, n) * n;
 }
-inline Vec3 cross(const Vec3 &u, const Vec3 &v)
+__host__ __device__ inline Vec3 cross(const Vec3 &u, const Vec3 &v)
 {
     return Vec3(u.get_y() * v.get_z() - u.get_z() * v.get_y(),
                 u.get_z() * v.get_x() - u.get_x() * v.get_z(),
                 u.get_x() * v.get_y() - u.get_y() * v.get_x());
 }
 // TODO: validate calculation from Snil's law
-inline Vec3 refract(const Vec3 &uv, const Vec3 &n, double etai_over_etat)
+__host__ __device__ inline Vec3 refract(const Vec3 &uv, const Vec3 &n, double etai_over_etat)
 {
     auto cos_theta = std::fmin(dot(-uv, n), 1.0);
     Vec3 r_out_perp = etai_over_etat * (uv + cos_theta * n);
@@ -131,7 +131,7 @@ inline Vec3 refract(const Vec3 &uv, const Vec3 &n, double etai_over_etat)
 }
 
 // Generate random unit vector
-inline Vec3 random_unit_vec_rejection_method()
+__host__ __device__ inline Vec3 random_unit_vec_rejection_method()
 {
     while (true)
     {
@@ -142,7 +142,7 @@ inline Vec3 random_unit_vec_rejection_method()
     }
 }
 
-inline Vec3 random_unit_vec_spherical_coordinates()
+__host__ __device__ inline Vec3 random_unit_vec_spherical_coordinates()
 {
     double theta = random_double(0, 2 * PI);
     double phi = acos(2 * random_double() - 1);
@@ -150,7 +150,7 @@ inline Vec3 random_unit_vec_spherical_coordinates()
     return Vec3(x[0], x[1], x[2]);
 }
 
-inline Vec3 random_unit_vec_normal_distribution()
+__host__ __device__ inline Vec3 random_unit_vec_normal_distribution()
 {
     while (true)
     {
@@ -167,7 +167,7 @@ inline Vec3 random_unit_vec_normal_distribution()
     }
 }
 
-inline Vec3 random_unit_vec_random_cosine_direction()
+__host__ __device__ inline Vec3 random_unit_vec_random_cosine_direction()
 {
     double u = random_double();
     double v = random_double();
@@ -178,7 +178,7 @@ inline Vec3 random_unit_vec_random_cosine_direction()
 }
 
 // TODO: use reflection ray that is close to normal(random_cosine_direction)
-inline Vec3 random_on_hemisphere(const Vec3 &normal)
+__host__ __device__ inline Vec3 random_on_hemisphere(const Vec3 &normal)
 {
     Vec3 on_unit_sphere = random_unit_vec_rejection_method();
     if (dot(on_unit_sphere, normal) > 0.0) // In the same hemisphere as the normal

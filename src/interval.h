@@ -47,4 +47,8 @@ public:
 
 static Interval pixel_interval(0.000, 0.999);
 
+__host__ __device__ static Interval get_pixel_interval() {
+    return Interval(0.00, 0.99);
+}
+
 #endif // INTERVAL_H_

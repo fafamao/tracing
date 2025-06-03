@@ -11,18 +11,18 @@ private:
   double time_;
 
 public:
-  Ray() {};
-  Ray(const Vec3 &ori, const Vec3 &di, double time) : origin(ori), dir(di), time_(time) {};
-  Ray(const Vec3 &ori, const Vec3 &di) : origin(ori), dir(di), time_(0.0) {};
-  const Vec3 &get_origin() const { return origin; }
-  const Vec3 &get_direction() const { return dir; }
+  __host__ __device__ Ray() {};
+  __host__ __device__ Ray(const Vec3 &ori, const Vec3 &di, double time) : origin(ori), dir(di), time_(time) {};
+  __host__ __device__ Ray(const Vec3 &ori, const Vec3 &di) : origin(ori), dir(di), time_(0.0) {};
+  __host__ __device__ const Vec3 &get_origin() const { return origin; }
+  __host__ __device__ const Vec3 &get_direction() const { return dir; }
 
   // Calculate ray position with given time t
-  Vec3 at(double t) const
+  __host__ __device__ Vec3 at(double t) const
   {
     return origin + t * dir;
   }
-  double get_time() const
+  __host__ __device__ double get_time() const
   {
     return time_;
   }
