@@ -123,7 +123,7 @@ int main()
 
     world = hittable_list(make_shared<bvh_node>(world));
 
-    if (is_gpu_available)
+    if (is_gpu_ready)
     {
         cudaDeviceProp prop;
         cudaGetDeviceProperties(&prop, 0);
