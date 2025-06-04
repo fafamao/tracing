@@ -17,7 +17,7 @@ class Material
 public:
     virtual ~Material() = default;
 
-    virtual bool scatter(
+    __host__ __device__ virtual bool scatter(
         const Ray &r_in, const record_content &record, Color &attenuation, Ray &scattered) const
     {
         return false;
@@ -27,9 +27,9 @@ public:
 class Lambertian : public Material
 {
 public:
-    Lambertian(const Color &albedo) : albedo(albedo) {}
+    __host__ __device__ Lambertian(const Color &albedo) : albedo(albedo) {}
 
-    bool scatter(const Ray &r_in, const record_content &record, Color &attenuation, Ray &scattered)
+    __host__ __device__ bool scatter(const Ray &r_in, const record_content &record, Color &attenuation, Ray &scattered)
         const override
     {
         auto scatter_direction = record.normal + random_unit_vec_rejection_method();
@@ -47,9 +47,9 @@ private:
 class Metal : public Material
 {
 public:
-    Metal(const Color &albedo, double fuzz) : albedo(albedo), fuzz(fuzz < 1 ? fuzz : 1) {}
+    __host__ __device__ Metal(const Color &albedo, double fuzz) : albedo(albedo), fuzz(fuzz < 1 ? fuzz : 1) {}
 
-    bool scatter(const Ray &r_in, const record_content &record, Color &attenuation, Ray &scattered)
+    __host__ __device__ bool scatter(const Ray &r_in, const record_content &record, Color &attenuation, Ray &scattered)
         const override
     {
         Vec3 reflected = reflect(r_in.get_direction(), record.normal);
@@ -68,9 +68,9 @@ private:
 class dielectric : public Material
 {
 public:
-    dielectric(double refraction_index) : refraction_index(refraction_index) {}
+    __host__ __device__ dielectric(double refraction_index) : refraction_index(refraction_index) {}
 
-    bool scatter(const Ray &r_in, const record_content &record, Color &attenuation, Ray &scattered)
+    __host__ __device__ bool scatter(const Ray &r_in, const record_content &record, Color &attenuation, Ray &scattered)
         const override
     {
         attenuation = Color(1.0, 1.0, 1.0);
@@ -97,7 +97,7 @@ private:
     // the refractive index of the enclosing media
     double refraction_index;
 
-    static double reflectance(double cosine, double refraction_index)
+    __host__ __device__ static double reflectance(double cosine, double refraction_index)
     {
         // Use Schlick's approximation for reflectance.
         auto r0 = (1 - refraction_index) / (1 + refraction_index);

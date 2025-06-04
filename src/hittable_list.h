@@ -19,23 +19,23 @@ private:
 public:
     std::vector<shared_ptr<hittable>> objects;
 
-    hittable_list() {}
-    hittable_list(shared_ptr<hittable> object) { add(object); }
+    __host__ __device__ hittable_list() {}
+    __host__ __device__ hittable_list(shared_ptr<hittable> object) { add(object); }
 
-    void clear() { objects.clear(); }
+    __host__ __device__ void clear() { objects.clear(); }
 
-    aabb bounding_box() const override
+    __host__ __device__ aabb bounding_box() const override
     {
         return box;
     }
 
-    void add(shared_ptr<hittable> object)
+    __host__ __device__ void add(shared_ptr<hittable> object)
     {
         objects.push_back(object);
         box = aabb(box, object->bounding_box());
     }
 
-    bool hit(const Ray &r, Interval interval, hit_record &rec) const override
+    __host__ __device__ bool hit(const Ray &r, Interval interval, hit_record &rec) const override
     {
         hit_record temp_rec;
         bool hit_anything = false;

@@ -1,5 +1,7 @@
 #include "camera.h"
 
+//TODO: implement cuda only render
+
 void Camera::render(const hittable_list &world, char *ptr)
 {
     auto start_time = std::chrono::steady_clock::now();
@@ -32,7 +34,7 @@ void Camera::render(const hittable_list &world, char *ptr)
     generate_ppm_6(ptr);
 }
 
-void Camera::initialize()
+__host__ __device__ void Camera::initialize()
 {
     // Camera is placed at the origin of the axis
     _camera = lookfrom;
@@ -58,7 +60,7 @@ void Camera::initialize()
     _pixel_scale = 1.0 / PIXEL_NEIGHBOR;
 }
 
-Color Camera::ray_color(const Ray &r, const int depth, const hittable_list &world)
+__host__ __device__ Color Camera::ray_color(const Ray &r, const int depth, const hittable_list &world)
 {
     if (depth <= 0)
         return Color(0, 0, 0);

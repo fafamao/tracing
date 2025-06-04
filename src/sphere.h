@@ -7,12 +7,12 @@
 class sphere : public hittable
 {
 public:
-    sphere(const Vec3 &center, double radius, shared_ptr<Material> mat) : center(center, Vec3(0, 0, 0)), radius(std::fmax(0, radius)), mat(mat)
+    __host__ __device__ sphere(const Vec3 &center, double radius, shared_ptr<Material> mat) : center(center, Vec3(0, 0, 0)), radius(std::fmax(0, radius)), mat(mat)
     {
         auto rvec = Vec3(radius, radius, radius);
         box = aabb(center - rvec, center + rvec);
     }
-    sphere(const Vec3 &center1, const Vec3 &center2, double radius, shared_ptr<Material> mat) : center(center1, center2 - center1), radius(std::fmax(0, radius)), mat(mat)
+    __host__ __device__ sphere(const Vec3 &center1, const Vec3 &center2, double radius, shared_ptr<Material> mat) : center(center1, center2 - center1), radius(std::fmax(0, radius)), mat(mat)
     {
         auto rvec = Vec3(radius, radius, radius);
         aabb box1(center.at(0) - rvec, center.at(0) + rvec);
@@ -20,7 +20,7 @@ public:
         box = aabb(box1, box2);
     }
 
-    bool hit(const Ray &r, Interval interval, hit_record &rec) const override
+    __host__ __device__ bool hit(const Ray &r, Interval interval, hit_record &rec) const override
     {
         Vec3 current_center = center.at(r.get_time());
         Vec3 oc = current_center - r.get_origin();
@@ -53,7 +53,7 @@ public:
         return true;
     }
 
-    aabb bounding_box() const override
+    __host__ __device__ aabb bounding_box() const override
     {
         return box;
     }

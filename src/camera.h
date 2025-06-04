@@ -17,8 +17,8 @@ private:
     Vec3 _top_left_pixel, _unit_vec_v, _unit_vec_u, _camera;
     Vec3 u, v, w; // Camera frame basis vectors
     double _pixel_scale;
-    void initialize();
-    Color ray_color(const Ray &r, const int depth, const hittable_list &world);
+    __host__ __device__ void initialize();
+    __host__ __device__ Color ray_color(const Ray &r, const int depth, const hittable_list &world);
     ThreadPool *thread_pool;
 
 public:
@@ -28,7 +28,7 @@ public:
     Vec3 lookat = Vec3(0, 0, -1);  // Point camera is looking at
     Vec3 vup = Vec3(0, 1, 0);      // Camera-relative "up" direction
 
-    Camera(Vec3 &origin, Vec3 &dest, Vec3 &up, ThreadPool *tp) : lookfrom(origin), lookat(dest), vup(up), thread_pool(tp)
+    __host__ __device__ Camera(Vec3 &origin, Vec3 &dest, Vec3 &up, ThreadPool *tp) : lookfrom(origin), lookat(dest), vup(up), thread_pool(tp)
     {
         initialize();
     }
@@ -39,12 +39,13 @@ public:
     void render(const hittable_list &world, char *ptr);
 
     // Generate vectors pointing to ([-0.5,0.5], [-0.5, 0.5], 0)
-    Vec3 sample_square() const
+    __host__ __device__ Vec3 sample_square() const
     {
+        // TODO: cuda random number generation
         return Vec3(random_double() - 0.5, random_double() - 0.5, 0);
     };
 
-    Ray get_ray(int i, int j) const
+    __host__ __device__ Ray get_ray(int i, int j) const
     {
         // TODO: get rid of sample generation
         auto offset = sample_square();
