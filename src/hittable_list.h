@@ -15,12 +15,20 @@ class hittable_list : public hittable
 {
 private:
     aabb box;
+    hittable **list;
+    int list_size;
 
 public:
     std::vector<shared_ptr<hittable>> objects;
 
     __host__ __device__ hittable_list() {}
     __host__ __device__ hittable_list(shared_ptr<hittable> object) { add(object); }
+
+    hittable_list(hittable **l, int n)
+    {
+        list = l;
+        list_size = n;
+    }
 
     __host__ __device__ void clear() { objects.clear(); }
 

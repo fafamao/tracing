@@ -7,7 +7,12 @@
 class sphere : public hittable
 {
 public:
-    __host__ __device__ sphere(const Vec3 &center, double radius, shared_ptr<Material> mat) : center(center, Vec3(0, 0, 0)), radius(std::fmax(0, radius)), mat(mat)
+    sphere(const Vec3 &center, double radius, shared_ptr<Material> mat) : center(center, Vec3(0, 0, 0)), radius(std::fmax(0, radius)), mat(mat)
+    {
+        auto rvec = Vec3(radius, radius, radius);
+        box = aabb(center - rvec, center + rvec);
+    }
+    __host__ __device__ sphere(const Vec3 &center, double radius, Material *mat) : center(center, Vec3(0, 0, 0)), radius(std::fmax(0, radius)), mat(mat)
     {
         auto rvec = Vec3(radius, radius, radius);
         box = aabb(center - rvec, center + rvec);
