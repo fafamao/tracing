@@ -8,6 +8,7 @@
 #include "bvh_node.h"
 #include "scene.h"
 #include <cuda_runtime.h>
+#include <curand_kernel.h>
 #include <cstring>
 
 bool is_gpu_available()
@@ -23,48 +24,41 @@ bool is_gpu_available()
     return deviceCount > 0;
 }
 
+#define checkCudaErrors(val) check_cuda((val), #val, __FILE__, __LINE__)
+
+void check_cuda(cudaError_t result, char const *const func, const char *const file, int const line)
+{
+    if (result)
+    {
+        std::cerr << "CUDA error = " << static_cast<unsigned int>(result) << " at " << file << ":" << line << " '" << func << "' \n";
+        cudaDeviceReset();
+        exit(99);
+    }
+}
+
+__global__ void rand_init(curandState *rand_state)
+{
+    if (threadIdx.x == 0 && blockIdx.x == 0)
+    {
+        curand_init(1984, 0, 0, rand_state);
+    }
+}
+
+__global__ void render_init(int max_x, int max_y, curandState *rand_state)
+{
+    int i = threadIdx.x + blockIdx.x * blockDim.x;
+    int j = threadIdx.y + blockIdx.y * blockDim.y;
+    if ((i >= max_x) || (j >= max_y))
+        return;
+    int pixel_index = j * max_x + i;
+    // Same id and different seed boosts performance
+    curand_init(1984 + pixel_index, 0, 0, &rand_state[pixel_index]);
+}
+
 int main()
 {
     // Check GPU availability
     bool is_gpu_ready = is_gpu_available();
-
-    // Instantiate memory pool
-    // TODO: fix this
-    size_t rgb_size = PIXEL_HEIGHT * PIXEL_WIDTH * 3;
-    size_t pool_siz = rgb_size * 2;
-    MemoryPool mem_pool(pool_siz);
-    char *pixel_buffer = mem_pool.allocate(rgb_size);
-
-    // Initialize pixel_buffer all white
-    memset(pixel_buffer, 255, rgb_size);
-
-    /*     // --- Construct the ffplay command ---
-        std::string cmd = "ffplay ";
-        cmd += "-v error "; // Quieter log level (shows errors only)
-        // Input options - must match the data being piped
-        cmd += "-f rawvideo ";
-        cmd += "-pixel_format rgb24 "; // TODO: define format in constants.h
-        cmd += "-video_size " + std::to_string(PIXEL_WIDTH) + "x" + std::to_string(PIXEL_HEIGHT) + " ";
-        cmd += "-framerate " + std::to_string(FRAME_RATE) + " ";
-        // Other options
-        cmd += "-window_title \"Ray Tracer Output (ffplay)\" "; // Optional: Set window title
-        cmd += "-i - ";                                         // Read input from stdin
-
-        std::cout << "Executing command: " << cmd << std::endl;
-
-        FILE *pipe = nullptr;
-
-        pipe = popen(cmd.c_str(), "w");
-        if (!pipe)
-        {
-            throw std::runtime_error("popen() to ffplay failed! Is ffplay installed and in PATH?");
-        }
-        std::cout << "ffplay process started. Rendering frames..." << std::endl;
-
-        if (pipe)
-        {
-            pclose(pipe);
-        } */
 
     if (is_gpu_ready)
     {
@@ -79,12 +73,44 @@ int main()
         printf("  Max Threads per Block: %d\n", prop.maxThreadsPerBlock);
         printf("  Warp Size: %d\n", prop.warpSize);
 
-        hittable_list* world = generate_scene_device();
+        // Dimension
+        int tx = 8;
+        int ty = 8;
+
+        // RNG
+        size_t num_pixels = PIXEL_HEIGHT * PIXEL_WIDTH;
+        curandState *d_rand_state;
+        checkCudaErrors(cudaMalloc((void **)&d_rand_state, num_pixels * sizeof(curandState)));
+        curandState *d_rand_state2;
+        checkCudaErrors(cudaMalloc((void **)&d_rand_state2, 1 * sizeof(curandState)));
+
+        // we need that 2nd random state to be initialized for the world creation
+        rand_init<<<1, 1>>>(d_rand_state2);
+        checkCudaErrors(cudaGetLastError());
+        checkCudaErrors(cudaDeviceSynchronize());
+
+        clock_t start, stop;
+        start = clock();
+        // Render our buffer
+        dim3 blocks(PIXEL_WIDTH / tx + 1, PIXEL_HEIGHT / ty + 1);
+        dim3 threads(tx, ty);
+        render_init<<<blocks, threads>>>(PIXEL_WIDTH, PIXEL_HEIGHT, d_rand_state);
+        checkCudaErrors(cudaGetLastError());
+        checkCudaErrors(cudaDeviceSynchronize());
     }
     else
     {
         // Instantiate thread pool
         ThreadPool tp;
+        // Memory pool to hold rgb values
+        size_t rgb_size = PIXEL_HEIGHT * PIXEL_WIDTH * 3;
+        size_t pool_siz = rgb_size * 2;
+        MemoryPool mem_pool(pool_siz);
+        char *pixel_buffer = mem_pool.allocate(rgb_size);
+
+        // Initialize pixel_buffer all white
+        memset(pixel_buffer, 255, rgb_size);
+
         // Create scene
         hittable_list world;
         generate_scene_host(world);
