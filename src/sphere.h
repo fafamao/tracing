@@ -17,7 +17,7 @@ public:
         auto rvec = Vec3(radius, radius, radius);
         box = aabb(center - rvec, center + rvec);
     }
-    __host__ __device__ sphere(const Vec3 &center1, const Vec3 &center2, double radius, shared_ptr<Material> mat) : center(center1, center2 - center1), radius(std::fmax(0, radius)), mat(mat)
+    sphere(const Vec3 &center1, const Vec3 &center2, double radius, shared_ptr<Material> mat) : center(center1, center2 - center1), radius(std::fmax(0, radius)), mat(mat)
     {
         auto rvec = Vec3(radius, radius, radius);
         aabb box1(center.at(0) - rvec, center.at(0) + rvec);
