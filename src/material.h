@@ -4,6 +4,7 @@
 #include "hittable.h"
 #include "ray.h"
 #include "color.h"
+#include <curand_kernel.h>
 
 typedef struct
 {
@@ -17,11 +18,10 @@ class Material
 public:
     virtual ~Material() = default;
 
-    __host__ __device__ virtual bool scatter(
-        const Ray &r_in, const record_content &record, Color &attenuation, Ray &scattered) const
-    {
-        return false;
-    }
+    __host__ virtual bool scatter(
+        const Ray &r_in, const record_content &record, Color &attenuation, Ray &scattered) const = 0;
+    __device__ virtual bool scatter(
+        const Ray &r_in, const record_content &record, Color &attenuation, Ray &scattered, curandState *local_rand_state) const = 0;
 };
 
 class Lambertian : public Material
@@ -29,7 +29,7 @@ class Lambertian : public Material
 public:
     __host__ __device__ Lambertian(const Color &albedo) : albedo(albedo) {}
 
-    __host__ __device__ bool scatter(const Ray &r_in, const record_content &record, Color &attenuation, Ray &scattered)
+    __host__ bool scatter(const Ray &r_in, const record_content &record, Color &attenuation, Ray &scattered)
         const override
     {
         auto scatter_direction = record.normal + random_unit_vec_rejection_method();
@@ -37,6 +37,13 @@ public:
             scatter_direction = record.normal;
         scattered = Ray(record.p, scatter_direction, r_in.get_time());
         attenuation = albedo;
+        return true;
+    }
+
+    __device__ bool scatter(const Ray &r_in, const record_content &record, Color &attenuation, Ray &scattered, curandState *local_rand_state)
+        const override
+    {
+        // TODO
         return true;
     }
 
@@ -49,7 +56,7 @@ class Metal : public Material
 public:
     __host__ __device__ Metal(const Color &albedo, double fuzz) : albedo(albedo), fuzz(fuzz < 1 ? fuzz : 1) {}
 
-    __host__ __device__ bool scatter(const Ray &r_in, const record_content &record, Color &attenuation, Ray &scattered)
+    __host__ bool scatter(const Ray &r_in, const record_content &record, Color &attenuation, Ray &scattered)
         const override
     {
         Vec3 reflected = reflect(r_in.get_direction(), record.normal);
@@ -58,6 +65,12 @@ public:
         scattered = Ray(record.p, reflected, r_in.get_time());
         attenuation = albedo;
         return (dot(scattered.get_direction(), record.normal) > 0);
+    }
+
+    __device__ bool scatter(const Ray &r_in, const record_content &record, Color &attenuation, Ray &scattered, curandState *local_rand_state)
+        const override
+    {
+        return true;
     }
 
 private:
@@ -70,7 +83,7 @@ class dielectric : public Material
 public:
     __host__ __device__ dielectric(double refraction_index) : refraction_index(refraction_index) {}
 
-    __host__ __device__ bool scatter(const Ray &r_in, const record_content &record, Color &attenuation, Ray &scattered)
+    __host__ bool scatter(const Ray &r_in, const record_content &record, Color &attenuation, Ray &scattered)
         const override
     {
         attenuation = Color(1.0, 1.0, 1.0);
@@ -89,6 +102,12 @@ public:
             direction = refract(unit_direction, record.normal, ri);
 
         scattered = Ray(record.p, direction, r_in.get_time());
+        return true;
+    }
+
+    __device__ bool scatter(const Ray &r_in, const record_content &record, Color &attenuation, Ray &scattered, curandState *local_rand_state)
+        const override
+    {
         return true;
     }
 
