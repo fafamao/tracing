@@ -44,6 +44,8 @@ __global__ void generate_scene_device(hittable **d_list, hittable **d_world, cur
 
         *d_world  = new hittable_list(d_list, 22*22+1+3);
 
+        // TODO: make world into bvh nodes.
+
         *rand_state = local_rand_state;
     }
 }

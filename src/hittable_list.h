@@ -37,11 +37,13 @@ public:
         return box;
     }
 
-    __host__ __device__ void add(shared_ptr<hittable> object)
+    void add(shared_ptr<hittable> object)
     {
         objects.push_back(object);
         box = aabb(box, object->bounding_box());
     }
+
+    //Todo: constructing box when device hittable list is done
 
     __host__ __device__ bool hit(const Ray &r, Interval interval, hit_record &rec) const override
     {

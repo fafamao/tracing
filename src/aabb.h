@@ -4,7 +4,7 @@
 #include "interval.h"
 #include "ray.h"
 #include "vec3.h"
-#include <algorithm>
+#include <cmath>
 
 class aabb
 {
@@ -55,10 +55,10 @@ public:
             auto t0 = (ax.min - ray_orig[axis]) * adinv;
             auto t1 = (ax.max - ray_orig[axis]) * adinv;
 
-            double slab_min = std::min(t0, t1); // Find the smaller of t0, t1
-            double slab_max = std::max(t0, t1); // Find the larger of t0, t1
-            ray_t.min = std::max(ray_t.min, slab_min);
-            ray_t.max = std::min(ray_t.max, slab_max);
+            double slab_min = fmin(t0, t1); // Find the smaller of t0, t1
+            double slab_max = fmax(t0, t1); // Find the larger of t0, t1
+            ray_t.min = fmax(ray_t.min, slab_min);
+            ray_t.max = fmin(ray_t.max, slab_max);
 
             if (ray_t.max <= ray_t.min)
                 return false;
