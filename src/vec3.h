@@ -13,7 +13,7 @@ private:
 public:
     __host__ __device__ Vec3() {};
     __host__ __device__ Vec3(double pos1, double pos2, double pos3) : x{pos1, pos2, pos3} {};
-    ~Vec3() {};
+    __host__ __device__ ~Vec3() {};
 
     __host__ __device__ double get_x() const
     {
@@ -131,7 +131,7 @@ __host__ __device__ inline Vec3 refract(const Vec3 &uv, const Vec3 &n, double et
 }
 
 // Generate random unit vector
-__host__ __device__ inline Vec3 random_unit_vec_rejection_method()
+inline Vec3 random_unit_vec_rejection_method()
 {
     while (true)
     {
@@ -142,7 +142,7 @@ __host__ __device__ inline Vec3 random_unit_vec_rejection_method()
     }
 }
 
-__host__ __device__ inline Vec3 random_unit_vec_spherical_coordinates()
+inline Vec3 random_unit_vec_spherical_coordinates()
 {
     double theta = random_double(0, 2 * PI);
     double phi = acos(2 * random_double() - 1);
@@ -150,7 +150,7 @@ __host__ __device__ inline Vec3 random_unit_vec_spherical_coordinates()
     return Vec3(x[0], x[1], x[2]);
 }
 
-__host__ __device__ inline Vec3 random_unit_vec_normal_distribution()
+inline Vec3 random_unit_vec_normal_distribution()
 {
     while (true)
     {
@@ -167,7 +167,7 @@ __host__ __device__ inline Vec3 random_unit_vec_normal_distribution()
     }
 }
 
-__host__ __device__ inline Vec3 random_unit_vec_random_cosine_direction()
+inline Vec3 random_unit_vec_random_cosine_direction()
 {
     double u = random_double();
     double v = random_double();
@@ -178,7 +178,7 @@ __host__ __device__ inline Vec3 random_unit_vec_random_cosine_direction()
 }
 
 // TODO: use reflection ray that is close to normal(random_cosine_direction)
-__host__ __device__ inline Vec3 random_on_hemisphere(const Vec3 &normal)
+inline Vec3 random_on_hemisphere(const Vec3 &normal)
 {
     Vec3 on_unit_sphere = random_unit_vec_rejection_method();
     if (dot(on_unit_sphere, normal) > 0.0) // In the same hemisphere as the normal

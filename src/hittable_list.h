@@ -24,7 +24,7 @@ public:
     __host__ __device__ hittable_list() {}
     __host__ __device__ hittable_list(shared_ptr<hittable> object) { add(object); }
 
-    hittable_list(hittable **l, int n)
+    __device__ hittable_list(hittable **l, int n)
     {
         list = l;
         list_size = n;

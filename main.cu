@@ -7,8 +7,8 @@
 #include "mem_pool.h"
 #include "bvh_node.h"
 #include "scene.h"
+#include "random_number_generator.cuh"
 #include <cuda_runtime.h>
-#include <curand_kernel.h>
 #include <cstring>
 
 bool is_gpu_available()
@@ -36,25 +36,6 @@ void check_cuda(cudaError_t result, char const *const func, const char *const fi
     }
 }
 
-__global__ void rand_init(curandState *rand_state)
-{
-    if (threadIdx.x == 0 && blockIdx.x == 0)
-    {
-        curand_init(1984, 0, 0, rand_state);
-    }
-}
-
-__global__ void render_init(int max_x, int max_y, curandState *rand_state)
-{
-    int i = threadIdx.x + blockIdx.x * blockDim.x;
-    int j = threadIdx.y + blockIdx.y * blockDim.y;
-    if ((i >= max_x) || (j >= max_y))
-        return;
-    int pixel_index = j * max_x + i;
-    // Same id and different seed boosts performance
-    curand_init(1984 + pixel_index, 0, 0, &rand_state[pixel_index]);
-}
-
 int main()
 {
     // Check GPU availability
@@ -77,15 +58,25 @@ int main()
         int tx = 8;
         int ty = 8;
 
-        // RNG
+        // Allocate device memory for RNG
         size_t num_pixels = PIXEL_HEIGHT * PIXEL_WIDTH;
-        curandState *d_rand_state;
-        checkCudaErrors(cudaMalloc((void **)&d_rand_state, num_pixels * sizeof(curandState)));
-        curandState *d_rand_state2;
-        checkCudaErrors(cudaMalloc((void **)&d_rand_state2, 1 * sizeof(curandState)));
+        curandState *scene_rand_state;
+        checkCudaErrors(cudaMalloc((void **)&scene_rand_state, num_pixels * sizeof(curandState)));
+        curandState *render_rand_state;
+        checkCudaErrors(cudaMalloc((void **)&render_rand_state, 1 * sizeof(curandState)));
+        // RNG kernel launch
+        rand_init<<<1, 1>>>(render_rand_state);
+        checkCudaErrors(cudaGetLastError());
+        checkCudaErrors(cudaDeviceSynchronize());
 
-        // we need that 2nd random state to be initialized for the world creation
-        rand_init<<<1, 1>>>(d_rand_state2);
+        // Allocate device memory for scene
+        size_t num_scene_objects = 22 * 22 + 4;
+        hittable **scene_list;
+        checkCudaErrors(cudaMalloc((void **)&scene_list, num_scene_objects * sizeof(hittable *)));
+        hittable **scene_world;
+        checkCudaErrors(cudaMalloc((void **)&scene_list, num_scene_objects * sizeof(hittable *)));
+        // Scene kernel launch
+        generate_scene_device<<<1, 1>>>(scene_list, scene_world, scene_rand_state);
         checkCudaErrors(cudaGetLastError());
         checkCudaErrors(cudaDeviceSynchronize());
 
@@ -94,7 +85,7 @@ int main()
         // Render our buffer
         dim3 blocks(PIXEL_WIDTH / tx + 1, PIXEL_HEIGHT / ty + 1);
         dim3 threads(tx, ty);
-        render_init<<<blocks, threads>>>(PIXEL_WIDTH, PIXEL_HEIGHT, d_rand_state);
+        render_init<<<blocks, threads>>>(PIXEL_WIDTH, PIXEL_HEIGHT, scene_rand_state);
         checkCudaErrors(cudaGetLastError());
         checkCudaErrors(cudaDeviceSynchronize());
     }
