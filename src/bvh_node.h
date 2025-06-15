@@ -10,12 +10,9 @@
 class bvh_node : public hittable
 {
 public:
-    __host__ __device__ bvh_node(hittable_list list) : bvh_node(list.objects, 0, list.objects.size())
+    bvh_node(hittable_list list) : bvh_node(list.objects, 0, list.objects.size())
     {
-        // There's a C++ subtlety here. This constructor (without span indices) creates an
-        // implicit copy of the hittable list, which we will modify. The lifetime of the copied
-        // list only extends until this constructor exits. That's OK, because we only need to
-        // persist the resulting bounding volume hierarchy.
+        // TODO: remove copy
     }
 
     bvh_node(std::vector<shared_ptr<hittable>> &objects, size_t start, size_t end)
@@ -50,11 +47,11 @@ public:
         bbox = aabb(left->bounding_box(), right->bounding_box());
     }
 
-    //TODO: construct bvh nodes for raw pointers
-    __device__ bvh_node(std::vector<shared_ptr<hittable>> &objects, size_t start, size_t end)
+    // TODO: construct bvh nodes for raw pointers
+    __device__ bvh_node(hittable **objects, size_t start, size_t end)
     {
-        // TODO: fix random number generator
-        int axis = random_int(0, 2);
+        // TODO: find the optimal axis
+        int axis = 0;
 
         auto comparator = (axis == 0)   ? box_x_compare
                           : (axis == 1) ? box_y_compare
@@ -64,12 +61,12 @@ public:
 
         if (object_span == 1)
         {
-            left = right = objects[start];
+            left_d = right_d = objects[start];
         }
         else if (object_span == 2)
         {
-            left = objects[start];
-            right = objects[start + 1];
+            left_d = objects[start];
+            right_d = objects[start + 1];
         }
         else
         {
@@ -83,7 +80,7 @@ public:
         bbox = aabb(left->bounding_box(), right->bounding_box());
     }
 
-    __host__ __device__ bool hit(const Ray &r, Interval ray_t, hit_record &rec) const override
+    bool hit(const Ray &r, Interval ray_t, hit_record &rec) const override
     {
         if (!bbox.hit(r, ray_t))
             return false;
@@ -99,6 +96,8 @@ public:
 private:
     shared_ptr<hittable> left;
     shared_ptr<hittable> right;
+    hittable *left_d;
+    hittable *right_d;
     aabb bbox;
 
     __host__ __device__ static bool box_compare(

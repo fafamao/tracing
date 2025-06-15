@@ -22,15 +22,23 @@ public:
     std::vector<shared_ptr<hittable>> objects;
 
     __host__ __device__ hittable_list() {}
-    __host__ __device__ hittable_list(shared_ptr<hittable> object) { add(object); }
+    hittable_list(shared_ptr<hittable> object) { add(object); }
 
     __device__ hittable_list(hittable **l, int n)
     {
         list = l;
         list_size = n;
+
+        for(int i = 0; i < n; i++) {
+            box = aabb(box, list[i]->bounding_box());
+        }
     }
 
-    __host__ __device__ void clear() { objects.clear(); }
+    __device__ int get_list_length() {
+        return list_size;
+    }
+
+    void clear() { objects.clear(); }
 
     __host__ __device__ aabb bounding_box() const override
     {
