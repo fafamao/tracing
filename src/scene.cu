@@ -102,5 +102,5 @@ void generate_scene_host(hittable_list &world)
     auto material3 = std::make_shared<Metal>(Color(0.7, 0.6, 0.5), 0.0);
     world.add(std::make_shared<sphere>(Vec3(4, 1, 0), 1.0, material3));
 
-    world = hittable_list(std::make_shared<bvh_node>(world));
+    //world = hittable_list(std::make_shared<bvh_node>(world));
 }

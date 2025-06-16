@@ -77,8 +77,8 @@ __host__ __device__ Color Camera::ray_color(const Ray &r, const int depth, const
         temp_record.p = record.p;
         Ray scattered;
         Color attenuation;
-        if (record.mat->scatter(r, temp_record, attenuation, scattered))
-            return ray_color(scattered, depth - 1, world) *= attenuation;
+/*         if (record.mat_ptr->scatter(r, temp_record, attenuation, scattered))
+            return ray_color(scattered, depth - 1, world) *= attenuation; */
         return Color(0, 0, 0);
     }
     Vec3 unit_direction = unit_vector(r.get_direction());

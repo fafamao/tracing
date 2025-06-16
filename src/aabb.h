@@ -4,7 +4,8 @@
 #include "interval.h"
 #include "ray.h"
 #include "vec3.h"
-#include <cmath>
+
+#include <cuda_runtime.h>
 
 class aabb
 {
