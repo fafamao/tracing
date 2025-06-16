@@ -8,9 +8,6 @@
 #include <memory>
 #include <vector>
 
-using std::make_shared;
-using std::shared_ptr;
-
 class hittable_list : public hittable
 {
 private:
@@ -19,22 +16,24 @@ private:
     int list_size;
 
 public:
-    std::vector<shared_ptr<hittable>> objects;
+    std::vector<std::shared_ptr<hittable>> objects;
 
     __host__ __device__ hittable_list() {}
-    hittable_list(shared_ptr<hittable> object) { add(object); }
+    hittable_list(std::shared_ptr<hittable> object) { add(object); }
 
     __device__ hittable_list(hittable **l, int n)
     {
         list = l;
         list_size = n;
 
-        for(int i = 0; i < n; i++) {
+        for (int i = 0; i < n; i++)
+        {
             box = aabb(box, list[i]->bounding_box());
         }
     }
 
-    __device__ int get_list_length() {
+    __device__ int get_list_length()
+    {
         return list_size;
     }
 
@@ -45,13 +44,13 @@ public:
         return box;
     }
 
-    void add(shared_ptr<hittable> object)
+    void add(std::shared_ptr<hittable> object)
     {
         objects.push_back(object);
         box = aabb(box, object->bounding_box());
     }
 
-    //Todo: constructing box when device hittable list is done
+    // Todo: constructing box when device hittable list is done
 
     __host__ __device__ bool hit(const Ray &r, Interval interval, hit_record &rec) const override
     {
