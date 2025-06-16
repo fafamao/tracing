@@ -7,26 +7,17 @@
 class sphere : public hittable
 {
 public:
-    sphere(const Vec3 &center, double radius, shared_ptr<Material> mat) : center(center, Vec3(0, 0, 0)), radius(std::fmax(0, radius))
-    {
-        auto rvec = Vec3(radius, radius, radius);
-        box = aabb(center - rvec, center + rvec);
-
-        mat_ptr = mat.get();
-    }
-    __device__ sphere(const Vec3 &center, double radius, Material *mat_ptr) : center(center, Vec3(0, 0, 0)), radius(fmax(0.0, radius)), mat_ptr(mat_ptr)
+    __device__ __host__ sphere(const Vec3 &center, double radius, Material *mat_ptr) : center(center, Vec3(0, 0, 0)), radius(fmax(0.0, radius)), mat_ptr(mat_ptr)
     {
         auto rvec = Vec3(radius, radius, radius);
         box = aabb(center - rvec, center + rvec);
     }
-    sphere(const Vec3 &center1, const Vec3 &center2, double radius, shared_ptr<Material> mat) : center(center1, center2 - center1), radius(std::fmax(0, radius))
+    sphere(const Vec3 &center1, const Vec3 &center2, double radius, Material* mat) : center(center1, center2 - center1), radius(std::fmax(0, radius)), mat_ptr(mat)
     {
         auto rvec = Vec3(radius, radius, radius);
         aabb box1(center.at(0) - rvec, center.at(0) + rvec);
         aabb box2(center.at(1) - rvec, center.at(1) + rvec);
         box = aabb(box1, box2);
-
-        mat_ptr = mat.get();
     }
 
     __host__ __device__ bool hit(const Ray &r, Interval interval, hit_record &rec) const override

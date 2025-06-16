@@ -20,7 +20,7 @@ public:
         // TODO: remove copy
     }
 
-    bvh_node(std::vector<shared_ptr<hittable>> &objects, size_t start, size_t end)
+    bvh_node(std::vector<hittable*> objects, size_t start, size_t end)
     {
         // TODO: fix random number generator
         int axis = random_int(0, 2);
@@ -33,12 +33,12 @@ public:
 
         if (object_span == 1)
         {
-            left_ptr = right_ptr = objects[start].get();
+            left_ptr = right_ptr = objects[start];
         }
         else if (object_span == 2)
         {
-            left_ptr = objects[start].get();
-            right_ptr = objects[start + 1].get();
+            left_ptr = objects[start];
+            right_ptr = objects[start + 1];
         }
         else
         {
@@ -102,24 +102,24 @@ private:
     aabb bbox;
 
     static bool box_compare(
-        const shared_ptr<hittable> a, const shared_ptr<hittable> b, int axis_index)
+        const hittable* a, const hittable* b, int axis_index)
     {
         auto a_axis_interval = a->bounding_box().axis_interval(axis_index);
         auto b_axis_interval = b->bounding_box().axis_interval(axis_index);
         return a_axis_interval.min < b_axis_interval.min;
     }
 
-    static bool box_x_compare(const shared_ptr<hittable> a, const shared_ptr<hittable> b)
+    static bool box_x_compare(const hittable* a, const hittable* b)
     {
         return box_compare(a, b, 0);
     }
 
-    static bool box_y_compare(const shared_ptr<hittable> a, const shared_ptr<hittable> b)
+    static bool box_y_compare(const hittable* a, const hittable* b)
     {
         return box_compare(a, b, 1);
     }
 
-    static bool box_z_compare(const shared_ptr<hittable> a, const shared_ptr<hittable> b)
+    static bool box_z_compare(const hittable* a, const hittable* b)
     {
         return box_compare(a, b, 2);
     }
