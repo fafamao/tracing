@@ -78,10 +78,10 @@ private:
     double fuzz;
 };
 
-class dielectric : public Material
+class Dielectric : public Material
 {
 public:
-    __host__ __device__ dielectric(double refraction_index) : refraction_index(refraction_index) {}
+    __host__ __device__ Dielectric(double refraction_index) : refraction_index(refraction_index) {}
 
     __host__ bool scatter(const Ray &r_in, const record_content &record, Color &attenuation, Ray &scattered)
         const override

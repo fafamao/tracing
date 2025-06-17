@@ -73,7 +73,7 @@ public:
         }
         else
         {
-            //thrust::sort(objects + start, objects + end, comparator);
+            thrust::sort(objects + start, objects + end, comparator);
 
             auto mid = start + object_span / 2;
             left_ptr = new bvh_node(objects, start, mid);
@@ -101,7 +101,7 @@ private:
     hittable *right_ptr;
     aabb bbox;
 
-    static bool box_compare(
+    __host__ __device__ static bool box_compare(
         const hittable* a, const hittable* b, int axis_index)
     {
         auto a_axis_interval = a->bounding_box().axis_interval(axis_index);
@@ -109,32 +109,19 @@ private:
         return a_axis_interval.min < b_axis_interval.min;
     }
 
-    static bool box_x_compare(const hittable* a, const hittable* b)
+    __host__ __device__ static bool box_x_compare(const hittable* a, const hittable* b)
     {
         return box_compare(a, b, 0);
     }
 
-    static bool box_y_compare(const hittable* a, const hittable* b)
+    __host__ __device__ static bool box_y_compare(const hittable* a, const hittable* b)
     {
         return box_compare(a, b, 1);
     }
 
-    static bool box_z_compare(const hittable* a, const hittable* b)
+    __host__ __device__ static bool box_z_compare(const hittable* a, const hittable* b)
     {
         return box_compare(a, b, 2);
-    }
-
-    __device__ static bool box_compare_device(
-        const hittable* a, const hittable* b, int axis_index)
-    {
-        auto a_axis_interval = a->bounding_box().axis_interval(axis_index);
-        auto b_axis_interval = b->bounding_box().axis_interval(axis_index);
-        return a_axis_interval.min < b_axis_interval.min;
-    }
-
-    __device__ static bool box_x_compare_device(const hittable* a, const hittable* b)
-    {
-        return box_compare_device(a, b, 0);
     }
 };
 

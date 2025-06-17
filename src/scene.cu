@@ -32,13 +32,13 @@ __global__ void generate_scene_device(hittable **d_list, hittable **d_world, cur
                     }
                     else
                     { // glass
-                        d_list[i++] = new sphere(center, 0.2, new dielectric(1.5));
+                        d_list[i++] = new sphere(center, 0.2, new Dielectric(1.5));
                     }
                 }
             }
         }
 
-        d_list[i++] = new sphere(Vec3(0, 1, 0), 1.0, new dielectric(1.5));
+        d_list[i++] = new sphere(Vec3(0, 1, 0), 1.0, new Dielectric(1.5));
         d_list[i++] = new sphere(Vec3(-4, 1, 0), 1.0, new Lambertian(Color(0.4, 0.2, 0.1)));
         d_list[i++] = new sphere(Vec3(4, 1, 0), 1.0, new Metal(Color(0.7, 0.6, 0.5), 0.0));
 
@@ -87,7 +87,7 @@ void generate_scene_host(hittable_list &world)
                 else
                 {
                     // glass
-                    auto sphere_material = new dielectric(1.5);
+                    auto sphere_material = new Dielectric(1.5);
                     auto sphere_object = new sphere(center, 0.2, sphere_material);
                     world.add(sphere_object);
                 }
@@ -95,7 +95,7 @@ void generate_scene_host(hittable_list &world)
         }
     }
 
-    auto material1 = new dielectric(1.5);
+    auto material1 = new Dielectric(1.5);
     auto object1 = new sphere(Vec3(0, 1, 0), 1.0, material1);
     world.add(object1);
 
