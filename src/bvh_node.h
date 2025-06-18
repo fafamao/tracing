@@ -15,14 +15,13 @@ public:
     {
         // TODO: remove copy
     }
-    __device__ bvh_node(hittable **list, size_t list_length) : bvh_node(list, 0, list_length)
+    __device__ bvh_node(hittable **list, size_t list_length, curandState &rand_state) : bvh_node(list, 0, list_length, rand_state)
     {
         // TODO: remove copy
     }
 
     bvh_node(std::vector<hittable*> objects, size_t start, size_t end)
     {
-        // TODO: fix random number generator
         int axis = random_int(0, 2);
 
         auto comparator = (axis == 0)   ? box_x_compare
@@ -51,10 +50,10 @@ public:
 
         bbox = aabb(left_ptr->bounding_box(), right_ptr->bounding_box());
     }
-    __device__ bvh_node(hittable **objects, size_t start, size_t end)
+    __device__ bvh_node(hittable **objects, size_t start, size_t end, curandState &rand_state)
     {
-        // TODO: use a strategy
-        int axis = 0;
+        // TODO: validate this.
+        int axis = (int)(curand_uniform(&rand_state) * 3.0f);
 
         auto comparator = (axis == 0)   ? box_x_compare
                           : (axis == 1) ? box_y_compare
@@ -76,8 +75,8 @@ public:
             thrust::sort(objects + start, objects + end, comparator);
 
             auto mid = start + object_span / 2;
-            left_ptr = new bvh_node(objects, start, mid);
-            right_ptr = new bvh_node(objects, mid, end);
+            left_ptr = new bvh_node(objects, start, mid, rand_state);
+            right_ptr = new bvh_node(objects, mid, end, rand_state);
         }
 
         bbox = aabb(left_ptr->bounding_box(), right_ptr->bounding_box());

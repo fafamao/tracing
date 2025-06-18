@@ -19,13 +19,14 @@ public:
     std::vector<hittable*> objects;
 
     __host__ __device__ hittable_list() {}
-    hittable_list(hittable* object_ptr) { add(object_ptr); }
+    __host__ __device__ hittable_list(hittable* object_ptr) { add(object_ptr); }
 
     __device__ hittable_list(hittable **l, int n)
     {
         list = l;
         list_size = n;
 
+        // TODO: validate this.
         for (int i = 0; i < n; i++)
         {
             box = aabb(box, list[i]->bounding_box());
@@ -37,20 +38,18 @@ public:
         return list_size;
     }
 
-    void clear() { objects.clear(); }
+    __host__ __device__ void clear() { objects.clear(); }
 
     __host__ __device__ aabb bounding_box() const override
     {
         return box;
     }
 
-    void add(hittable* object)
+    __host__ __device__ void add(hittable* object)
     {
         objects.push_back(object);
         box = aabb(box, object->bounding_box());
     }
-
-    // Todo: constructing box when device hittable list is done
 
     __host__ __device__ bool hit(const Ray &r, Interval interval, hit_record &rec) const override
     {

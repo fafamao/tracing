@@ -39,15 +39,14 @@ public:
     void render(const hittable_list &world, char *ptr);
 
     // Generate vectors pointing to ([-0.5,0.5], [-0.5, 0.5], 0)
-    __host__ __device__ Vec3 sample_square() const
+    Vec3 sample_square() const
     {
         // TODO: cuda random number generation
         return Vec3(random_double() - 0.5, random_double() - 0.5, 0);
     };
 
-    __host__ __device__ Ray get_ray(int i, int j) const
+    Ray get_ray(int i, int j) const
     {
-        // TODO: get rid of sample generation
         auto offset = sample_square();
         auto pixel_sample = _top_left_pixel + ((i + offset.get_x()) * _unit_vec_u) + ((j + offset.get_y()) * _unit_vec_v);
 
