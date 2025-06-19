@@ -13,7 +13,7 @@ private:
 public:
     __host__ __device__ Vec3() {};
     __host__ __device__ Vec3(double pos1, double pos2, double pos3) : x{pos1, pos2, pos3} {};
-    __host__ __device__ ~Vec3() {};
+    __host__ __device__ ~Vec3(){};
 
     __host__ __device__ double get_x() const
     {
@@ -64,11 +64,11 @@ public:
         return x[0] * x[0] + x[1] * x[1] + x[2] * x[2];
     }
 
-    static Vec3 random()
+    __host__ __device__ static Vec3 random()
     {
         return Vec3(random_double(), random_double(), random_double());
     }
-    static Vec3 random(double min, double max)
+    __host__ __device__ static Vec3 random(double min, double max)
     {
         return Vec3(random_double(min, max), random_double(min, max), random_double(min, max));
     }
@@ -76,7 +76,11 @@ public:
     {
         // Return true if the vector is close to zero in all dimensions.
         auto s = 1e-8;
+#ifdef __CUDA_ARCH__
+        return (fabs(x[0]) < s) && (fabs(x[1]) < s) && (fabs(x[2]) < s);
+#else
         return (std::fabs(x[0]) < s) && (std::fabs(x[1]) < s) && (std::fabs(x[2]) < s);
+#endif
     }
 };
 __host__ __device__ inline Vec3 operator+(const Vec3 &vec1, const Vec3 &vec2)
@@ -124,14 +128,15 @@ __host__ __device__ inline Vec3 cross(const Vec3 &u, const Vec3 &v)
 // TODO: validate calculation from Snil's law
 __host__ __device__ inline Vec3 refract(const Vec3 &uv, const Vec3 &n, double etai_over_etat)
 {
-    auto cos_theta = std::fmin(dot(-uv, n), 1.0);
+    // TODO
+    auto cos_theta = fmin(dot(-uv, n), 1.0);
     Vec3 r_out_perp = etai_over_etat * (uv + cos_theta * n);
-    Vec3 r_out_parallel = -std::sqrt(std::fabs(1.0 - r_out_perp.length_squared())) * n;
+    Vec3 r_out_parallel = -sqrt(fabs(1.0 - r_out_perp.length_squared())) * n;
     return r_out_perp + r_out_parallel;
 }
 
 // Generate random unit vector
-inline Vec3 random_unit_vec_rejection_method()
+__host__ __device__ inline Vec3 random_unit_vec_rejection_method()
 {
     while (true)
     {
@@ -142,7 +147,7 @@ inline Vec3 random_unit_vec_rejection_method()
     }
 }
 
-inline Vec3 random_unit_vec_spherical_coordinates()
+__device__ __host__ inline Vec3 random_unit_vec_spherical_coordinates()
 {
     double theta = random_double(0, 2 * PI);
     double phi = acos(2 * random_double() - 1);
@@ -150,7 +155,7 @@ inline Vec3 random_unit_vec_spherical_coordinates()
     return Vec3(x[0], x[1], x[2]);
 }
 
-inline Vec3 random_unit_vec_normal_distribution()
+[[maybe_unused]] inline Vec3 random_unit_vec_normal_distribution()
 {
     while (true)
     {
@@ -167,7 +172,7 @@ inline Vec3 random_unit_vec_normal_distribution()
     }
 }
 
-inline Vec3 random_unit_vec_random_cosine_direction()
+__device__ __host__ inline Vec3 random_unit_vec_random_cosine_direction()
 {
     double u = random_double();
     double v = random_double();
@@ -178,7 +183,7 @@ inline Vec3 random_unit_vec_random_cosine_direction()
 }
 
 // TODO: use reflection ray that is close to normal(random_cosine_direction)
-inline Vec3 random_on_hemisphere(const Vec3 &normal)
+__device__ __host__ inline Vec3 random_on_hemisphere(const Vec3 &normal)
 {
     Vec3 on_unit_sphere = random_unit_vec_rejection_method();
     if (dot(on_unit_sphere, normal) > 0.0) // In the same hemisphere as the normal

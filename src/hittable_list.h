@@ -16,10 +16,9 @@ private:
     int list_size;
 
 public:
-    std::vector<hittable*> objects;
-
+    std::vector<hittable *> objects;
     __host__ __device__ hittable_list() {}
-    __host__ __device__ hittable_list(hittable* object_ptr) { add(object_ptr); }
+    hittable_list(hittable *object_ptr) { add(object_ptr); }
 
     __device__ hittable_list(hittable **l, int n)
     {
@@ -38,14 +37,14 @@ public:
         return list_size;
     }
 
-    __host__ __device__ void clear() { objects.clear(); }
+    void clear() { objects.clear(); }
 
     __host__ __device__ aabb bounding_box() const override
     {
         return box;
     }
 
-    __host__ __device__ void add(hittable* object)
+    void add(hittable *object)
     {
         objects.push_back(object);
         box = aabb(box, object->bounding_box());

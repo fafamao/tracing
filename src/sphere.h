@@ -32,7 +32,7 @@ public:
         if (discriminant < 0)
             return false;
 
-        auto sqrtd = std::sqrt(discriminant);
+        auto sqrtd = sqrt(discriminant);
 
         // Find the nearest root that lies in the acceptable range.
         // TODO: optimization to let root fall within t range
@@ -56,6 +56,10 @@ public:
     __host__ __device__ aabb bounding_box() const override
     {
         return box;
+    }
+
+    ~sphere(){
+        delete mat_ptr;
     }
 
 private:

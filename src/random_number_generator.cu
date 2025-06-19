@@ -8,7 +8,7 @@ __global__ void rand_init(curandState *rand_state)
     }
 }
 
-__global__ void render_init(int max_x, int max_y, curandState *rand_state)
+__global__ void render_init(int max_x, int max_y)
 {
     int i = threadIdx.x + blockIdx.x * blockDim.x;
     int j = threadIdx.y + blockIdx.y * blockDim.y;
@@ -16,5 +16,5 @@ __global__ void render_init(int max_x, int max_y, curandState *rand_state)
         return;
     int pixel_index = j * max_x + i;
     // Same id and different seed boosts performance
-    curand_init(pixel_index, 0, 0, &rand_state[pixel_index]);
+    curand_init(pixel_index, 0, 0, &render_rand_state_global[pixel_index]);
 }

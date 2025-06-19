@@ -8,8 +8,6 @@
 #include "aabb.h"
 #include <memory>
 
-using std::shared_ptr;
-
 class hit_record
 {
 public:

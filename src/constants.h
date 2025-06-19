@@ -6,6 +6,9 @@
 #include <iostream>
 #include <fstream>
 #include <string_view>
+#include <curand_kernel.h>
+
+extern __device__ curandState* render_rand_state_global;
 
 // Frame rate
 inline constexpr int FRAME_RATE = 30;
@@ -32,25 +35,43 @@ inline constexpr double PI = 3.1415926535897932385;
 inline constexpr double RAY_INFINITY = std::numeric_limits<double>::infinity();
 
 // Generate random data with random distribution between 0,1
-inline double random_double()
+__device__ __host__ inline double random_double()
 {
+#ifdef __CUDA_ARCH__
+    // --- DEVICE (GPU) IMPLEMENTATION ---
+    // This code is compiled only for the GPU.
+
+    // Calculate the unique global thread index
+    int i = threadIdx.x + blockIdx.x * blockDim.x;
+    int j = threadIdx.y + blockIdx.y * blockDim.y;
+
+    size_t pixel_index = j * PIXEL_WIDTH + i;
+
+    // Use the thread's personal generator state to get a random double [0,1)
+    return curand_uniform_double(&render_rand_state_global[pixel_index]);
+
+#else
+    // --- HOST (CPU) IMPLEMENTATION ---
+    // This code is compiled only for the CPU. It remains unchanged.
     static std::uniform_real_distribution<double> distribution(0.0, 1.0);
     static std::mt19937 generator;
     return distribution(generator);
+
+#endif
 }
 
-inline double degrees_to_radians(double degrees)
+__device__ __host__ inline double degrees_to_radians(double degrees)
 {
     return degrees * PI / 180.0;
 }
 
-inline double random_double(double min, double max)
+__device__ __host__ inline double random_double(double min, double max)
 {
     // Returns a random real in [min,max).
     return min + (max - min) * random_double();
 }
 
-inline int random_int(int min, int max)
+__device__ __host__ inline int random_int(int min, int max)
 {
     // Returns a random integer in [min,max].
     return int(random_double(min, max + 1));

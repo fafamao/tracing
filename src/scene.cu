@@ -10,7 +10,7 @@ __global__ void generate_scene_device(hittable **d_list, hittable **d_world, cur
 {
     if (threadIdx.x == 0 && blockIdx.x == 0)
     {
-        size_t world_size = 22*22+1+3;
+        size_t world_size = 22 * 22 + 1 + 3;
         curandState local_rand_state = *rand_state;
         d_list[0] = new sphere(Vec3(0, -1000, 0), 1000, new Lambertian(Color(0.5, 0.5, 0.5)));
         int i = 1;
@@ -29,7 +29,7 @@ __global__ void generate_scene_device(hittable **d_list, hittable **d_world, cur
                     else if (choose_mat < 0.95f)
                     { // metal
                         d_list[i++] = new sphere(center, 0.2,
-                                               new Metal(Color(0.5f * (1.0f + RND), 0.5f * (1.0f + RND), 0.5f * (1.0f + RND)), 0.5f * RND));
+                                                 new Metal(Color(0.5f * (1.0f + RND), 0.5f * (1.0f + RND), 0.5f * (1.0f + RND)), 0.5f * RND));
                     }
                     else
                     { // glass
@@ -43,8 +43,9 @@ __global__ void generate_scene_device(hittable **d_list, hittable **d_world, cur
         d_list[i++] = new sphere(Vec3(-4, 1, 0), 1.0, new Lambertian(Color(0.4, 0.2, 0.1)));
         d_list[i++] = new sphere(Vec3(4, 1, 0), 1.0, new Metal(Color(0.7, 0.6, 0.5), 0.0));
 
-        auto bvh_world = new bvh_node(d_list, world_size, local_rand_state);
-        *d_world  = new hittable_list(bvh_world);
+        hittable **bvh_world;
+        *bvh_world = new bvh_node(d_list, world_size, local_rand_state);
+        *d_world = new hittable_list(bvh_world, 1);
 
         *rand_state = local_rand_state;
     }

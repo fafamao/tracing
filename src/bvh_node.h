@@ -95,6 +95,11 @@ public:
 
     __host__ __device__ aabb bounding_box() const override { return bbox; }
 
+    ~bvh_node(){
+        delete left_ptr;
+        delete right_ptr;
+    }
+
 private:
     hittable *left_ptr;
     hittable *right_ptr;

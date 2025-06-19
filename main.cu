@@ -11,6 +11,9 @@
 #include <cuda_runtime.h>
 #include <cstring>
 
+// Global random state
+__device__ curandState *render_rand_state_global;
+
 bool is_gpu_available()
 {
     int deviceCount = 0;
@@ -61,11 +64,10 @@ int main()
         // Allocate device memory for RNG
         size_t num_pixels = PIXEL_HEIGHT * PIXEL_WIDTH;
         curandState *scene_rand_state;
-        checkCudaErrors(cudaMalloc((void **)&scene_rand_state, num_pixels * sizeof(curandState)));
-        curandState *render_rand_state;
-        checkCudaErrors(cudaMalloc((void **)&render_rand_state, 1 * sizeof(curandState)));
+        checkCudaErrors(cudaMalloc((void **)&scene_rand_state, 1 * sizeof(curandState)));
+        checkCudaErrors(cudaMalloc((void **)&render_rand_state_global, num_pixels * sizeof(curandState)));
         // RNG kernel launch
-        rand_init<<<1, 1>>>(render_rand_state);
+        rand_init<<<1, 1>>>(scene_rand_state);
         checkCudaErrors(cudaGetLastError());
         checkCudaErrors(cudaDeviceSynchronize());
 
@@ -74,7 +76,7 @@ int main()
         hittable **scene_list;
         checkCudaErrors(cudaMalloc((void **)&scene_list, num_scene_objects * sizeof(hittable *)));
         hittable **scene_world;
-        checkCudaErrors(cudaMalloc((void **)&scene_list, num_scene_objects * sizeof(hittable *)));
+        checkCudaErrors(cudaMalloc((void **)&scene_world, sizeof(hittable *)));
         // Scene kernel launch
         generate_scene_device<<<1, 1>>>(scene_list, scene_world, scene_rand_state);
         checkCudaErrors(cudaGetLastError());
@@ -85,9 +87,16 @@ int main()
         // Render our buffer
         dim3 blocks(PIXEL_WIDTH / tx + 1, PIXEL_HEIGHT / ty + 1);
         dim3 threads(tx, ty);
-        render_init<<<blocks, threads>>>(PIXEL_WIDTH, PIXEL_HEIGHT, scene_rand_state);
+        render_init<<<blocks, threads>>>(PIXEL_WIDTH, PIXEL_HEIGHT);
         checkCudaErrors(cudaGetLastError());
         checkCudaErrors(cudaDeviceSynchronize());
+
+        stop = clock();
+        double timer_seconds = ((double)(stop - start)) / CLOCKS_PER_SEC;
+        std::cerr << "Rendering: took " << timer_seconds << " seconds.\n";
+
+        checkCudaErrors(cudaDeviceSynchronize());
+        free_world<<<1, 1>>>(scene_list, scene_world);
     }
     else
     {
