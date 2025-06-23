@@ -32,7 +32,7 @@ public:
     {
         initialize();
     }
-    ~Camera()
+    __host__ __device__ ~Camera()
     {
         printf("Camera: destructor called\n");
     }

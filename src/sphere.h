@@ -4,15 +4,15 @@
 #include "hittable.h"
 #include "aabb.h"
 
-class sphere : public hittable
+class Sphere : public hittable
 {
 public:
-    __device__ __host__ sphere(const Vec3 &center, double radius, Material *mat_ptr) : center(center, Vec3(0, 0, 0)), radius(fmax(0.0, radius)), mat_ptr(mat_ptr)
+    __device__ __host__ Sphere(const Vec3 &center, double radius, Material *mat_ptr) : center(center, Vec3(0, 0, 0)), radius(fmax(0.0, radius)), mat_ptr(mat_ptr)
     {
         auto rvec = Vec3(radius, radius, radius);
         box = aabb(center - rvec, center + rvec);
     }
-    sphere(const Vec3 &center1, const Vec3 &center2, double radius, Material* mat) : center(center1, center2 - center1), radius(std::fmax(0, radius)), mat_ptr(mat)
+    Sphere(const Vec3 &center1, const Vec3 &center2, double radius, Material* mat) : center(center1, center2 - center1), radius(std::fmax(0, radius)), mat_ptr(mat)
     {
         auto rvec = Vec3(radius, radius, radius);
         aabb box1(center.at(0) - rvec, center.at(0) + rvec);
@@ -58,7 +58,11 @@ public:
         return box;
     }
 
-    ~sphere(){
+    __device__ Material* get_mat_ptr() {
+        return mat_ptr;
+    }
+
+    ~Sphere(){
         delete mat_ptr;
     }
 

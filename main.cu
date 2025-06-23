@@ -77,8 +77,11 @@ int main()
         checkCudaErrors(cudaMalloc((void **)&scene_list, num_scene_objects * sizeof(hittable *)));
         hittable **scene_world;
         checkCudaErrors(cudaMalloc((void **)&scene_world, sizeof(hittable *)));
+        // Allocate device memory for camera
+        Camera **d_camera;
+        checkCudaErrors(cudaMalloc((void **)&d_camera, sizeof(Camera *)));
         // Scene kernel launch
-        generate_scene_device<<<1, 1>>>(scene_list, scene_world, scene_rand_state);
+        generate_scene_device<<<1, 1>>>(scene_list, scene_world, scene_rand_state, d_camera);
         checkCudaErrors(cudaGetLastError());
         checkCudaErrors(cudaDeviceSynchronize());
 
@@ -96,7 +99,14 @@ int main()
         std::cerr << "Rendering: took " << timer_seconds << " seconds.\n";
 
         checkCudaErrors(cudaDeviceSynchronize());
-        free_world<<<1, 1>>>(scene_list, scene_world);
+        free_scene<<<1, 1>>>(scene_list, scene_world, d_camera);
+
+        checkCudaErrors(cudaGetLastError());
+        checkCudaErrors(cudaFree(d_camera));
+        checkCudaErrors(cudaFree(scene_world));
+        checkCudaErrors(cudaFree(scene_list));
+        checkCudaErrors(cudaFree(scene_rand_state));
+        checkCudaErrors(cudaFree(render_rand_state_global));
     }
     else
     {
