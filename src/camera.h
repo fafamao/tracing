@@ -28,7 +28,11 @@ public:
     Vec3 lookat = Vec3(0, 0, -1);  // Point camera is looking at
     Vec3 vup = Vec3(0, 1, 0);      // Camera-relative "up" direction
 
-    __host__ __device__ Camera(Vec3 &origin, Vec3 &dest, Vec3 &up, ThreadPool *tp) : lookfrom(origin), lookat(dest), vup(up), thread_pool(tp)
+    Camera(Vec3 &origin, Vec3 &dest, Vec3 &up, ThreadPool *tp) : lookfrom(origin), lookat(dest), vup(up), thread_pool(tp)
+    {
+        initialize();
+    }
+    __device__ Camera(Vec3 &origin, Vec3 &dest, Vec3 &up) : lookfrom(origin), lookat(dest), vup(up)
     {
         initialize();
     }
@@ -39,13 +43,13 @@ public:
     void render(const hittable_list &world, char *ptr);
 
     // Generate vectors pointing to ([-0.5,0.5], [-0.5, 0.5], 0)
-    Vec3 sample_square() const
+    __host__ __device__ Vec3 sample_square() const
     {
         // TODO: cuda random number generation
         return Vec3(random_double() - 0.5, random_double() - 0.5, 0);
     };
 
-    Ray get_ray(int i, int j) const
+    __host__ __device__ Ray get_ray(int i, int j) const
     {
         auto offset = sample_square();
         auto pixel_sample = _top_left_pixel + ((i + offset.get_x()) * _unit_vec_u) + ((j + offset.get_y()) * _unit_vec_v);
@@ -53,7 +57,7 @@ public:
         auto ray_origin = _camera;
         auto ray_direction = pixel_sample - ray_origin;
 
-        auto random_time = 0;//random_double();
+        auto random_time = 0; // random_double();
 
         return Ray(ray_origin, ray_direction, random_time);
     };

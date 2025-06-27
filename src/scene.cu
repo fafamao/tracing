@@ -46,6 +46,12 @@ __global__ void generate_scene_device(hittable **d_list, hittable **d_world, cur
         *d_world = new hittable_list(d_list, 22 * 22 + 1 + 3);
 
         *rand_state = local_rand_state;
+
+        // Create camera
+        Vec3 camera_origin = Vec3(13, 2, 3);
+        Vec3 camera_dest = Vec3(0, 0, 0);
+        Vec3 camera_up = Vec3(0, 1, 0);
+        *camera = new Camera(camera_origin, camera_dest, camera_up);
     }
 }
 

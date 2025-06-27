@@ -1,7 +1,5 @@
 #include "camera.h"
 
-// TODO: implement cuda only render
-
 void Camera::render(const hittable_list &world, char *ptr)
 {
     auto start_time = std::chrono::steady_clock::now();
