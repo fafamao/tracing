@@ -16,12 +16,11 @@ class Camera
 private:
     Vec3 _top_left_pixel, _unit_vec_v, _unit_vec_u, _camera;
     Vec3 u, v, w; // Camera frame basis vectors
-    double _pixel_scale;
     __host__ __device__ void initialize();
-    __host__ __device__ Color ray_color(const Ray &r, const int depth, const hittable_list &world);
     ThreadPool *thread_pool;
 
 public:
+    float _pixel_scale;
     // Angle between z direction ray and ray between origin and top edge of viewport * 2
     double vfov = 90;
     Vec3 lookfrom = Vec3(0, 0, 0); // Point camera is looking from
@@ -41,6 +40,8 @@ public:
         printf("Camera: destructor called\n");
     }
     void render(const hittable_list &world, char *ptr);
+
+    __host__ __device__ Color ray_color(const Ray &r, const int depth, const hittable_list &world);
 
     // Generate vectors pointing to ([-0.5,0.5], [-0.5, 0.5], 0)
     __host__ __device__ Vec3 sample_square() const

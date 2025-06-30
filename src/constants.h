@@ -8,7 +8,7 @@
 #include <string_view>
 #include <curand_kernel.h>
 
-extern __device__ curandState* render_rand_state_global;
+extern __device__ curandState *render_rand_state_global;
 
 // Frame rate
 inline constexpr int FRAME_RATE = 30;
@@ -39,8 +39,6 @@ __device__ __host__ inline double random_double()
 {
 #ifdef __CUDA_ARCH__
     // --- DEVICE (GPU) IMPLEMENTATION ---
-    // This code is compiled only for the GPU.
-
     // Calculate the unique global thread index
     int i = threadIdx.x + blockIdx.x * blockDim.x;
     int j = threadIdx.y + blockIdx.y * blockDim.y;
@@ -52,7 +50,6 @@ __device__ __host__ inline double random_double()
 
 #else
     // --- HOST (CPU) IMPLEMENTATION ---
-    // This code is compiled only for the CPU. It remains unchanged.
     static std::uniform_real_distribution<double> distribution(0.0, 1.0);
     static std::mt19937 generator;
     return distribution(generator);

@@ -78,7 +78,7 @@ public:
         return Color(r + normal.get_x(), g + normal.get_y(), b + normal.get_z());
     }
     // Operator to scale self
-    __host__ __device__ Color &operator*=(const double scale)
+    __host__ __device__ Color &operator*=(const float scale)
     {
         r = r * scale;
         g = g * scale;

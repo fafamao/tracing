@@ -1,6 +1,12 @@
 #ifndef RENDER_CUH_
 #define RENDER_CUH_
 
-__global__ render_device(vec3 *fb, int max_x, int max_y, int ns, camera **cam, hitable **world);
+#include "hittable.h"
+#include "camera.h"
+#include "vec3.h"
+#include "constants.h"
+#include "random_number_generator.cuh"
+
+__global__ void render_device(int max_x, int max_y, Camera **cam, hittable **world);
 
 #endif // RENDER_CUH_
