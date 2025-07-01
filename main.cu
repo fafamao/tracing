@@ -65,8 +65,11 @@ int main()
         size_t num_pixels = PIXEL_HEIGHT * PIXEL_WIDTH;
         curandState *scene_rand_state;
         checkCudaErrors(cudaMalloc((void **)&scene_rand_state, 1 * sizeof(curandState)));
+        printf("[DEBUG] After cudaMalloc: scene_rand_state = %p\n", scene_rand_state);
+        // ... (later, before kernel launch) ...
+        printf("[DEBUG] Before kernel launch: scene_rand_state = %p\n", scene_rand_state);
         checkCudaErrors(cudaMalloc((void **)&render_rand_state_global, num_pixels * sizeof(curandState)));
-        // RNG kernel launch
+        //  RNG kernel launch
         rand_init<<<1, 1>>>(scene_rand_state);
         checkCudaErrors(cudaGetLastError());
         checkCudaErrors(cudaDeviceSynchronize());

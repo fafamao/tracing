@@ -56,6 +56,17 @@ public:
         bool hit_anything = false;
         auto closest_so_far = interval.max;
 
+#ifdef __CUDA_ARCH__
+        for (int i = 0; i < list_size; i++)
+        {
+            if (list[i]->hit(r, Interval(interval.min, closest_so_far), temp_rec))
+            {
+                hit_anything = true;
+                closest_so_far = temp_rec.t;
+                rec = temp_rec;
+            }
+        }
+#else
         for (const auto &object : objects)
         {
             if (object->hit(r, Interval(interval.min, closest_so_far), temp_rec))
@@ -65,7 +76,7 @@ public:
                 rec = temp_rec;
             }
         }
-
+#endif
         return hit_anything;
     }
 };
