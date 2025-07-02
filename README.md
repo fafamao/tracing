@@ -1,43 +1,55 @@
-# tracing
+# Ray Tracing Project 🚀
 
-A simple C++ tracing library for debugging and performance analysis.
+A high-performance ray tracer built with C++ and CUDA to generate photorealistic images. This project simulates the physics of light to render scenes with complex interactions, including reflections, refractions, and soft shadows.
 
-## Table of Contents
+![Rendered Image Placeholder]([https://via.placeholder.com/800x400.png?text=Your+Amazing+Render+Goes+Here](https://github.com/fafamao/tracing/blob/main/figure/image.png))
 
-- [About](#about)
-- [Features](#features)
-- [Getting Started](#getting-started)
-  - [Prerequisites](#prerequisites)
-  - [Installation](#installation)
-- [License](#license)
-- [Contact](#contact)
+***
 
-## About
+## 🌟 Features
 
-This project provides a lightweight C++ tracing library. It's designed to help developers quickly add tracing capabilities to their applications for debugging and performance analysis. The library offers a simple API for emitting trace events and can be easily integrated into existing projects.
+* **CUDA-Accelerated:** Leverages the power of NVIDIA GPUs for massively parallel ray tracing computations.
+* **Physically-Based Rendering (PBR):** Simulates real-world materials and lighting.
+* **Material System:** Supports various materials like diffuse (Lambertian), metal (reflective), and dielectric (refractive).
+* **Camera Model:** Implements a configurable camera with depth of field (defocus blur).
+* **Anti-Aliasing:** Uses supersampling to smooth out jagged edges.
+* **Bounding Volume Hierarchy (BVH):** Accelerates ray-object intersection tests for complex scenes.
 
-## Features
+***
 
--   Fast rendering with concurrent execution
+## Benchmark data
+TBD
+
+## 🛠️ Getting Started
+
+Follow these instructions to get a copy of the project up and running on your local machine for development and testing.
 
 ### Prerequisites
 
--   A C++ compiler that supports C++17 or later (e.g., GCC, Clang).
--   xmake installation
+Make sure you have the following installed:
 
-### Installation
+* **NVIDIA GPU:** A CUDA-enabled NVIDIA GPU is required.
+* **NVIDIA CUDA Toolkit:** [Download and install the CUDA Toolkit](https://developer.nvidia.com/cuda-downloads).
+* **C++ Compiler:** A C++ compiler that is compatible with your CUDA version (e.g., GCC, Clang, or MSVC).
+* **Xmake:** https://xmake.io/#/getting_started.
 
-This is a header-only library, so no compilation or linking is required. Just copy the `tracing.h` file into your project's include directory.
+### Installation & Building
 
-1.  Clone the repository:
-
-    ```bash
+1.  **Clone the repository:**
+    ```sh
     git clone [https://github.com/fafamao/tracing.git](https://www.google.com/search?q=https://github.com/fafamao/tracing.git)
     ```
 
-2.  xmake build tracing
+2.  **Build the program:**
+    ```sh
+    xmake build tracing
+    ```
 
-3.  xmake run tracing
-   
-### License
-This project is licensed under the MIT License - see the LICENSE file for details.
+3.  **Run the program:**
+    ```sh
+    xmake run tracing
+    ```
+***
+
+## 🏃‍♀️ Usage
+
