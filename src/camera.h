@@ -41,7 +41,8 @@ public:
     }
     void render(const hittable_list &world, char *ptr);
 
-    __host__ __device__ Color ray_color(const Ray &r, const int depth, const hittable_list &world);
+    Color ray_color(const Ray &r, const int depth, const hittable_list &world);
+    __device__ Color ray_color_device(const Ray &r, const int depth, hittable **world);
 
     // Generate vectors pointing to ([-0.5,0.5], [-0.5, 0.5], 0)
     __host__ __device__ Vec3 sample_square() const

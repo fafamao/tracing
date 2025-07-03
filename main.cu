@@ -8,6 +8,7 @@
 #include "bvh_node.h"
 #include "scene.h"
 #include "random_number_generator.cuh"
+#include "render.cuh"
 #include <cuda_runtime.h>
 #include <cstring>
 
@@ -102,6 +103,8 @@ int main()
         render_init<<<blocks, threads>>>(PIXEL_WIDTH, PIXEL_HEIGHT);
         checkCudaErrors(cudaGetLastError());
         checkCudaErrors(cudaDeviceSynchronize());
+
+        render_device<<<blocks, threads>>>(tx, ty, d_camera, scene_world);
 
         stop = clock();
         double timer_seconds = ((double)(stop - start)) / CLOCKS_PER_SEC;

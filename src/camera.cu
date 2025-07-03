@@ -58,7 +58,7 @@ __host__ __device__ void Camera::initialize()
     _pixel_scale = 1.0 / PIXEL_NEIGHBOR;
 }
 
-__host__ __device__ Color Camera::ray_color(const Ray &r, const int depth, const hittable_list &world)
+Color Camera::ray_color(const Ray &r, const int depth, const hittable_list &world)
 {
     if (depth <= 0)
         return Color(0, 0, 0);
@@ -77,6 +77,32 @@ __host__ __device__ Color Camera::ray_color(const Ray &r, const int depth, const
         Color attenuation;
         if (record.mat_ptr->scatter(r, temp_record, attenuation, scattered))
             return ray_color(scattered, depth - 1, world) *= attenuation;
+        return Color(0, 0, 0);
+    }
+    Vec3 unit_direction = unit_vector(r.get_direction());
+    auto a = 0.5 * (unit_direction.get_y() + 1.0);
+    return (1.0 - a) * Color(1.0, 1.0, 1.0) + a * Color(0.5, 0.7, 1.0);
+}
+
+__device__ Color Camera::ray_color_device(const Ray &r, const int depth, hittable **world)
+{
+    if (depth <= 0)
+        return Color(0, 0, 0);
+    hit_record record;
+    // Avoid floating point error to have 0.001
+    Interval interval(0.001, RAY_INFINITY);
+    // Check if ray hits the hittable list and save record
+    if ((*world)->hit(r, interval, record))
+    {
+        // Workaround to avoid circular dependency, construct a struct to replace record
+        record_content temp_record;
+        temp_record.front_face = record.front_face;
+        temp_record.normal = record.normal;
+        temp_record.p = record.p;
+        Ray scattered;
+        Color attenuation;
+        if (record.mat_ptr->scatter(r, temp_record, attenuation, scattered))
+            return ray_color_device(scattered, depth - 1, world) *= attenuation;
         return Color(0, 0, 0);
     }
     Vec3 unit_direction = unit_vector(r.get_direction());
