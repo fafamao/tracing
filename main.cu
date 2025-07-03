@@ -51,7 +51,7 @@ int main()
     // Check GPU availability
     bool is_gpu_ready = is_gpu_available();
 
-    if (!is_gpu_ready)
+    if (is_gpu_ready)
     {
         cudaDeviceProp prop;
         cudaGetDeviceProperties(&prop, 0);
