@@ -1,56 +1,70 @@
+--[[
+xmake.lua
+This is the build script for the 'tracing' project.
+]]
+
+-- == Global Settings ==
+
+-- Set the C++ standard globally for the entire project.
+set_languages("c++17")
+
+-- Add the compiler flag to show CUDA resource usage upon compilation.
+add_cuflags("--ptxas-options=-v")
+
+-- Define required packages
 add_requires("cuda")
 
-if is_mode("profile") then
-    set_symbols("debug")
-    add_cxflags("-pg")
-    add_ldflags("-pg")
-end
+-- Define a workspace-level rule for CUDA toolkit paths
+add_includedirs("/usr/local/cuda-11.8/include", { public = true })
+add_linkdirs("/usr/local/cuda-11.8/lib64")
+
+-- Define common include paths for all targets
+add_includedirs("src", "utility")
+
+-- == Build Mode Configurations ==
 
 if is_mode("release") then
     set_symbols("hidden")
     set_optimize("fastest")
     set_strip("all")
-end
-
-if is_mode("debug") then
+elseif is_mode("debug") then
     set_symbols("debug")
     set_optimize("none")
+elseif is_mode("profile") then
+    set_symbols("debug")
+    add_cxflags("-pg")
+    add_ldflags("-pg")
 end
 
-target("cuda")
-    set_kind("phony")
-    add_includedirs("/usr/local/cuda-12.9/include")
-    add_linkdirs("/usr/local/cuda-12.9/lib64")
-    add_links("cudart")
+-- == Library Targets ==
 
 target("camera_library")
     set_kind("static")
-    add_includedirs("src")
-    add_includedirs("utility")
     add_files("src/camera.cu")
-    set_targetdir("bin")
 
 target("scene_library")
     set_kind("static")
-    add_includedirs("src")
     add_files("src/scene.cu")
-    set_targetdir("bin")
 
 target("RNG_library")
     set_kind("static")
-    add_includedirs("src")
     add_files("src/random_number_generator.cu")
-    set_targetdir("bin")
+
+-- == Main Executable Target ==
 
 target("tracing")
+    -- Set the kind to a binary executable
     set_kind("binary")
-    add_includedirs("src")
-    add_includedirs("utility")
+
+    -- Add the main source file
     add_files("main.cu")
-    add_deps("camera_library")
-    add_deps("scene_library")
-    add_deps("RNG_library")
-    add_deps("cuda")
-    set_toolchains("cuda")
+
+    -- Add dependencies on our static libraries
+    add_deps("camera_library", "scene_library", "RNG_library")
+
+    -- Add package dependencies
+    add_packages("cuda")
+
+    -- Set the output directory and filename
     set_targetdir("bin")
     set_basename("tracing")

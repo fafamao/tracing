@@ -12,7 +12,7 @@ public:
         auto rvec = Vec3(radius, radius, radius);
         box = aabb(center - rvec, center + rvec);
     }
-    Sphere(const Vec3 &center1, const Vec3 &center2, double radius, Material* mat) : center(center1, center2 - center1), radius(std::fmax(0, radius)), mat_ptr(mat)
+    Sphere(const Vec3 &center1, const Vec3 &center2, double radius, Material *mat) : center(center1, center2 - center1), radius(std::fmax(0, radius)), mat_ptr(mat)
     {
         auto rvec = Vec3(radius, radius, radius);
         aabb box1(center.at(0) - rvec, center.at(0) + rvec);
@@ -58,11 +58,13 @@ public:
         return box;
     }
 
-    __device__ Material* get_mat_ptr() {
+    __device__ Material *get_mat_ptr()
+    {
         return mat_ptr;
     }
 
-    ~Sphere(){
+    ~Sphere()
+    {
         delete mat_ptr;
     }
 

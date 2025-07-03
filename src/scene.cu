@@ -2,11 +2,10 @@
 
 #define RND (curand_uniform(&local_rand_state))
 
-__global__ void generate_scene_device(hittable **d_list, hittable **d_world, curandState *rand_state, Camera **camera)
+__global__ void generate_scene_device(hittable **d_list, hittable **d_world, curandState *rand_state, Camera **camera, int *d_object_count)
 {
     if (threadIdx.x == 0 && blockIdx.x == 0)
     {
-        size_t world_size = 22 * 22 + 1 + 3;
         curandState local_rand_state = *rand_state;
         d_list[0] = new Sphere(Vec3(0, -1000, 0), 1000, new Lambertian(Color(0.5, 0.5, 0.5)));
         int i = 1;
@@ -39,11 +38,13 @@ __global__ void generate_scene_device(hittable **d_list, hittable **d_world, cur
         d_list[i++] = new Sphere(Vec3(-4, 1, 0), 1.0, new Lambertian(Color(0.4, 0.2, 0.1)));
         d_list[i++] = new Sphere(Vec3(4, 1, 0), 1.0, new Metal(Color(0.7, 0.6, 0.5), 0.0));
 
+        *d_object_count = i;
+
         // TODO: enable bvh node
         /*         hittable **bvh_world;
          *bvh_world = new bvh_node(d_list, world_size, local_rand_state);
          *d_world = new hittable_list(bvh_world, 1); */
-        *d_world = new hittable_list(d_list, 22 * 22 + 1 + 3);
+        *d_world = new hittable_list(d_list, i - 1);
 
         *rand_state = local_rand_state;
 
@@ -55,13 +56,12 @@ __global__ void generate_scene_device(hittable **d_list, hittable **d_world, cur
     }
 }
 
-__global__ void free_scene(hittable **d_list, hittable **d_world, Camera **d_camera)
+__global__ void free_scene(hittable **d_list, hittable **d_world, Camera **d_camera, int *d_object_count)
 {
-    size_t num_object = 22 * 22 + 1 + 3;
-    for (int i = 0; i < num_object; i++)
+    for (int i = 0; i < *d_object_count; i++)
     {
-        Material *mat_ptr_local = ((Sphere *)d_list[i])->get_mat_ptr();
-        delete mat_ptr_local;
+        Material *local_ptr = ((Sphere *)d_list[i])->get_mat_ptr();
+        delete local_ptr;
         delete d_list[i];
     }
     delete *d_world;

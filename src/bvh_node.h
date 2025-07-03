@@ -20,7 +20,7 @@ public:
         // TODO: remove copy
     }
 
-    bvh_node(std::vector<hittable*> objects, size_t start, size_t end)
+    bvh_node(std::vector<hittable *> objects, size_t start, size_t end)
     {
         int axis = random_int(0, 2);
 
@@ -95,7 +95,8 @@ public:
 
     __host__ __device__ aabb bounding_box() const override { return bbox; }
 
-    ~bvh_node(){
+    ~bvh_node()
+    {
         delete left_ptr;
         delete right_ptr;
     }
@@ -106,24 +107,24 @@ private:
     aabb bbox;
 
     __host__ __device__ static bool box_compare(
-        const hittable* a, const hittable* b, int axis_index)
+        const hittable *a, const hittable *b, int axis_index)
     {
         auto a_axis_interval = a->bounding_box().axis_interval(axis_index);
         auto b_axis_interval = b->bounding_box().axis_interval(axis_index);
         return a_axis_interval.min < b_axis_interval.min;
     }
 
-    __host__ __device__ static bool box_x_compare(const hittable* a, const hittable* b)
+    __host__ __device__ static bool box_x_compare(const hittable *a, const hittable *b)
     {
         return box_compare(a, b, 0);
     }
 
-    __host__ __device__ static bool box_y_compare(const hittable* a, const hittable* b)
+    __host__ __device__ static bool box_y_compare(const hittable *a, const hittable *b)
     {
         return box_compare(a, b, 1);
     }
 
-    __host__ __device__ static bool box_z_compare(const hittable* a, const hittable* b)
+    __host__ __device__ static bool box_z_compare(const hittable *a, const hittable *b)
     {
         return box_compare(a, b, 2);
     }

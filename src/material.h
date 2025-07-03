@@ -17,7 +17,7 @@ typedef struct
 class Material
 {
 public:
-    virtual ~Material() = default;
+    // virtual ~Material() = default;
 
     __host__ __device__ virtual bool scatter(
         const Ray &r_in, const record_content &record, Color &attenuation, Ray &scattered) const = 0;

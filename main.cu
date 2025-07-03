@@ -39,12 +39,19 @@ void check_cuda(cudaError_t result, char const *const func, const char *const fi
     }
 }
 
+void initialize_global_state(int num_pixels)
+{
+    curandState *d_temp_ptr;
+    checkCudaErrors(cudaMalloc((void **)&d_temp_ptr, num_pixels * sizeof(curandState)));
+    checkCudaErrors(cudaMemcpyToSymbol(render_rand_state_global, &d_temp_ptr, sizeof(d_temp_ptr)));
+}
+
 int main()
 {
     // Check GPU availability
     bool is_gpu_ready = is_gpu_available();
 
-    if (is_gpu_ready)
+    if (!is_gpu_ready)
     {
         cudaDeviceProp prop;
         cudaGetDeviceProperties(&prop, 0);
@@ -65,10 +72,7 @@ int main()
         size_t num_pixels = PIXEL_HEIGHT * PIXEL_WIDTH;
         curandState *scene_rand_state;
         checkCudaErrors(cudaMalloc((void **)&scene_rand_state, 1 * sizeof(curandState)));
-        printf("[DEBUG] After cudaMalloc: scene_rand_state = %p\n", scene_rand_state);
-        // ... (later, before kernel launch) ...
-        printf("[DEBUG] Before kernel launch: scene_rand_state = %p\n", scene_rand_state);
-        checkCudaErrors(cudaMalloc((void **)&render_rand_state_global, num_pixels * sizeof(curandState)));
+        initialize_global_state(num_pixels);
         //  RNG kernel launch
         rand_init<<<1, 1>>>(scene_rand_state);
         checkCudaErrors(cudaGetLastError());
@@ -76,6 +80,8 @@ int main()
 
         // Allocate device memory for scene
         size_t num_scene_objects = 22 * 22 + 4;
+        int *d_object_count;
+        checkCudaErrors(cudaMalloc((void **)&d_object_count, sizeof(int)));
         hittable **scene_list;
         checkCudaErrors(cudaMalloc((void **)&scene_list, num_scene_objects * sizeof(hittable *)));
         hittable **scene_world;
@@ -84,7 +90,7 @@ int main()
         Camera **d_camera;
         checkCudaErrors(cudaMalloc((void **)&d_camera, sizeof(Camera *)));
         // Scene kernel launch
-        generate_scene_device<<<1, 1>>>(scene_list, scene_world, scene_rand_state, d_camera);
+        generate_scene_device<<<1, 1>>>(scene_list, scene_world, scene_rand_state, d_camera, d_object_count);
         checkCudaErrors(cudaGetLastError());
         checkCudaErrors(cudaDeviceSynchronize());
 
@@ -102,7 +108,8 @@ int main()
         std::cerr << "Rendering: took " << timer_seconds << " seconds.\n";
 
         checkCudaErrors(cudaDeviceSynchronize());
-        free_scene<<<1, 1>>>(scene_list, scene_world, d_camera);
+        free_scene<<<1, 1>>>(scene_list, scene_world, d_camera, d_object_count);
+        checkCudaErrors(cudaDeviceSynchronize());
 
         checkCudaErrors(cudaGetLastError());
         checkCudaErrors(cudaFree(d_camera));

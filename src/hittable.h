@@ -30,8 +30,6 @@ public:
 class hittable
 {
 public:
-    virtual ~hittable() = default;
-
     __host__ __device__ virtual bool hit(const Ray &r, Interval interval, hit_record &rec) const = 0;
 
     __host__ __device__ virtual aabb bounding_box() const = 0;
