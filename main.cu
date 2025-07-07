@@ -65,9 +65,17 @@ int main()
         printf("  Max Threads per Block: %d\n", prop.maxThreadsPerBlock);
         printf("  Warp Size: %d\n", prop.warpSize);
 
+        size_t current_stack_size;
+        cudaDeviceGetLimit(&current_stack_size, cudaLimitStackSize);
+        std::cout << "Current stack size = " << current_stack_size << " bytes\n";
+
+        size_t new_stack_size = 16384; // 16 * 1024 bytes
+        cudaDeviceSetLimit(cudaLimitStackSize, new_stack_size);
+        std::cout << "Set new stack size = " << new_stack_size << " bytes\n";
+
         // Dimension
-        int tx = 8;
-        int ty = 8;
+        int tx = 16;
+        int ty = 16;
 
         // Allocate device memory for RNG
         size_t num_pixels = PIXEL_HEIGHT * PIXEL_WIDTH;
@@ -95,20 +103,28 @@ int main()
         checkCudaErrors(cudaGetLastError());
         checkCudaErrors(cudaDeviceSynchronize());
 
-        clock_t start, stop;
-        start = clock();
-        // Render our buffer
+        cudaEvent_t start, stop;
+        cudaEventCreate(&start);
+        cudaEventCreate(&stop);
+        cudaEventRecord(start);
+        //  Render our buffer
         dim3 blocks(PIXEL_WIDTH / tx + 1, PIXEL_HEIGHT / ty + 1);
         dim3 threads(tx, ty);
         render_init<<<blocks, threads>>>(PIXEL_WIDTH, PIXEL_HEIGHT);
         checkCudaErrors(cudaGetLastError());
         checkCudaErrors(cudaDeviceSynchronize());
 
-        render_device<<<blocks, threads>>>(tx, ty, d_camera, scene_world);
+        render_device<<<blocks, threads>>>(PIXEL_WIDTH, PIXEL_HEIGHT, d_camera, scene_world);
 
-        stop = clock();
-        double timer_seconds = ((double)(stop - start)) / CLOCKS_PER_SEC;
-        std::cerr << "Rendering: took " << timer_seconds << " seconds.\n";
+        cudaEventRecord(stop);
+        cudaEventSynchronize(stop);
+
+        float milliseconds = 0;
+        cudaEventElapsedTime(&milliseconds, start, stop);
+
+        std::cout << "Kernel execution time: " << milliseconds << " ms" << std::endl;
+        cudaEventDestroy(start);
+        cudaEventDestroy(stop);
 
         checkCudaErrors(cudaDeviceSynchronize());
         free_scene<<<1, 1>>>(scene_list, scene_world, d_camera, d_object_count);
