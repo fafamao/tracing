@@ -11,12 +11,13 @@ class Color
 private:
     double r, g, b;
 
-    inline double linear_to_gamma(double linear_component)
+    __host__ __device__ inline double linear_to_gamma(double linear_component)
     {
-        if (linear_component > 0)
-            return std::sqrt(linear_component);
-
-        return 0;
+#ifdef CUDA_ARCH
+        return sqrtf(fmaxf(0.0f, linear_component));
+#else
+        return std::sqrt(std::fmax(0.0f, linear_component));
+#endif
     }
 
 public:
@@ -30,7 +31,7 @@ public:
     }
 
     // Write color to memory
-    void write_color(int i, int j, char *ptr)
+    __host__ __device__ void write_color(int i, int j, char *const ptr)
     {
         r = linear_to_gamma(r);
         g = linear_to_gamma(g);
@@ -78,7 +79,7 @@ public:
         return Color(r + normal.get_x(), g + normal.get_y(), b + normal.get_z());
     }
     // Operator to scale self
-    __host__ __device__ Color &operator*=(const float scale)
+    __host__ __device__ Color &operator*=(const double scale)
     {
         r = r * scale;
         g = g * scale;

@@ -13,7 +13,7 @@ __global__ void generate_scene_device(hittable **d_list, hittable **d_world, cur
         {
             for (int b = -11; b < 11; b++)
             {
-                float choose_mat = RND;
+                double choose_mat = RND;
                 Vec3 center(a + 0.9f * RND, 0.2, b + 0.9f * RND);
                 if ((center - Vec3(4, 0.2, 0)).get_length() > 0.9)
                 {

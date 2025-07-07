@@ -20,7 +20,7 @@ private:
     ThreadPool *thread_pool;
 
 public:
-    float _pixel_scale;
+    double _pixel_scale;
     // Angle between z direction ray and ray between origin and top edge of viewport * 2
     double vfov = 90;
     Vec3 lookfrom = Vec3(0, 0, 0); // Point camera is looking from

@@ -26,6 +26,7 @@ inline constexpr int PIXEL_NEIGHBOR = 10;
 // TODO: Configure pixel size from static file
 inline constexpr int PIXEL_WIDTH = 1280;
 inline constexpr int PIXEL_HEIGHT = int(double(PIXEL_WIDTH) / PIXEL_SCALE);
+inline constexpr int FRAME_SIZE_RGB = PIXEL_WIDTH * PIXEL_HEIGHT * 3;
 
 // Total ray bouncing
 inline constexpr int MAX_DEPTH = 10;

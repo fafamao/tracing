@@ -98,6 +98,13 @@ int main()
         // Allocate device memory for camera
         Camera **d_camera;
         checkCudaErrors(cudaMalloc((void **)&d_camera, sizeof(Camera *)));
+        // Allocate device memory for pixel buffer
+        char *d_pixel;
+        checkCudaErrors(cudaMalloc((void **)&d_pixel, sizeof(char) * FRAME_SIZE_RGB));
+        // Allocate host memory for pixel buffer
+        char *h_pixel;
+        checkCudaErrors(cudaMallocHost((void **)&h_pixel, sizeof(char) * FRAME_SIZE_RGB));
+
         // Scene kernel launch
         generate_scene_device<<<1, 1>>>(scene_list, scene_world, scene_rand_state, d_camera, d_object_count);
         checkCudaErrors(cudaGetLastError());
@@ -114,7 +121,7 @@ int main()
         checkCudaErrors(cudaGetLastError());
         checkCudaErrors(cudaDeviceSynchronize());
 
-        render_device<<<blocks, threads>>>(PIXEL_WIDTH, PIXEL_HEIGHT, d_camera, scene_world);
+        render_device<<<blocks, threads>>>(PIXEL_WIDTH, PIXEL_HEIGHT, d_camera, scene_world, d_pixel);
 
         cudaEventRecord(stop);
         cudaEventSynchronize(stop);
@@ -130,12 +137,16 @@ int main()
         free_scene<<<1, 1>>>(scene_list, scene_world, d_camera, d_object_count);
         checkCudaErrors(cudaDeviceSynchronize());
 
+        cudaMemcpy(h_pixel, d_pixel, sizeof(char) * FRAME_SIZE_RGB, cudaMemcpyDeviceToHost);
+        generate_ppm_6(h_pixel);
+
         checkCudaErrors(cudaGetLastError());
         checkCudaErrors(cudaFree(d_camera));
         checkCudaErrors(cudaFree(scene_world));
         checkCudaErrors(cudaFree(scene_list));
         checkCudaErrors(cudaFree(scene_rand_state));
         checkCudaErrors(cudaFree(render_rand_state_global));
+        checkCudaErrors(cudaFree(d_pixel));
     }
     else
     {

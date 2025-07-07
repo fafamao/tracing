@@ -56,7 +56,11 @@ public:
 
     __host__ __device__ double get_length() const
     {
+#ifdef __CUDA_ARCH__
+        return sqrt(length_squared());
+#else
         return std::sqrt(length_squared());
+#endif
     }
 
     __host__ __device__ double length_squared() const
