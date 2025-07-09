@@ -7,36 +7,43 @@ __global__ void generate_scene_device(hittable **d_list, hittable **d_world, cur
     if (threadIdx.x == 0 && blockIdx.x == 0)
     {
         curandState local_rand_state = *rand_state;
-        d_list[0] = new Sphere(Vec3(0, -1000, 0), 1000, new Lambertian(Color(0.5, 0.5, 0.5)));
+        Material *mat = new Lambertian(Color(0.5f, 0.5f, 0.5f));
+        printf("mat pointer:%p\n", mat);
+        d_list[0] = new Sphere(Vec3(0.0f, -1000.0f, 0.0f), 1000.0f, mat);
+        printf("scene object:%p\n", d_list[0]);
         int i = 1;
         for (int a = -11; a < 11; a++)
         {
             for (int b = -11; b < 11; b++)
             {
-                double choose_mat = RND;
+                float choose_mat = RND;
                 Vec3 center(a + 0.9f * RND, 0.2, b + 0.9f * RND);
                 if ((center - Vec3(4, 0.2, 0)).get_length() > 0.9)
                 {
+                    Material *mat;
                     if (choose_mat < 0.8f)
                     { // diffuse
-                        d_list[i++] = new Sphere(center, 0.2, new Lambertian(Color(RND * RND, RND * RND, RND * RND)));
+                        mat = new Lambertian(Color(RND * RND, RND * RND, RND * RND));
+                        d_list[i++] = new Sphere(center, 0.2, mat);
                     }
                     else if (choose_mat < 0.95f)
                     { // metal
-                        d_list[i++] = new Sphere(center, 0.2,
-                                                 new Metal(Color(0.5f * (1.0f + RND), 0.5f * (1.0f + RND), 0.5f * (1.0f + RND)), 0.5f * RND));
+                        mat = new Metal(Color(0.5f * (1.0f + RND), 0.5f * (1.0f + RND), 0.5f * (1.0f + RND)), 0.5f * RND);
+                        d_list[i++] = new Sphere(center, 0.2, mat);
                     }
                     else
                     { // glass
-                        d_list[i++] = new Sphere(center, 0.2, new Dielectric(1.5));
+                        mat = new Dielectric(1.5);
+                        d_list[i++] = new Sphere(center, 0.2, mat);
                     }
                 }
             }
         }
 
-        d_list[i++] = new Sphere(Vec3(0, 1, 0), 1.0, new Dielectric(1.5));
-        d_list[i++] = new Sphere(Vec3(-4, 1, 0), 1.0, new Lambertian(Color(0.4, 0.2, 0.1)));
-        d_list[i++] = new Sphere(Vec3(4, 1, 0), 1.0, new Metal(Color(0.7, 0.6, 0.5), 0.0));
+        d_list[i++] = new Sphere(Vec3(0, 1, 0), 1.0f, new Dielectric(1.5));
+        d_list[i++] = new Sphere(Vec3(-4, 1, 0), 1.0f, new Lambertian(Color(0.4f, 0.2f, 0.1f)));
+        d_list[i++] = new Sphere(Vec3(4, 1, 0), 1.0f, new Metal(Color(0.7f, 0.6f, 0.5f), 0.0f));
+        printf("generate_scene_device: object pointer is %p\n", d_list[--i]);
 
         *d_object_count = i;
 
@@ -53,6 +60,7 @@ __global__ void generate_scene_device(hittable **d_list, hittable **d_world, cur
         Vec3 camera_dest = Vec3(0, 0, 0);
         Vec3 camera_up = Vec3(0, 1, 0);
         *camera = new Camera(camera_origin, camera_dest, camera_up);
+        printf("generate_scene_device: Camera pointer is %p\n", *camera);
     }
 }
 
@@ -78,8 +86,8 @@ void generate_scene_host(hittable_list &world)
     {
         for (int b = -11; b < 11; b++)
         {
-            auto choose_mat = random_double();
-            Vec3 center(a + 0.9f * random_double(), 0.2f, b + 0.9f * random_double());
+            auto choose_mat = random_float();
+            Vec3 center(a + 0.9f * random_float(), 0.2f, b + 0.9f * random_float());
 
             if ((center - Vec3(4, 0.2, 0)).get_length() > 0.9f)
             {
@@ -88,7 +96,7 @@ void generate_scene_host(hittable_list &world)
                     // diffuse
                     Color random_color = Color::random_color();
                     random_color *= Color::random_color();
-                    auto center2 = center + Vec3(0, random_double(0, .5), 0);
+                    auto center2 = center + Vec3(0, random_float(0, .5), 0);
                     auto sphere_material = new Lambertian(random_color);
                     auto sphere_object = new Sphere(center, center2, 0.2, sphere_material);
                     world.add(sphere_object);
@@ -97,7 +105,7 @@ void generate_scene_host(hittable_list &world)
                 {
                     // metal
                     auto albedo = Color::random_color(0.5, 1);
-                    auto fuzz = random_double(0, 0.5);
+                    auto fuzz = random_float(0, 0.5);
                     auto sphere_material = new Metal(albedo, fuzz);
                     auto sphere_object = new Sphere(center, 0.2, sphere_material);
                     world.add(sphere_object);

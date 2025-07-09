@@ -8,27 +8,27 @@
 class Vec3
 {
 private:
-    double x[3];
+    float x[3];
 
 public:
     __host__ __device__ Vec3() {};
-    __host__ __device__ Vec3(double pos1, double pos2, double pos3) : x{pos1, pos2, pos3} {};
+    __host__ __device__ Vec3(float pos1, float pos2, float pos3) : x{pos1, pos2, pos3} {};
     __host__ __device__ ~Vec3(){};
 
-    __host__ __device__ double get_x() const
+    __host__ __device__ float get_x() const
     {
         return x[0];
     }
-    __host__ __device__ double get_y() const
+    __host__ __device__ float get_y() const
     {
         return x[1];
     }
-    __host__ __device__ double get_z() const
+    __host__ __device__ float get_z() const
     {
         return x[2];
     }
 
-    __host__ __device__ double operator[](size_t i) const
+    __host__ __device__ float operator[](size_t i) const
     {
         return x[i];
     }
@@ -54,7 +54,7 @@ public:
         return *this;
     }
 
-    __host__ __device__ double get_length() const
+    __host__ __device__ float get_length() const
     {
 #ifdef __CUDA_ARCH__
         return sqrt(length_squared());
@@ -63,18 +63,18 @@ public:
 #endif
     }
 
-    __host__ __device__ double length_squared() const
+    __host__ __device__ float length_squared() const
     {
         return x[0] * x[0] + x[1] * x[1] + x[2] * x[2];
     }
 
     __host__ __device__ static Vec3 random()
     {
-        return Vec3(random_double(), random_double(), random_double());
+        return Vec3(random_float(), random_float(), random_float());
     }
-    __host__ __device__ static Vec3 random(double min, double max)
+    __host__ __device__ static Vec3 random(float min, float max)
     {
-        return Vec3(random_double(min, max), random_double(min, max), random_double(min, max));
+        return Vec3(random_float(min, max), random_float(min, max), random_float(min, max));
     }
     __host__ __device__ bool near_zero() const
     {
@@ -99,19 +99,19 @@ __host__ __device__ inline Vec3 operator*(const Vec3 &vec1, const Vec3 &vec2)
 {
     return Vec3(vec1.get_x() * vec2.get_x(), vec1.get_y() * vec2.get_y(), vec1.get_z() * vec2.get_z());
 }
-__host__ __device__ inline Vec3 operator*(const double scale, const Vec3 &vec2)
+__host__ __device__ inline Vec3 operator*(const float scale, const Vec3 &vec2)
 {
     return Vec3(scale * vec2.get_x(), scale * vec2.get_y(), scale * vec2.get_z());
 }
-__host__ __device__ inline Vec3 operator*(const Vec3 &vec, const double scale)
+__host__ __device__ inline Vec3 operator*(const Vec3 &vec, const float scale)
 {
     return scale * vec;
 }
-__host__ __device__ inline Vec3 operator/(const Vec3 &vec, double scale)
+__host__ __device__ inline Vec3 operator/(const Vec3 &vec, float scale)
 {
     return (1 / scale) * vec;
 }
-__host__ __device__ inline double dot(const Vec3 &vec1, const Vec3 &vec2)
+__host__ __device__ inline float dot(const Vec3 &vec1, const Vec3 &vec2)
 {
     return vec1.get_x() * vec2.get_x() + vec1.get_y() * vec2.get_y() + vec1.get_z() * vec2.get_z();
 }
@@ -130,12 +130,12 @@ __host__ __device__ inline Vec3 cross(const Vec3 &u, const Vec3 &v)
                 u.get_x() * v.get_y() - u.get_y() * v.get_x());
 }
 // TODO: validate calculation from Snil's law
-__host__ __device__ inline Vec3 refract(const Vec3 &uv, const Vec3 &n, double etai_over_etat)
+__host__ __device__ inline Vec3 refract(const Vec3 &uv, const Vec3 &n, float etai_over_etat)
 {
     // TODO
-    auto cos_theta = fmin(dot(-uv, n), 1.0);
+    auto cos_theta = fmin(dot(-uv, n), 1.0f);
     Vec3 r_out_perp = etai_over_etat * (uv + cos_theta * n);
-    Vec3 r_out_parallel = -sqrt(fabs(1.0 - r_out_perp.length_squared())) * n;
+    Vec3 r_out_parallel = -sqrt(fabs(1.0f - r_out_perp.length_squared())) * n;
     return r_out_perp + r_out_parallel;
 }
 
@@ -153,9 +153,9 @@ __host__ __device__ inline Vec3 random_unit_vec_rejection_method()
 
 __device__ __host__ inline Vec3 random_unit_vec_spherical_coordinates()
 {
-    double theta = random_double(0, 2 * PI);
-    double phi = acos(2 * random_double() - 1);
-    double x[3] = {sin(phi) * cos(theta), sin(phi) * sin(theta), cos(phi)};
+    float theta = random_float(0, 2 * PI);
+    float phi = acos(2 * random_float() - 1);
+    float x[3] = {sin(phi) * cos(theta), sin(phi) * sin(theta), cos(phi)};
     return Vec3(x[0], x[1], x[2]);
 }
 
@@ -165,8 +165,8 @@ __device__ __host__ inline Vec3 random_unit_vec_spherical_coordinates()
     {
         std::random_device rd;
         std::mt19937 rng(rd());
-        std::normal_distribution<double> dist(0.0, 1.0);
-        double x[3] = {dist(rng), dist(rng), dist(rng)};
+        std::normal_distribution<float> dist(0.0f, 1.0f);
+        float x[3] = {dist(rng), dist(rng), dist(rng)};
         auto vec = Vec3(x[0], x[1], x[2]);
         auto len = vec.length_squared();
         if (1e-160 < len && len <= 1)
@@ -178,11 +178,11 @@ __device__ __host__ inline Vec3 random_unit_vec_spherical_coordinates()
 
 __device__ __host__ inline Vec3 random_unit_vec_random_cosine_direction()
 {
-    double u = random_double();
-    double v = random_double();
-    double theta = acos(sqrt(1 - u));
-    double phi = 2 * M_PI * v;
-    double x[3] = {sin(theta) * cos(phi), sin(theta) * sin(phi), sqrt(u)};
+    float u = random_float();
+    float v = random_float();
+    float theta = acos(sqrt(1 - u));
+    float phi = 2 * M_PI * v;
+    float x[3] = {sin(theta) * cos(phi), sin(theta) * sin(phi), sqrt(u)};
     return Vec3(x[0], x[1], x[2]);
 }
 
@@ -190,7 +190,7 @@ __device__ __host__ inline Vec3 random_unit_vec_random_cosine_direction()
 __device__ __host__ inline Vec3 random_on_hemisphere(const Vec3 &normal)
 {
     Vec3 on_unit_sphere = random_unit_vec_rejection_method();
-    if (dot(on_unit_sphere, normal) > 0.0) // In the same hemisphere as the normal
+    if (dot(on_unit_sphere, normal) > 0.0f) // In the same hemisphere as the normal
         return on_unit_sphere;
     else
         return -on_unit_sphere;

@@ -51,13 +51,13 @@ public:
         for (int axis = 0; axis < 3; axis++)
         {
             const Interval &ax = axis_interval(axis);
-            const double adinv = 1.0 / ray_dir[axis];
+            const float adinv = 1.0f / ray_dir[axis];
 
             auto t0 = (ax.min - ray_orig[axis]) * adinv;
             auto t1 = (ax.max - ray_orig[axis]) * adinv;
 
-            double slab_min = fmin(t0, t1); // Find the smaller of t0, t1
-            double slab_max = fmax(t0, t1); // Find the larger of t0, t1
+            float slab_min = fmin(t0, t1); // Find the smaller of t0, t1
+            float slab_max = fmax(t0, t1); // Find the larger of t0, t1
             ray_t.min = fmax(ray_t.min, slab_min);
             ray_t.max = fmin(ray_t.max, slab_max);
 

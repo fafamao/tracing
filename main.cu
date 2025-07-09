@@ -77,6 +77,8 @@ int main()
         int tx = 16;
         int ty = 16;
 
+        // cudaDeviceSetLimit(cudaLimitMallocHeapSize, 128 * 1024 * 1024);
+
         // Allocate device memory for RNG
         size_t num_pixels = PIXEL_HEIGHT * PIXEL_WIDTH;
         curandState *scene_rand_state;

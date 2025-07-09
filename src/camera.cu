@@ -41,7 +41,7 @@ __host__ __device__ void Camera::initialize()
     auto theta = degrees_to_radians(vfov);
     auto h = std::tan(theta / 2);
     auto viewport_height = 2 * h * focal_len;
-    auto viewport_width = viewport_height * (double(PIXEL_WIDTH) / double(PIXEL_HEIGHT));
+    auto viewport_width = viewport_height * (float(PIXEL_WIDTH) / float(PIXEL_HEIGHT));
     // Calculate the u,v,w unit basis vectors for the camera coordinate frame.
     w = unit_vector(lookfrom - lookat);
     u = unit_vector(cross(vup, w));
@@ -55,7 +55,7 @@ __host__ __device__ void Camera::initialize()
     // Position of the top left pixel
     _top_left_pixel = _camera - focal_len * w - vec_u / 2 - vec_v / 2 + _unit_vec_u / 2 + _unit_vec_v / 2;
     // Color scale factor for a number of samples
-    _pixel_scale = 1.0 / double(PIXEL_NEIGHBOR);
+    _pixel_scale = 1.0f / float(PIXEL_NEIGHBOR);
 }
 
 Color Camera::ray_color(const Ray &r, const int depth, const hittable_list &world)
@@ -64,7 +64,7 @@ Color Camera::ray_color(const Ray &r, const int depth, const hittable_list &worl
         return Color(0, 0, 0);
     hit_record record;
     // Avoid floating point error to have 0.001
-    Interval interval(0.001, RAY_INFINITY);
+    Interval interval(0.001f, RAY_INFINITY);
     // Check if ray hits the hittable list and save record
     if (world.hit(r, interval, record))
     {
@@ -80,8 +80,8 @@ Color Camera::ray_color(const Ray &r, const int depth, const hittable_list &worl
         return Color(0, 0, 0);
     }
     Vec3 unit_direction = unit_vector(r.get_direction());
-    auto a = 0.5 * (unit_direction.get_y() + 1.0);
-    return (1.0 - a) * Color(1.0, 1.0, 1.0) + a * Color(0.5, 0.7, 1.0);
+    auto a = 0.5 * (unit_direction.get_y() + 1.0f);
+    return (1.0f - a) * Color(1.0f, 1.0f, 1.0f) + a * Color(0.5f, 0.7f, 1.0f);
 }
 
 __device__ Color Camera::ray_color_device(const Ray &r, const int depth, hittable **world)
@@ -90,7 +90,7 @@ __device__ Color Camera::ray_color_device(const Ray &r, const int depth, hittabl
         return Color(0, 0, 0);
     hit_record record;
     // Avoid floating point error to have 0.001
-    Interval interval(0.001, RAY_INFINITY);
+    Interval interval(0.001f, RAY_INFINITY);
     // Check if ray hits the hittable list and save record
     if ((*world)->hit(r, interval, record))
     {
@@ -106,6 +106,6 @@ __device__ Color Camera::ray_color_device(const Ray &r, const int depth, hittabl
         return Color(0, 0, 0);
     }
     Vec3 unit_direction = unit_vector(r.get_direction());
-    auto a = 0.5 * (unit_direction.get_y() + 1.0);
-    return (1.0 - a) * Color(1.0, 1.0, 1.0) + a * Color(0.5, 0.7, 1.0);
+    auto a = 0.5f * (unit_direction.get_y() + 1.0f);
+    return (1.0f - a) * Color(1.0f, 1.0f, 1.0f) + a * Color(0.5f, 0.7f, 1.0f);
 }

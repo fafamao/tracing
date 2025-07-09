@@ -18,25 +18,25 @@ inline constexpr std::string_view PIXEL_FORMAT = "rgb24";
 
 // Picture size
 inline constexpr int PIXEL_FACTOR = 256;
-inline constexpr double PIXEL_SCALE = 16.0 / 9.0;
+inline constexpr float PIXEL_SCALE = 16.0f / 9.0f;
 
 // Samples per pixel for anti-aliasing
 inline constexpr int PIXEL_NEIGHBOR = 10;
 
 // TODO: Configure pixel size from static file
 inline constexpr int PIXEL_WIDTH = 1280;
-inline constexpr int PIXEL_HEIGHT = int(double(PIXEL_WIDTH) / PIXEL_SCALE);
+inline constexpr int PIXEL_HEIGHT = int(float(PIXEL_WIDTH) / PIXEL_SCALE);
 inline constexpr int FRAME_SIZE_RGB = PIXEL_WIDTH * PIXEL_HEIGHT * 3;
 
 // Total ray bouncing
 inline constexpr int MAX_DEPTH = 50;
 
 // Math
-inline constexpr double PI = 3.1415926535897932385;
-inline constexpr double RAY_INFINITY = std::numeric_limits<double>::infinity();
+inline constexpr float PI = 3.1415926535897932385;
+inline constexpr float RAY_INFINITY = std::numeric_limits<float>::infinity();
 
 // Generate random data with random distribution between 0,1
-__device__ __host__ inline double random_double()
+__device__ __host__ inline float random_float()
 {
 #ifdef __CUDA_ARCH__
     // --- DEVICE (GPU) IMPLEMENTATION ---
@@ -46,33 +46,33 @@ __device__ __host__ inline double random_double()
 
     size_t pixel_index = j * PIXEL_WIDTH + i;
 
-    // Use the thread's personal generator state to get a random double [0,1)
-    return curand_uniform_double(&render_rand_state_global[pixel_index]);
+    // Use the thread's personal generator state to get a random float [0,1)
+    return curand_uniform(&render_rand_state_global[pixel_index]);
 
 #else
     // --- HOST (CPU) IMPLEMENTATION ---
-    static std::uniform_real_distribution<double> distribution(0.0, 1.0);
+    static std::uniform_real_distribution<float> distribution(0.0f, 1.0f);
     static std::mt19937 generator;
     return distribution(generator);
 
 #endif
 }
 
-__device__ __host__ inline double degrees_to_radians(double degrees)
+__device__ __host__ inline float degrees_to_radians(float degrees)
 {
-    return degrees * PI / 180.0;
+    return degrees * PI / 180.0f;
 }
 
-__device__ __host__ inline double random_double(double min, double max)
+__device__ __host__ inline float random_float(float min, float max)
 {
     // Returns a random real in [min,max).
-    return min + (max - min) * random_double();
+    return min + (max - min) * random_float();
 }
 
 __device__ __host__ inline int random_int(int min, int max)
 {
     // Returns a random integer in [min,max].
-    return int(random_double(min, max + 1));
+    return int(random_float(min, max + 1));
 }
 
 inline void generate_ppm_6(char *ptr)

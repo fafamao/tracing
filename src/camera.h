@@ -20,9 +20,9 @@ private:
     ThreadPool *thread_pool;
 
 public:
-    double _pixel_scale;
+    float _pixel_scale;
     // Angle between z direction ray and ray between origin and top edge of viewport * 2
-    double vfov = 90;
+    float vfov = 90;
     Vec3 lookfrom = Vec3(0, 0, 0); // Point camera is looking from
     Vec3 lookat = Vec3(0, 0, -1);  // Point camera is looking at
     Vec3 vup = Vec3(0, 1, 0);      // Camera-relative "up" direction
@@ -48,7 +48,7 @@ public:
     __host__ __device__ Vec3 sample_square() const
     {
         // TODO: cuda random number generation
-        return Vec3(random_double() - 0.5, random_double() - 0.5, 0);
+        return Vec3(random_float() - 0.5, random_float() - 0.5, 0);
     };
 
     __host__ __device__ Ray get_ray(int i, int j) const
@@ -59,7 +59,7 @@ public:
         auto ray_origin = _camera;
         auto ray_direction = pixel_sample - ray_origin;
 
-        auto random_time = 0; // random_double();
+        auto random_time = 0; // random_float();
 
         return Ray(ray_origin, ray_direction, random_time);
     };

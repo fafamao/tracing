@@ -14,7 +14,7 @@ public:
     Vec3 p;
     Vec3 normal;
     Material *mat_ptr;
-    double t;
+    float t;
     bool front_face;
 
     __host__ __device__ void set_face_normal(const Ray &r, const Vec3 &outward_normal)

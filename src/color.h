@@ -9,20 +9,20 @@
 class Color
 {
 private:
-    double r, g, b;
+    float r, g, b;
 
-    __host__ __device__ inline double linear_to_gamma(double linear_component)
+    __host__ __device__ inline float linear_to_gamma(float linear_component)
     {
 #ifdef CUDA_ARCH
-        return sqrt(fmax(0.0, linear_component));
+        return sqrt(fmax(0.0f, linear_component));
 #else
-        return std::sqrt(std::fmax(0.0, linear_component));
+        return std::sqrt(std::fmax(0.0f, linear_component));
 #endif
     }
 
 public:
     __host__ __device__ Color() {};
-    __host__ __device__ Color(double r1, double g1, double b1) : r(r1), g(g1), b(b1) {};
+    __host__ __device__ Color(float r1, float g1, float b1) : r(r1), g(g1), b(b1) {};
     __host__ __device__ Color(const Color &color)
     {
         r = color.r;
@@ -53,9 +53,9 @@ public:
         *(ptr + (buff_pos + 2)) = bp;
     }
 
-    __host__ __device__ double get_r() const { return r; }
-    __host__ __device__ double get_g() const { return g; }
-    __host__ __device__ double get_b() const { return b; }
+    __host__ __device__ float get_r() const { return r; }
+    __host__ __device__ float get_g() const { return g; }
+    __host__ __device__ float get_b() const { return b; }
 
     __host__ __device__ Color &operator-=(const Color &color2)
     {
@@ -84,7 +84,7 @@ public:
         return Color(r + normal.get_x(), g + normal.get_y(), b + normal.get_z());
     }
     // Operator to scale self
-    __host__ __device__ Color &operator*=(const double scale)
+    __host__ __device__ Color &operator*=(const float scale)
     {
         r = r * scale;
         g = g * scale;
@@ -93,15 +93,15 @@ public:
     }
     static Color random_color()
     {
-        return Color(random_double(), random_double(), random_double());
+        return Color(random_float(), random_float(), random_float());
     }
-    static Color random_color(double min, double max)
+    static Color random_color(float min, float max)
     {
-        return Color(random_double(min, max), random_double(min, max), random_double(min, max));
+        return Color(random_float(min, max), random_float(min, max), random_float(min, max));
     }
 };
 // Operator to scale Color
-__host__ __device__ inline Color operator*(const double t, const Color &color)
+__host__ __device__ inline Color operator*(const float t, const Color &color)
 {
     return Color(t * color.get_r(), t * color.get_g(), t * color.get_b());
 }
