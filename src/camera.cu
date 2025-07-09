@@ -55,7 +55,7 @@ __host__ __device__ void Camera::initialize()
     // Position of the top left pixel
     _top_left_pixel = _camera - focal_len * w - vec_u / 2 - vec_v / 2 + _unit_vec_u / 2 + _unit_vec_v / 2;
     // Color scale factor for a number of samples
-    _pixel_scale = 1.0 / PIXEL_NEIGHBOR;
+    _pixel_scale = 1.0 / double(PIXEL_NEIGHBOR);
 }
 
 Color Camera::ray_color(const Ray &r, const int depth, const hittable_list &world)

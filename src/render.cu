@@ -13,5 +13,6 @@ __global__ void render_device(int max_x, int max_y, Camera **cam, hittable **wor
         col += (*cam)->ray_color_device(r, MAX_DEPTH, world);
     }
     col *= (*cam)->_pixel_scale;
+
     col.write_color(i, j, pixel_buffer);
 }

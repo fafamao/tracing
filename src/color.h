@@ -14,9 +14,9 @@ private:
     __host__ __device__ inline double linear_to_gamma(double linear_component)
     {
 #ifdef CUDA_ARCH
-        return sqrtf(fmaxf(0.0f, linear_component));
+        return sqrt(fmax(0.0, linear_component));
 #else
-        return std::sqrt(std::fmax(0.0f, linear_component));
+        return std::sqrt(std::fmax(0.0, linear_component));
 #endif
     }
 
@@ -40,6 +40,11 @@ public:
         unsigned char rp = static_cast<unsigned char>(PIXEL_FACTOR * get_pixel_interval().clamp(r));
         unsigned char gp = static_cast<unsigned char>(PIXEL_FACTOR * get_pixel_interval().clamp(g));
         unsigned char bp = static_cast<unsigned char>(PIXEL_FACTOR * get_pixel_interval().clamp(b));
+        // TODO: without the print below, pixel colors are abnormal. Find why
+        if ((i == 0) && (j == PIXEL_HEIGHT - 1))
+        {
+            printf("r %d, g %d, b %d\n", rp, gp, bp);
+        }
         // 3 for r,g,b
         int buff_pos = (i + j * PIXEL_WIDTH) * 3;
 

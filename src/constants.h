@@ -29,7 +29,7 @@ inline constexpr int PIXEL_HEIGHT = int(double(PIXEL_WIDTH) / PIXEL_SCALE);
 inline constexpr int FRAME_SIZE_RGB = PIXEL_WIDTH * PIXEL_HEIGHT * 3;
 
 // Total ray bouncing
-inline constexpr int MAX_DEPTH = 10;
+inline constexpr int MAX_DEPTH = 50;
 
 // Math
 inline constexpr double PI = 3.1415926535897932385;
@@ -85,7 +85,7 @@ inline void generate_ppm_6(char *ptr)
     }
     ppmFile << "P6\n"
             << PIXEL_WIDTH << " " << PIXEL_HEIGHT << "\n255\n";
-    ppmFile.write(ptr, PIXEL_HEIGHT * PIXEL_WIDTH * 3);
+    ppmFile.write(ptr, FRAME_SIZE_RGB);
     ppmFile.close();
     std::cout << "PPM file written successfully: image.ppm" << std::endl;
 }

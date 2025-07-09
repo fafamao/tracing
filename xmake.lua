@@ -15,8 +15,8 @@ add_cuflags("--ptxas-options=-v")
 add_requires("cuda")
 
 -- Define a workspace-level rule for CUDA toolkit paths
-add_includedirs("/usr/local/cuda-11.8/include", { public = true })
-add_linkdirs("/usr/local/cuda-11.8/lib64")
+add_includedirs("/usr/local/cuda/include", { public = true })
+add_linkdirs("/usr/local/cuda/lib64")
 
 -- Define common include paths for all targets
 add_includedirs("src", "utility")
