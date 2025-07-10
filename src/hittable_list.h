@@ -26,10 +26,10 @@ public:
         list_size = n;
 
         // TODO: validate this.
-        /*         for (int i = 0; i < n; i++)
-                {
-                    box = aabb(box, list[0]->bounding_box());
-                } */
+        for (int i = 0; i < n; i++)
+        {
+            box = aabb(box, list[0]->bounding_box());
+        }
     }
 
     __device__ int get_list_length()

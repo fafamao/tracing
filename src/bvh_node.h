@@ -15,10 +15,6 @@ public:
     {
         // TODO: remove copy
     }
-    __device__ bvh_node(hittable **list, size_t list_length, curandState &rand_state) : bvh_node(list, 0, list_length, rand_state)
-    {
-        // TODO: remove copy
-    }
 
     bvh_node(std::vector<hittable *> objects, size_t start, size_t end)
     {
@@ -50,37 +46,37 @@ public:
 
         bbox = aabb(left_ptr->bounding_box(), right_ptr->bounding_box());
     }
-    __device__ bvh_node(hittable **objects, size_t start, size_t end, curandState &rand_state)
-    {
-        // TODO: validate this.
-        int axis = (int)(curand_uniform(&rand_state) * 3.0f);
-
-        auto comparator = (axis == 0)   ? box_x_compare
-                          : (axis == 1) ? box_y_compare
-                                        : box_z_compare;
-
-        size_t object_span = end - start;
-
-        if (object_span == 1)
+    /*     __device__ bvh_node(hittable **objects, size_t start, size_t end, curandState &rand_state)
         {
-            left_ptr = right_ptr = objects[start];
-        }
-        else if (object_span == 2)
-        {
-            left_ptr = objects[start];
-            right_ptr = objects[start + 1];
-        }
-        else
-        {
-            thrust::sort(objects + start, objects + end, comparator);
+            // TODO: validate this.
+            int axis = (int)(curand_uniform(&rand_state) * 3.0f);
 
-            auto mid = start + object_span / 2;
-            left_ptr = new bvh_node(objects, start, mid, rand_state);
-            right_ptr = new bvh_node(objects, mid, end, rand_state);
-        }
+            auto comparator = (axis == 0)   ? box_x_compare
+                              : (axis == 1) ? box_y_compare
+                                            : box_z_compare;
 
-        bbox = aabb(left_ptr->bounding_box(), right_ptr->bounding_box());
-    }
+            size_t object_span = end - start;
+
+            if (object_span == 1)
+            {
+                left_ptr = right_ptr = objects[start];
+            }
+            else if (object_span == 2)
+            {
+                left_ptr = objects[start];
+                right_ptr = objects[start + 1];
+            }
+            else
+            {
+                thrust::sort(objects + start, objects + end, comparator);
+
+                auto mid = start + object_span / 2;
+                left_ptr = new bvh_node(objects, start, mid, rand_state);
+                right_ptr = new bvh_node(objects, mid, end, rand_state);
+            }
+
+            bbox = aabb(left_ptr->bounding_box(), right_ptr->bounding_box());
+        } */
 
     __device__ __host__ bool hit(const Ray &r, Interval ray_t, hit_record &rec) const override
     {

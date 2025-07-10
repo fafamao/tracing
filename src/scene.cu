@@ -8,9 +8,7 @@ __global__ void generate_scene_device(hittable **d_list, hittable **d_world, cur
     {
         curandState local_rand_state = *rand_state;
         Material *mat = new Lambertian(Color(0.5f, 0.5f, 0.5f));
-        printf("mat pointer:%p\n", mat);
         d_list[0] = new Sphere(Vec3(0.0f, -1000.0f, 0.0f), 1000.0f, mat);
-        printf("scene object:%p\n", d_list[0]);
         int i = 1;
         for (int a = -11; a < 11; a++)
         {
@@ -43,14 +41,10 @@ __global__ void generate_scene_device(hittable **d_list, hittable **d_world, cur
         d_list[i++] = new Sphere(Vec3(0, 1, 0), 1.0f, new Dielectric(1.5));
         d_list[i++] = new Sphere(Vec3(-4, 1, 0), 1.0f, new Lambertian(Color(0.4f, 0.2f, 0.1f)));
         d_list[i++] = new Sphere(Vec3(4, 1, 0), 1.0f, new Metal(Color(0.7f, 0.6f, 0.5f), 0.0f));
-        printf("generate_scene_device: object pointer is %p\n", d_list[--i]);
 
         *d_object_count = i;
 
         // TODO: enable bvh node
-        /*         hittable **bvh_world;
-         *bvh_world = new bvh_node(d_list, world_size, local_rand_state);
-         *d_world = new hittable_list(bvh_world, 1); */
         *d_world = new hittable_list(d_list, i - 1);
 
         *rand_state = local_rand_state;
