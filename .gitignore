@@ -3,17 +3,13 @@
 build/
 bin/
 node_modules/
+.vscode/
+.xmake/
 
 # Ignore files with a specific extension
 *.log
 *.tmp
 *.o
 
-# Ignore a specific file
-secret_credentials.txt
-
-# You can also ignore files but make exceptions
-# Ignore all .txt files...
 *.txt
-# ...except for this specific one
 !important.txt
