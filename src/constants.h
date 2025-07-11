@@ -21,7 +21,10 @@ inline constexpr int PIXEL_FACTOR = 256;
 inline constexpr float PIXEL_SCALE = 16.0f / 9.0f;
 
 // Samples per pixel for anti-aliasing
-inline constexpr int PIXEL_NEIGHBOR = 10;
+inline constexpr int PIXEL_NEIGHBOR = 1;
+
+// Tripple buffering for ffplay
+inline constexpr int NUM_BUFFERS = 3;
 
 // TODO: Configure pixel size from static file
 inline constexpr int PIXEL_WIDTH = 1280;
@@ -29,7 +32,7 @@ inline constexpr int PIXEL_HEIGHT = int(float(PIXEL_WIDTH) / PIXEL_SCALE);
 inline constexpr int FRAME_SIZE_RGB = PIXEL_WIDTH * PIXEL_HEIGHT * 3;
 
 // Total ray bouncing
-inline constexpr int MAX_DEPTH = 50;
+inline constexpr int MAX_DEPTH = 10;
 
 // Math
 inline constexpr float PI = 3.1415926535897932385;

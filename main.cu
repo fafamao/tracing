@@ -69,15 +69,27 @@ int main()
         cudaDeviceGetLimit(&current_stack_size, cudaLimitStackSize);
         std::cout << "Current stack size = " << current_stack_size << " bytes\n";
 
-        size_t new_stack_size = 16384; // 16 * 1024 bytes
-        cudaDeviceSetLimit(cudaLimitStackSize, new_stack_size);
-        std::cout << "Set new stack size = " << new_stack_size << " bytes\n";
-
         // Dimension
         int tx = 16;
         int ty = 16;
 
-        // cudaDeviceSetLimit(cudaLimitMallocHeapSize, 128 * 1024 * 1024);
+        size_t new_stack_size = 16384; // 16 * 1024 bytes
+        cudaDeviceSetLimit(cudaLimitStackSize, new_stack_size);
+        std::cout << "Set new stack size = " << new_stack_size << " bytes\n";
+
+        /* uint8_t *h_buffers[NUM_BUFFERS]; // Host-side pinned buffers
+        uint8_t *d_buffers[NUM_BUFFERS]; // Device-side buffers
+        cudaStream_t streams[NUM_BUFFERS];
+
+        for (int i = 0; i < NUM_BUFFERS; ++i)
+        {
+            // Allocate page-locked (pinned) memory on the host for faster async copies
+            cudaMallocHost(&h_buffers[i], FRAME_SIZE_RGB);
+            // Allocate memory on the device
+            cudaMalloc(&d_buffers[i], FRAME_SIZE_RGB);
+            // Create a stream for each buffer
+            cudaStreamCreate(&streams[i]);
+        } */
 
         // Allocate device memory for RNG
         size_t num_pixels = PIXEL_HEIGHT * PIXEL_WIDTH;
