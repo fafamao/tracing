@@ -1,32 +1,19 @@
-# Prerequisites
-*.d
+# Ignore a specific directory and everything inside it
+# (Common for build output, dependencies, etc.)
+build/
+bin/
+node_modules/
 
-# Compiled Object files
-*.slo
-*.lo
+# Ignore files with a specific extension
+*.log
+*.tmp
 *.o
-*.obj
 
-# Precompiled Headers
-*.gch
-*.pch
+# Ignore a specific file
+secret_credentials.txt
 
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
-
-# Fortran module files
-*.mod
-*.smod
-
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
-
-# Executables
-*.exe
-*.out
-*.app
+# You can also ignore files but make exceptions
+# Ignore all .txt files...
+*.txt
+# ...except for this specific one
+!important.txt
