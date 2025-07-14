@@ -2,7 +2,7 @@
 #define VEC3_POD_CUH_
 
 #include <cmath>
-#include <random> // For random_unit_vec_normal_distribution
+#include <random>
 #include "constants.h"
 
 struct Vec3

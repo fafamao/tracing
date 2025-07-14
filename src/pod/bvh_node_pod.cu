@@ -1,36 +1,13 @@
-#ifndef BVH_NODE_POD_CUH_
-#define BVH_NODE_POD_CUH_
+#include "bvh_node_pod.cuh"
 
-#include "hittable_pod.cuh"
-#include "aabb_pod.cuh"
-
-/* Take std::vector of Hittable PODs.
-
-Recursively subdivide the list and sort it, just like before.
-
-Instead of calling new bvh_node(...), it will populate the flat BVHNode array. It will manage the indices for parent and child nodes.
-
-Once the host-side array of BVHNodes is complete, use cudaMalloc and cudaMemcpy to copy the entire flat structure to the GPU. */
-
-struct BVHNode
-{
-    aabb bbox;
-    int left_child_idx;  // Index into the BVH node array
-    int right_child_idx; // Index into the BVH node array
-
-    // For leaf nodes
-    bool is_leaf;
-    int object_idx; // Index into the main hittable object array
-};
-
-__device__ inline bool hit_bvh(
-    const BVHNode *bvh_nodes, const Hittable *objects, // Pass in the arrays
-    int node_idx, const Ray &r, Interval ray_t, HitRecord &rec)
+__device__ inline bool hit_bvh(const BVHNode *bvh_nodes,
+                               const Hittable *objects, int node_idx,
+                               const Ray &r, Interval ray_t, HitRecord &rec)
 {
     // --- Iterative Traversal (Replaces Recursion) ---
     bool hit_anything = false;
     // TODO: dynamic stack
-    int to_visit_stack[64]; // A fixed-size stack for traversal
+    int to_visit_stack[64];
     int stack_idx = 0;
     to_visit_stack[stack_idx++] = node_idx; // Start with the root node
 
@@ -66,5 +43,3 @@ __device__ inline bool hit_bvh(
 
     return hit_anything;
 }
-
-#endif // BVH_NODE_POD_CUH_
