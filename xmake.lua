@@ -40,11 +40,11 @@ end
 
 target("camera_library")
     set_kind("static")
-    add_files("src/camera.cu")
+    add_files("src/legacy/camera.cu")
 
 target("scene_library")
     set_kind("static")
-    add_files("src/scene.cu")
+    add_files("src/legacy/scene.cu")
 
 target("rng_library")
     set_kind("static")
@@ -52,7 +52,7 @@ target("rng_library")
 
 target("render_library")
     set_kind("static")
-    add_files("src/render.cu")
+    add_files("src/legacy/render.cu")
 
 target("world_library")
     set_kind("static")

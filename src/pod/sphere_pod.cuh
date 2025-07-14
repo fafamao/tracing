@@ -5,34 +5,38 @@
 #include "material_pod.cuh"
 #include "vec3_pod.cuh"
 
-// Break circular dependency
-struct HitRecord;
+namespace cuda_device
+{
 
-struct Sphere {
-  Vec3 center0; // Starting center for motion
-  float radius;
-  Material mat; // Material data is embedded directly
+  // Break circular dependency
+  struct HitRecord;
 
-  // Data for moving spheres
-  bool is_moving;
-  Vec3 center_vec; // The vector of movement (center1 - center0)
-};
+  struct Sphere
+  {
+    Vec3 center0; // Starting center for motion
+    float radius;
+    Material mat; // Material data is embedded directly
 
-__device__ Sphere create_static_sphere(const Vec3 &center, float radius,
-                                       const Material &mat);
+    // Data for moving spheres
+    bool is_moving;
+    Vec3 center_vec; // The vector of movement (center1 - center0)
+  };
 
-// Creates a moving sphere
-__device__ Sphere create_moving_sphere(const Vec3 &center0, const Vec3 &center1,
-                                       float radius, const Material &mat);
+  __device__ Sphere create_static_sphere(const Vec3 &center, float radius,
+                                         const Material &mat);
 
-// Gets the center of the sphere at a specific time for motion blur
-__device__ Vec3 sphere_center(const Sphere *s, float time);
+  // Creates a moving sphere
+  __device__ Sphere create_moving_sphere(const Vec3 &center0, const Vec3 &center1,
+                                         float radius, const Material &mat);
 
-// Calculates the bounding box for a sphere
-__device__ aabb bounding_box_sphere(const Sphere *s);
+  // Gets the center of the sphere at a specific time for motion blur
+  __device__ Vec3 sphere_center(const Sphere *s, float time);
 
-// The main ray-sphere intersection logic
-__device__ bool hit_sphere(const Sphere *s, const Ray &r, Interval ray_t,
-                           HitRecord &rec);
+  // Calculates the bounding box for a sphere
+  __device__ aabb bounding_box_sphere(const Sphere *s);
 
+  // The main ray-sphere intersection logic
+  __device__ bool hit_sphere(const Sphere *s, const Ray &r, Interval ray_t,
+                             HitRecord &rec);
+}
 #endif // SPHERE_POD_CUH_

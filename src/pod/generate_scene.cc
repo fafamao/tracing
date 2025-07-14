@@ -2,6 +2,7 @@
 #include "constants.h"
 #include "sphere_pod.cuh"
 #include <utility>
+namespace cuda_device {
 
 std::vector<Hittable> generate_world() {
   std::cout << "Generating scene on the host..." << std::endl;
@@ -84,3 +85,4 @@ inline Material create_dielectric_material(float index_of_refraction) {
   mat.dielectric.ir = index_of_refraction;
   return mat;
 }
+} // namespace cuda_device
