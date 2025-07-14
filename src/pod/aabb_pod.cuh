@@ -17,7 +17,7 @@ namespace cuda_device
     const aabb EMPTY_AABB = {EMPTY_INTERVAL, EMPTY_INTERVAL, EMPTY_INTERVAL};
 
     // Creates a bounding box from two points.
-    __device__ inline aabb create_aabb_from_points(const Vec3 &a, const Vec3 &b)
+    inline aabb create_aabb_from_points(const Vec3 &a, const Vec3 &b)
     {
         // Treat the two points a and b as extrema for the bounding box.
         Interval ix = (a.x <= b.x) ? Interval{a.x, b.x} : Interval{b.x, a.x};
@@ -27,7 +27,7 @@ namespace cuda_device
     }
 
     // Creates a new bounding box that encloses two other bounding boxes.
-    __device__ inline aabb create_aabb_from_boxes(const aabb &box1, const aabb &box2)
+    inline aabb create_aabb_from_boxes(const aabb &box1, const aabb &box2)
     {
         Interval ix = create_combined_interval(box1.x, box2.x);
         Interval iy = create_combined_interval(box1.y, box2.y);
@@ -36,7 +36,7 @@ namespace cuda_device
     }
 
     // Returns the interval for a given axis (0=x, 1=y, 2=z).
-    __device__ inline const Interval &aabb_axis_interval(const aabb &box, int n)
+    __device__ __host__ inline const Interval &aabb_axis_interval(const aabb &box, int n)
     {
         if (n == 1)
             return box.y;

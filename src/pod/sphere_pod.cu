@@ -3,8 +3,8 @@
 
 namespace cuda_device
 {
-    __device__ Sphere create_static_sphere(const Vec3 &center, float radius,
-                                           const Material &mat)
+    Sphere create_static_sphere(const Vec3 &center, float radius,
+                                const Material &mat)
     {
         Sphere s;
         s.center0 = center;
@@ -16,9 +16,9 @@ namespace cuda_device
     }
 
     // Creates a moving sphere
-    __device__ Sphere create_moving_sphere(const Vec3 &center0,
-                                           const Vec3 &center1, float radius,
-                                           const Material &mat)
+    Sphere create_moving_sphere(const Vec3 &center0,
+                                const Vec3 &center1, float radius,
+                                const Material &mat)
     {
         Sphere s;
         s.center0 = center0;
@@ -40,7 +40,7 @@ namespace cuda_device
     }
 
     // Calculates the bounding box for a sphere
-    __device__ aabb bounding_box_sphere(const Sphere *s)
+    aabb bounding_box_sphere(const Sphere *s)
     {
         Vec3 rvec = Vec3{s->radius, s->radius, s->radius};
         if (!s->is_moving)

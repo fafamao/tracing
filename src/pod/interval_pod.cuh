@@ -47,7 +47,7 @@ namespace cuda_device
     }
 
     // Creates a new interval that contains two other intervals.
-    __device__ inline Interval create_combined_interval(const Interval &a, const Interval &b)
+    __host__ __device__ inline Interval create_combined_interval(const Interval &a, const Interval &b)
     {
         float new_min = a.min < b.min ? a.min : b.min;
         float new_max = a.max > b.max ? a.max : b.max;

@@ -33,7 +33,7 @@ namespace cuda_device
   __device__ Vec3 sphere_center(const Sphere *s, float time);
 
   // Calculates the bounding box for a sphere
-  __device__ aabb bounding_box_sphere(const Sphere *s);
+  aabb bounding_box_sphere(const Sphere *s);
 
   // The main ray-sphere intersection logic
   __device__ bool hit_sphere(const Sphere *s, const Ray &r, Interval ray_t,
