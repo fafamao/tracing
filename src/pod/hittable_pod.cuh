@@ -44,17 +44,17 @@ struct Hittable {
   };
 };
 
-__device__ inline bool hittable_hit(const Hittable &object, const Ray &r,
-                                    Interval &ray_t, HitRecord &rec);
+__device__ bool hittable_hit(const Hittable &object, const Ray &r,
+                             Interval &ray_t, HitRecord &rec);
 
 // --- The 'bounding_box' Dispatcher Function ---
-__device__ inline aabb hittable_bounding_box(const Hittable &object);
+__device__ aabb hittable_bounding_box(const Hittable &object);
 
-__device__ inline Hittable create_hittable_from_sphere(const Sphere &s);
+__device__ Hittable create_hittable_from_sphere(const Sphere &s);
 
 // Sets the hit record's normal vector.
 // The HitRecord is passed by reference to be modified.
-__device__ inline void set_face_normal(HitRecord &rec, const Ray &r,
-                                       const Vec3 &outward_normal);
+__device__ void set_face_normal(HitRecord &rec, const Ray &r,
+                                const Vec3 &outward_normal);
 
 #endif // HITTABLE_POD_CUH_

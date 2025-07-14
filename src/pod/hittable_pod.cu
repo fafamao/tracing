@@ -37,8 +37,7 @@ __device__ aabb hittable_bounding_box(const Hittable &object)
     return EMPTY_AABB;
 }
 
-__host__ __device__ Hittable
-create_hittable_from_sphere(Sphere *s)
+__device__ Hittable create_hittable_from_sphere(Sphere *s)
 {
     Hittable h;
     h.type = SPHERE;

@@ -2,8 +2,8 @@
 #include "hittable_pod.cuh"
 
 // The main intersection logic for the list
-__device__ inline bool hit_hittable_list(const HittableList *list, const Ray &r,
-                                         Interval ray_t, HitRecord &rec)
+__device__ bool hit_hittable_list(const HittableList *list, const Ray &r,
+                                  Interval ray_t, HitRecord &rec)
 {
     HitRecord temp_rec;
     bool hit_anything = false;
@@ -25,7 +25,7 @@ __device__ inline bool hit_hittable_list(const HittableList *list, const Ray &r,
 }
 
 // The bounding box function simply returns the pre-computed box
-__device__ inline aabb bounding_box_hittable_list(const HittableList *list)
+__device__ aabb bounding_box_hittable_list(const HittableList *list)
 {
     return list->bbox;
 }
