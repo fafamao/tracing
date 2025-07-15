@@ -23,8 +23,8 @@ namespace cuda_device
         int object_idx;
     };
 
-    __device__ inline bool hit_bvh(const BVHNode *bvh_nodes,
-                                   const Hittable *objects, int node_idx,
-                                   const Ray &r, Interval ray_t, HitRecord &rec);
+    __device__ bool hit_bvh(const BVHNode *bvh_nodes,
+                            const Hittable *objects, int node_idx,
+                            const Ray &r, Interval ray_t, HitRecord &rec);
 }
 #endif // BVH_NODE_POD_CUH_

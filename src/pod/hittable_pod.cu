@@ -22,7 +22,7 @@ namespace cuda_device
     }
 
     // --- The 'bounding_box' Dispatcher Function ---
-    __device__ aabb hittable_bounding_box(const Hittable &object)
+    __device__ __host__ aabb hittable_bounding_box(const Hittable &object)
     {
         switch (object.type)
         {
@@ -30,16 +30,16 @@ namespace cuda_device
             return bounding_box_sphere(object.sphere);
         case HITTABLE_LIST:
             // return bounding_box_hittable_list(object.list);
-            break; // Placeholder
+            break;
         case BVH_NODE:
-            // return bounding_box_bvh_node(object.bvh);
-            break; // Placeholder
+            return object.bvh->nodes[0].bbox;
+            break;
         }
         // Return an empty box for unknown types
         return EMPTY_AABB;
     }
 
-    __device__ Hittable create_hittable_from_sphere(Sphere *s)
+    __device__ __host__ Hittable create_hittable_from_sphere(Sphere *s)
     {
         Hittable h;
         h.type = SPHERE;
@@ -47,8 +47,8 @@ namespace cuda_device
         return h;
     }
 
-    __device__ void set_face_normal(HitRecord &rec, const Ray &r,
-                                    const Vec3 &outward_normal)
+    __device__ __host__ void set_face_normal(HitRecord &rec, const Ray &r,
+                                             const Vec3 &outward_normal)
     {
         // NOTE: the parameter `outward_normal` is assumed to have unit length.
         rec.front_face = dot(r.direction, outward_normal) < 0;

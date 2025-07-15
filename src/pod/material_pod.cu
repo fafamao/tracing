@@ -70,4 +70,7 @@ namespace cuda_device
         // Call the correct function based on the material's type ID
         return scatter_functions[rec.mat.type](r_in, rec, attenuation, scattered);
     }
+
+    __device__ ScatterFn scatter_functions[] = {scatter_lambertian, scatter_metal,
+                                                scatter_dielectric};
 }

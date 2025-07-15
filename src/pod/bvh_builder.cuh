@@ -13,21 +13,6 @@
 #include "aabb_pod.cuh"
 namespace cuda_device
 {
-
-    // A helper function to get the bounding box from a Hittable.
-    // This would call your main hittable_bounding_box dispatcher.
-    inline aabb get_hittable_bounding_box(const Hittable &object)
-    {
-        switch (object.type)
-        {
-        case SPHERE:
-            return bounding_box_sphere(object.sphere);
-        // TODO: Add other object types here
-        default:
-            return aabb(); // Return empty AABB
-        }
-    }
-
     class BVHBuilder
     {
     public:
@@ -76,10 +61,10 @@ namespace cuda_device
                 nodes[node_idx].right_child_idx = span;
 
                 // Compute the bounding box for all objects in this leaf.
-                aabb leaf_box = get_hittable_bounding_box(objects[start]);
+                aabb leaf_box = hittable_bounding_box(objects[start]);
                 for (size_t i = start + 1; i < end; ++i)
                 {
-                    leaf_box = create_aabb_from_boxes(leaf_box, get_hittable_bounding_box(objects[i]));
+                    leaf_box = create_aabb_from_boxes(leaf_box, hittable_bounding_box(objects[i]));
                 }
                 nodes[node_idx].bbox = leaf_box;
 
@@ -114,8 +99,8 @@ namespace cuda_device
 
         static bool box_compare(const Hittable &a, const Hittable &b, int axis_index)
         {
-            aabb box_a = get_hittable_bounding_box(a);
-            aabb box_b = get_hittable_bounding_box(b);
+            aabb box_a = hittable_bounding_box(a);
+            aabb box_b = hittable_bounding_box(b);
             const Interval &a_interval = aabb_axis_interval(box_a, axis_index);
             const Interval &b_interval = aabb_axis_interval(box_b, axis_index);
             return a_interval.min < b_interval.min;

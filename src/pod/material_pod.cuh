@@ -47,12 +47,8 @@ namespace cuda_device
   __device__ bool scatter_dielectric(const Ray &r_in, const HitRecord &rec,
                                      Color &attenuation, Ray &scattered);
 
-  // 1. Define the function pointer type
   typedef bool (*ScatterFn)(const Ray &, const HitRecord &, Color &, Ray &);
-
-  // 2. Create the table of scatter functions on the device
-  __device__ ScatterFn scatter_functions[] = {scatter_lambertian, scatter_metal,
-                                              scatter_dielectric};
+  extern __device__ ScatterFn scatter_functions[];
 
   __device__ bool scatter(const Ray &r_in, const HitRecord &rec,
                           Color &attenuation, Ray &scattered);

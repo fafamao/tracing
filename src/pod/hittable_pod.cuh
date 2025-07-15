@@ -37,7 +37,6 @@ namespace cuda_device
     SPHERE,
     HITTABLE_LIST,
     BVH_NODE
-    // TODO: add more objects here
   };
 
   struct Hittable
@@ -55,9 +54,9 @@ namespace cuda_device
                                Interval &ray_t, HitRecord &rec);
 
   // --- The 'bounding_box' Dispatcher Function ---
-  __device__ aabb hittable_bounding_box(const Hittable &object);
+  __device__ __host__ aabb hittable_bounding_box(const Hittable &object);
 
-  __device__ Hittable create_hittable_from_sphere(const Sphere &s);
+  __device__ __host__ Hittable create_hittable_from_sphere(Sphere *s);
 
   // Sets the hit record's normal vector.
   // The HitRecord is passed by reference to be modified.

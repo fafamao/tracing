@@ -54,9 +54,9 @@ target("render_library")
     set_kind("static")
     add_files("src/legacy/render.cu")
 
-target("world_library")
+target("ray_tracing_lib")
     set_kind("static")
-    add_files("src/pod/*.cc")
+    add_files("src/pod/*.cc", "src/pod/*.cu")
 
 -- == Main Executable Target ==
 
@@ -68,7 +68,7 @@ target("tracing")
     add_files("main.cu")
 
     -- Add dependencies on our static libraries
-    add_deps("camera_library", "scene_library", "rng_library", "render_library", "world_library")
+    add_deps("camera_library", "scene_library", "rng_library", "render_library", "ray_tracing_lib")
 
     -- Add package dependencies
     add_packages("cuda")

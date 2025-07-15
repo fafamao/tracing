@@ -41,8 +41,7 @@ extern "C" __global__ void render_kernel(
     cuda_device::CameraData cam,
     const cuda_device::Hittable *world,
     const cuda_device::BVHNode *bvh_nodes,
-    int world_size,
-    curandState *rand_states)
+    int world_size)
 {
     int i = blockIdx.x * blockDim.x + threadIdx.x;
     int j = blockIdx.y * blockDim.y + threadIdx.y;

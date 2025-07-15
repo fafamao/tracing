@@ -2,9 +2,9 @@
 namespace cuda_device
 {
 
-    __device__ inline bool hit_bvh(const BVHNode *bvh_nodes,
-                                   const Hittable *objects, int node_idx,
-                                   const Ray &r, Interval ray_t, HitRecord &rec)
+    __device__ bool hit_bvh(const BVHNode *bvh_nodes,
+                            const Hittable *objects, int node_idx,
+                            const Ray &r, Interval ray_t, HitRecord &rec)
     {
         // --- Iterative Traversal (Replaces Recursion) ---
         bool hit_anything = false;
