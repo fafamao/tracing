@@ -10,14 +10,5 @@ namespace cuda_device {
 
 // Generate world from objects into hittable
 std::vector<Hittable> generate_world();
-
-// Generate lambertian material
-Material create_lambertian_material(const Color &color);
-
-// Generate metal material
-Material create_metal_material(const Color &color, float fuzz);
-
-// Generate glass material
-Material create_dielectric_material(float index_of_refraction);
 } // namespace cuda_device
 #endif // POD_GENERATE_SCENE_H_

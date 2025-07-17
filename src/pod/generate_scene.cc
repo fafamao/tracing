@@ -4,6 +4,29 @@
 #include <utility>
 namespace cuda_device {
 
+inline Material create_lambertian_material(const Color &albedo) {
+  Material mat;
+  mat.type = LAMBERTIAN;
+  mat.albedo = albedo;
+  return mat;
+}
+
+inline Material create_metal_material(const Color &albedo, float fuzz) {
+  Material mat;
+  mat.type = METAL;
+  mat.albedo = albedo;
+  mat.metal.fuzz = fuzz;
+  return mat;
+}
+
+inline Material create_dielectric_material(float index_of_refraction) {
+  Material mat;
+  mat.type = DIELECTRIC;
+  mat.albedo = Color{1.0f, 1.0f, 1.0f};
+  mat.dielectric.ir = index_of_refraction;
+  return mat;
+}
+
 std::vector<Hittable> generate_world() {
   std::cout << "Generating scene on the host..." << std::endl;
   std::vector<Hittable> world_objects;
@@ -61,28 +84,5 @@ std::vector<Hittable> generate_world() {
   std::cout << "Generated a total of " << world_objects.size() << " objects."
             << std::endl;
   return world_objects;
-}
-
-inline Material create_lambertian_material(const Color &albedo) {
-  Material mat;
-  mat.type = LAMBERTIAN;
-  mat.albedo = albedo;
-  return mat;
-}
-
-inline Material create_metal_material(const Color &albedo, float fuzz) {
-  Material mat;
-  mat.type = METAL;
-  mat.albedo = albedo;
-  mat.metal.fuzz = fuzz;
-  return mat;
-}
-
-inline Material create_dielectric_material(float index_of_refraction) {
-  Material mat;
-  mat.type = DIELECTRIC;
-  mat.albedo = Color{1.0f, 1.0f, 1.0f};
-  mat.dielectric.ir = index_of_refraction;
-  return mat;
 }
 } // namespace cuda_device
