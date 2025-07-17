@@ -30,9 +30,13 @@ inline constexpr int NUM_BUFFERS = 3;
 inline constexpr int PIXEL_WIDTH = 1280;
 inline constexpr int PIXEL_HEIGHT = int(float(PIXEL_WIDTH) / PIXEL_SCALE);
 inline constexpr int FRAME_SIZE_RGB = PIXEL_WIDTH * PIXEL_HEIGHT * 3;
+inline constexpr int FRAME_BUFFERING = FRAME_SIZE_RGB;
 
 // Total ray bouncing
 inline constexpr int MAX_DEPTH = 10;
+
+// Camera tilt angle
+inline constexpr float VFOV = 90;
 
 // Math
 inline constexpr float PI = 3.1415926535897932385;

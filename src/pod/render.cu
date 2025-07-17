@@ -58,7 +58,4 @@ extern "C" __global__ void render_kernel(
         cuda_device::Ray r = cuda_device::get_ray_device(cam, i, j);
         pixel_color += cuda_device::ray_color_device(r, MAX_DEPTH, world, bvh_nodes, world_size);
     }
-
-    // Write the final color to the framebuffer, performing averaging and gamma correction.
-    // write_color(framebuffer, PIXEL_WIDTH, i, j, pixel_color, samples_per_pixel);
 }

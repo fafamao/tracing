@@ -1,9 +1,9 @@
 #ifndef CAMERA_POD_CUH_
 #define CAMERA_POD_CUH_
 
-#include "vec3_pod.cuh"
-#include "ray_pod.cuh"
 #include "constants.h"
+#include "ray_pod.cuh"
+#include "vec3_pod.cuh"
 namespace cuda_device
 {
 
@@ -28,7 +28,9 @@ namespace cuda_device
     __device__ inline Ray get_ray_device(const CameraData &cam, int i, int j)
     {
         Vec3 offset = sample_square_device();
-        Vec3 pixel_sample = cam.top_left_pixel + ((float(i) + offset.x) * cam.unit_vec_u) + ((float(j) + offset.y) * cam.unit_vec_v);
+        Vec3 pixel_sample = cam.top_left_pixel +
+                            ((float(i) + offset.x) * cam.unit_vec_u) +
+                            ((float(j) + offset.y) * cam.unit_vec_v);
 
         Vec3 ray_origin = cam.camera_origin;
         Vec3 ray_direction = pixel_sample - ray_origin;
@@ -36,5 +38,32 @@ namespace cuda_device
         // A time of 0 for a static scene.
         return Ray{ray_origin, ray_direction, 0.0f};
     }
-}
+
+    __device__ __host__ inline CameraData
+    construct_camera(const Vec3 &origin, const Vec3 &dest, const Vec3 &up)
+    {
+        Vec3 w = unit_vector(origin - dest);
+        Vec3 u = unit_vector(cross(up, w));
+        Vec3 v = cross(w, u);
+
+        float pixel_scale = 1.0f / float(PIXEL_NEIGHBOR);
+
+        float focal_len = length(origin - dest);
+        float theta = degrees_to_radians(VFOV);
+        float h = tanf(theta / 2.0f);
+        float viewport_height = 2 * h * focal_len;
+        float viewport_width =
+            viewport_height * (float(PIXEL_WIDTH) / float(PIXEL_HEIGHT));
+        Vec3 vec_u = u * viewport_width;
+        Vec3 vec_v = -v * viewport_height;
+        Vec3 unit_vec_u = vec_u / PIXEL_WIDTH;
+        Vec3 unit_vec_v = vec_v / PIXEL_HEIGHT;
+        Vec3 top_left_pixel = origin - focal_len * w - vec_u / 2 - vec_v / 2 +
+                              unit_vec_u / 2 + unit_vec_v / 2;
+
+        CameraData camera = {top_left_pixel, unit_vec_u, unit_vec_v, origin,
+                             pixel_scale};
+        return camera;
+    }
+} // namespace cuda_device
 #endif // CAMERA_POD_CUH_
