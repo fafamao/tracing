@@ -133,9 +133,27 @@ int main()
             (PIXEL_WIDTH + number_of_thread_x - 1) / number_of_thread_x,
             (PIXEL_HEIGHT + number_of_thread_y - 1) / number_of_thread_y);
 
+        cudaEvent_t start, stop;
+        checkCudaErrors(cudaEventCreate(&start));
+        checkCudaErrors(cudaEventCreate(&stop));
+
+        checkCudaErrors(cudaEventRecord(start));
+
         render_kernel<<<blocksPerGrid, threadsPerBlock>>>(
             d_pixel_data, camera, d_objects, d_nodes, world_hittable.size());
         checkCudaErrors(cudaDeviceSynchronize());
+
+        checkCudaErrors(cudaEventRecord(stop));
+
+        checkCudaErrors(cudaEventSynchronize(stop));
+
+        float milliseconds = 0;
+        checkCudaErrors(cudaEventElapsedTime(&milliseconds, start, stop));
+
+        printf("Kernel execution time: %f ms\n", milliseconds);
+
+        checkCudaErrors(cudaEventDestroy(start));
+        checkCudaErrors(cudaEventDestroy(stop));
 
         // Free resource
         checkCudaErrors(cudaFree(d_objects));
