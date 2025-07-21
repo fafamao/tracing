@@ -26,6 +26,14 @@ namespace cuda_device
         return aabb{ix, iy, iz};
     }
 
+    __host__ __device__ inline aabb create_empty_aabb()
+    {
+        return aabb{
+            create_empty_interval(),
+            create_empty_interval(),
+            create_empty_interval()};
+    }
+
     // Creates a new bounding box that encloses two other bounding boxes.
     __device__ __host__ inline aabb create_aabb_from_boxes(const aabb &box1, const aabb &box2)
     {

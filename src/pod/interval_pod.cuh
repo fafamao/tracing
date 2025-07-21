@@ -24,6 +24,11 @@ namespace cuda_device
         return interval.max - interval.min;
     }
 
+    __host__ __device__ inline Interval create_empty_interval()
+    {
+        return Interval{RAY_INFINITY, -RAY_INFINITY};
+    }
+
     // Checks if the interval contains a value (inclusive).
     __device__ inline bool interval_contains(const Interval &interval, float x)
     {

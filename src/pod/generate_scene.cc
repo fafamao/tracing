@@ -2,6 +2,7 @@
 #include "constants.h"
 #include "sphere_pod.cuh"
 #include <utility>
+
 namespace cuda_device {
 
 inline Material create_lambertian_material(const Color &albedo) {

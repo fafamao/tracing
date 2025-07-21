@@ -1,6 +1,7 @@
 #include "hittable_pod.cuh"
 #include "bvh_node_pod.cuh"
 #include "vec3_pod.cuh"
+#include "aabb_pod.cuh"
 namespace cuda_device
 {
 
@@ -36,7 +37,7 @@ namespace cuda_device
             break;
         }
         // Return an empty box for unknown types
-        return EMPTY_AABB;
+        return create_empty_aabb();
     }
 
     __device__ __host__ Hittable create_hittable_from_sphere(Sphere *s)
