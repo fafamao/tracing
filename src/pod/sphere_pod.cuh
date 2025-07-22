@@ -22,15 +22,15 @@ namespace cuda_device
     Vec3 center_vec; // The vector of movement (center1 - center0)
   };
 
-  __device__ Sphere create_static_sphere(const Vec3 &center, float radius,
+  Sphere create_static_sphere(const Vec3 &center, float radius,
                                          const Material &mat);
 
   // Creates a moving sphere
-  __device__ Sphere create_moving_sphere(const Vec3 &center0, const Vec3 &center1,
+  Sphere create_moving_sphere(const Vec3 &center0, const Vec3 &center1,
                                          float radius, const Material &mat);
 
   // Gets the center of the sphere at a specific time for motion blur
-  __device__ Vec3 sphere_center(const Sphere *s, float time);
+  __device__ __host__ Vec3 sphere_center(const Sphere *s, float time);
 
   // Calculates the bounding box for a sphere
   aabb bounding_box_sphere(const Sphere *s);

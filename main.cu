@@ -115,6 +115,9 @@ int main()
         sizeof(cuda_device::CameraData))); checkCudaErrors(cudaMemcpy(d_camera,
         &camera, sizeof(cuda_device::CameraData), cudaMemcpyHostToDevice)); */
 
+        // Initialize random state
+        initialize_global_state(PIXEL_WIDTH * PIXEL_HEIGHT);
+
         // Allocate pinned host memory for pixel data transfer
         unsigned char *d_pixel_data;
         unsigned char *h_pixel_data;
