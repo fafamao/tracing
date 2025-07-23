@@ -12,11 +12,11 @@ namespace cuda_device
     };
 
     // Represents an empty interval.
-    const Interval EMPTY_INTERVAL = {RAY_INFINITY, -RAY_INFINITY};
+    const static Interval EMPTY_INTERVAL = {RAY_INFINITY, -RAY_INFINITY};
     // Represents the entire number line.
-    const Interval UNIVERSE_INTERVAL = {-RAY_INFINITY, RAY_INFINITY};
+    const static Interval UNIVERSE_INTERVAL = {-RAY_INFINITY, RAY_INFINITY};
     // The interval for pixel intensity.
-    const Interval PIXEL_INTENSITY_INTERVAL = {0.000f, 0.999f};
+    const static Interval PIXEL_INTENSITY_INTERVAL = {0.000f, 0.999f};
 
     // Calculates the size of the interval.
     __device__ inline float interval_size(const Interval &interval)

@@ -52,10 +52,16 @@ extern "C" __global__ void render_kernel(
         return;
     }
 
-    cuda_device::Color pixel_color{0, 0, 0}; // Use {}
+    cuda_device::Color pixel_color{0, 0, 0};
     for (int s = 0; s < PIXEL_NEIGHBOR; ++s)
     {
         cuda_device::Ray r = cuda_device::get_ray_device(cam, i, j);
         pixel_color += cuda_device::ray_color_device(r, MAX_DEPTH, world, bvh_nodes, world_size);
     }
+
+    float scale = 1.0f / PIXEL_NEIGHBOR;
+    pixel_color *= scale;
+
+    write_color(pixel_color, i, j,
+                (char *)framebuffer);
 }

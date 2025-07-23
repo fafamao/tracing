@@ -158,6 +158,10 @@ int main()
         checkCudaErrors(cudaEventDestroy(start));
         checkCudaErrors(cudaEventDestroy(stop));
 
+        checkCudaErrors(cudaMemcpy(h_pixel_data, d_pixel_data, FRAME_BUFFERING, cudaMemcpyDeviceToHost));
+
+        generate_ppm_6((char*)h_pixel_data);
+
         // Free resource
         checkCudaErrors(cudaFree(d_objects));
         checkCudaErrors(cudaFree(d_nodes));
