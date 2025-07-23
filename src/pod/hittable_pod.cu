@@ -12,9 +12,6 @@ namespace cuda_device
         {
         case SPHERE:
             return hit_sphere(object.sphere, r, ray_t, rec);
-        case HITTABLE_LIST:
-            return hit_hittable_list(object.list, r, ray_t, rec);
-            break;
         case BVH_NODE:
             return hit_bvh(object.bvh->nodes, object.bvh->objects, 0, r, ray_t, rec);
             break;
@@ -40,7 +37,7 @@ namespace cuda_device
         return create_empty_aabb();
     }
 
-    __device__ __host__ Hittable create_hittable_from_sphere(Sphere *s)
+    __device__ __host__ Hittable create_hittable_from_sphere(Sphere &s)
     {
         Hittable h;
         h.type = SPHERE;

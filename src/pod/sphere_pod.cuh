@@ -30,13 +30,13 @@ namespace cuda_device
                                          float radius, const Material &mat);
 
   // Gets the center of the sphere at a specific time for motion blur
-  __device__ __host__ Vec3 sphere_center(const Sphere *s, float time);
+  __device__ __host__ Vec3 sphere_center(const Sphere &s, float time);
 
   // Calculates the bounding box for a sphere
-  aabb bounding_box_sphere(const Sphere *s);
+  aabb bounding_box_sphere(const Sphere &s);
 
   // The main ray-sphere intersection logic
-  __device__ bool hit_sphere(const Sphere *s, const Ray &r, Interval ray_t,
+  __device__ bool hit_sphere(const Sphere &s, const Ray &r, Interval ray_t,
                              HitRecord &rec);
 }
 #endif // SPHERE_POD_CUH_

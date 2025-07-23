@@ -44,8 +44,7 @@ namespace cuda_device
     ObjectType type;
     union
     {
-      Sphere *sphere;
-      HittableList *list;
+      Sphere sphere;
       BVH *bvh;
     };
   };
@@ -56,11 +55,11 @@ namespace cuda_device
   // --- The 'bounding_box' Dispatcher Function ---
   __device__ __host__ aabb hittable_bounding_box(const Hittable &object);
 
-  __device__ __host__ Hittable create_hittable_from_sphere(Sphere *s);
+  __device__ __host__ Hittable create_hittable_from_sphere(Sphere &s);
 
   // Sets the hit record's normal vector.
   // The HitRecord is passed by reference to be modified.
-  __device__ void set_face_normal(HitRecord &rec, const Ray &r,
+  __device__ __host__ void set_face_normal(HitRecord &rec, const Ray &r,
                                   const Vec3 &outward_normal);
 }
 #endif // HITTABLE_POD_CUH_

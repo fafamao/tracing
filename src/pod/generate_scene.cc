@@ -44,7 +44,7 @@ namespace cuda_device
     Sphere ground_sphere = create_static_sphere(Vec3{0.0f, -1000.0f, 0.0f},
                                                 1000.0f, ground_material);
 
-    world_objects.push_back(create_hittable_from_sphere(&ground_sphere));
+    world_objects.push_back(create_hittable_from_sphere(ground_sphere));
 
     // --- Random Small Spheres ---
     const int spheres_per_axis = 11;
@@ -76,7 +76,7 @@ namespace cuda_device
           }
 
           Sphere new_sphere = create_static_sphere(center, 0.2f, sphere_material);
-          world_objects.push_back(create_hittable_from_sphere(&new_sphere));
+          world_objects.push_back(create_hittable_from_sphere(new_sphere));
         }
       }
     }
@@ -85,17 +85,17 @@ namespace cuda_device
     Material material1 = create_dielectric_material(1.5f);
     Sphere sphere1 =
         create_static_sphere(Vec3{0.0f, 1.0f, 0.0f}, 1.0f, material1);
-    world_objects.push_back(create_hittable_from_sphere(&sphere1));
+    world_objects.push_back(create_hittable_from_sphere(sphere1));
 
     Material material2 = create_lambertian_material(Color{0.4f, 0.2f, 0.1f});
     Sphere sphere2 =
         create_static_sphere(Vec3{-4.0f, 1.0f, 0.0f}, 1.0f, material2);
-    world_objects.push_back(create_hittable_from_sphere(&sphere2));
+    world_objects.push_back(create_hittable_from_sphere(sphere2));
 
     Material material3 = create_metal_material(Color{0.7f, 0.6f, 0.5f}, 0.0f);
     Sphere sphere3 =
         create_static_sphere(Vec3{4.0f, 1.0f, 0.0f}, 1.0f, material3);
-    world_objects.push_back(create_hittable_from_sphere(&sphere3));
+    world_objects.push_back(create_hittable_from_sphere(sphere3));
 
     std::cout << "Generated a total of " << world_objects.size() << " objects."
               << std::endl;

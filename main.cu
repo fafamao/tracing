@@ -162,7 +162,7 @@ int main()
         checkCudaErrors(cudaFree(d_objects));
         checkCudaErrors(cudaFree(d_nodes));
         checkCudaErrors(cudaFree(d_pixel_data));
-        checkCudaErrors(cudaFree(h_pixel_data));
+        checkCudaErrors(cudaFreeHost(h_pixel_data));
     }
     else
     {

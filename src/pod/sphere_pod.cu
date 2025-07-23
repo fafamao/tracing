@@ -30,32 +30,32 @@ namespace cuda_device
     }
 
     // Gets the center of the sphere at a specific time for motion blur
-    __device__ Vec3 sphere_center(const Sphere *s, float time)
+    __device__ Vec3 sphere_center(const Sphere& s, float time)
     {
-        if (!s->is_moving)
+        if (!s.is_moving)
         {
-            return s->center0;
+            return s.center0;
         }
-        return s->center0 + time * s->center_vec;
+        return s.center0 + time * s.center_vec;
     }
 
     // Calculates the bounding box for a sphere
-    aabb bounding_box_sphere(const Sphere *s)
+    aabb bounding_box_sphere(const Sphere &s)
     {
-        Vec3 rvec = Vec3{s->radius, s->radius, s->radius};
-        if (!s->is_moving)
+        Vec3 rvec = Vec3{s.radius, s.radius, s.radius};
+        if (!s.is_moving)
         {
-            return create_aabb_from_points(s->center0 - rvec, s->center0 + rvec);
+            return create_aabb_from_points(s.center0 - rvec, s.center0 + rvec);
         }
         // For moving spheres, enclose the boxes at time0 and time1
-        aabb box0 = create_aabb_from_points(s->center0 - rvec, s->center0 + rvec);
-        aabb box1 = create_aabb_from_points((s->center0 + s->center_vec) - rvec,
-                                            (s->center0 + s->center_vec) + rvec);
+        aabb box0 = create_aabb_from_points(s.center0 - rvec, s.center0 + rvec);
+        aabb box1 = create_aabb_from_points((s.center0 + s.center_vec) - rvec,
+                                            (s.center0 + s.center_vec) + rvec);
         return create_aabb_from_boxes(box0, box1);
     }
 
     // The main ray-sphere intersection logic
-    __device__ bool hit_sphere(const Sphere *s, const Ray &r, Interval ray_t,
+    __device__ bool hit_sphere(const Sphere &s, const Ray &r, Interval ray_t,
                                HitRecord &rec)
     {
         Vec3 center_at_time = sphere_center(s, r.time);
@@ -63,7 +63,7 @@ namespace cuda_device
 
         auto a = length_squared(r.direction);
         auto h = dot(r.direction, -oc);
-        auto c = length_squared(oc) - s->radius * s->radius;
+        auto c = length_squared(oc) - s.radius * s.radius;
 
         auto discriminant = h * h - a * c;
         if (discriminant < 0)
@@ -87,9 +87,9 @@ namespace cuda_device
         // A valid hit was found, so populate the HitRecord
         rec.t = root;
         rec.p = ray_at(r, rec.t);
-        Vec3 outward_normal = (rec.p - center_at_time) / s->radius;
+        Vec3 outward_normal = (rec.p - center_at_time) / s.radius;
         set_face_normal(rec, r, outward_normal);
-        rec.mat = s->mat;
+        rec.mat = s.mat;
 
         return true;
     }

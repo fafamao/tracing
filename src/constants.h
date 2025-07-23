@@ -33,7 +33,7 @@ inline constexpr int FRAME_SIZE_RGB = PIXEL_WIDTH * PIXEL_HEIGHT * 3;
 inline constexpr int FRAME_BUFFERING = FRAME_SIZE_RGB;
 
 // Total ray bouncing
-inline constexpr int MAX_DEPTH = 10;
+inline constexpr int MAX_DEPTH = 1;
 
 // Camera tilt angle
 inline constexpr float VFOV = 90;
