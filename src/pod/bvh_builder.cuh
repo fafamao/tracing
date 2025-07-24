@@ -35,6 +35,18 @@ namespace cuda_device
             return nodes;
         }
 
+        void print_tree() const
+        {
+            std::cout << "\n--- BVH Tree Structure ---\n";
+            if (!nodes.empty())
+            {
+                // Start the recursive printing from the root node (index 0)
+                print_node(0, 0);
+            }
+            std::cout << "--- End of BVH Tree ---\n"
+                      << std::endl;
+        }
+
     private:
         std::vector<Hittable> &objects;
         std::vector<BVHNode> nodes;
@@ -53,7 +65,7 @@ namespace cuda_device
 
             // Base Case: If the range has few enough objects, create a leaf node.
             if (span <= 4)
-            { // Leaf node condition (can be tuned)
+            {
                 nodes[node_idx].is_leaf = true;
                 // For a leaf, the 'left_child_idx' can store the start of the object range,
                 // and 'right_child_idx' can store the count.
@@ -74,17 +86,13 @@ namespace cuda_device
             // Recursive Step: It's an internal node.
             nodes[node_idx].is_leaf = false;
 
-            // 1. Choose a random axis to split on.
-            // 0=x, 1=y, 2=z
             int axis = random_int(0, 2);
 
-            // 2. Sort the objects in the range [start, end) along the chosen axis.
             auto comparator = (axis == 0)   ? box_x_compare
                               : (axis == 1) ? box_y_compare
                                             : box_z_compare;
             std::sort(objects.begin() + start, objects.begin() + end, comparator);
 
-            // 3. Find the midpoint and recursively call for left and right children.
             size_t mid = start + span / 2;
             int left_child = build_recursive(start, mid);
             int right_child = build_recursive(mid, end);
@@ -95,6 +103,44 @@ namespace cuda_device
             nodes[node_idx].bbox = create_aabb_from_boxes(nodes[left_child].bbox, nodes[right_child].bbox);
 
             return node_idx;
+        }
+
+        void print_node(int node_idx, int depth) const
+        {
+            // Create an indentation string based on the tree depth
+            std::string indent(depth * 4, ' ');
+            indent += "|-- ";
+
+            const BVHNode &node = nodes[node_idx];
+
+            // Print the current node's information
+            std::cout << indent << "Node " << node_idx << " " << node.bbox << std::endl;
+
+            // Check if it's a leaf or an internal node
+            if (node.is_leaf)
+            {
+                int start_idx = node.left_child_idx;
+                int num_objects = node.right_child_idx;
+                std::cout << indent << "    (Leaf) Contains " << num_objects << " object(s) starting at index " << start_idx << ":" << std::endl;
+
+                // Print details for each object in the leaf
+                for (int i = 0; i < num_objects; ++i)
+                {
+                    const Hittable &obj = objects[start_idx + i];
+                    // Assuming Sphere is the only object type for now
+                    const Sphere &sphere = obj.sphere;
+                    std::cout << indent << "      - " << object_type_to_string(obj.type)
+                              << " at " << sphere.center0
+                              << ", r=" << sphere.radius << std::endl;
+                }
+            }
+            else
+            {
+                // It's an internal node, so recurse for its children
+                std::cout << indent << "    (Internal) Children: " << node.left_child_idx << " and " << node.right_child_idx << std::endl;
+                print_node(node.left_child_idx, depth + 1);
+                print_node(node.right_child_idx, depth + 1);
+            }
         }
 
         static bool box_compare(const Hittable &a, const Hittable &b, int axis_index)

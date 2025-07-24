@@ -17,13 +17,13 @@ namespace cuda_device
         HitRecord rec;
         Interval ray_t{0.001f, INFINITY};
 
-        // A more direct way without the top-level hittable dispatcher if the world IS the bvh
         if (hit_bvh(bvh_nodes, world, 0, r, ray_t, rec))
         {
             Ray scattered;
             Color attenuation;
             if (scatter(r, rec, attenuation, scattered))
             {
+                // printf("r: %f, g %f and b%f\n", attenuation.x, attenuation.y, attenuation.z);
                 return attenuation * ray_color_device(scattered, depth - 1, world, bvh_nodes, world_size);
             }
             return Color{0, 0, 0};

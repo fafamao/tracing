@@ -1,4 +1,5 @@
 #include "bvh_node_pod.cuh"
+
 namespace cuda_device
 {
 
@@ -6,7 +7,6 @@ namespace cuda_device
                             const Hittable *objects, int node_idx,
                             const Ray &r, Interval ray_t, HitRecord &rec)
     {
-        // --- Iterative Traversal (Replaces Recursion) ---
         bool hit_anything = false;
         // TODO: dynamic stack
         int to_visit_stack[64];
@@ -27,11 +27,16 @@ namespace cuda_device
             // If it's a leaf node, check for intersection with the object
             if (node.is_leaf)
             {
-                if (hittable_hit(objects[node.object_idx], r, ray_t, rec))
+                int start_idx = node.left_child_idx;
+                int count = node.right_child_idx;
+
+                for (int i = 0; i < count; ++i)
                 {
-                    hit_anything = true;
-                    // Narrow the interval to find the closest hit
-                    ray_t.max = rec.t;
+                    if (hittable_hit(objects[start_idx + i], r, ray_t, rec))
+                    {
+                        hit_anything = true;
+                        ray_t.max = rec.t;
+                    }
                 }
             }
             else

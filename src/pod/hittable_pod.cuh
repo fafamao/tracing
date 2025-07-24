@@ -60,6 +60,18 @@ namespace cuda_device
   // Sets the hit record's normal vector.
   // The HitRecord is passed by reference to be modified.
   __device__ __host__ void set_face_normal(HitRecord &rec, const Ray &r,
-                                  const Vec3 &outward_normal);
+                                           const Vec3 &outward_normal);
+
+  inline const char *object_type_to_string(ObjectType type)
+  {
+    switch (type)
+    {
+    case SPHERE:
+      return "Sphere";
+    // Add other types here as you create them
+    default:
+      return "Unknown";
+    }
+  }
 }
 #endif // HITTABLE_POD_CUH_

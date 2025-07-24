@@ -58,5 +58,10 @@ namespace cuda_device
         float new_max = a.max > b.max ? a.max : b.max;
         return Interval{new_min, new_max};
     }
+
+    inline std::ostream &operator<<(std::ostream &out, const Interval &i)
+    {
+        return out << "[" << i.min << ", " << i.max << "]";
+    }
 }
 #endif // INTERVAL_POD_CUH_

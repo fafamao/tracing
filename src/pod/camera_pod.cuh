@@ -4,10 +4,10 @@
 #include "constants.h"
 #include "ray_pod.cuh"
 #include "vec3_pod.cuh"
+
 namespace cuda_device
 {
 
-    // The simple POD struct with only the data needed by the kernel.
     struct CameraData
     {
         Vec3 top_left_pixel;
@@ -20,7 +20,6 @@ namespace cuda_device
     // Generates a random offset for anti-aliasing.
     __device__ inline Vec3 sample_square_device()
     {
-        // Generate vectors pointing to ([-0.5,0.5], [-0.5, 0.5], 0)
         return Vec3{random_float() - 0.5f, random_float() - 0.5f, 0};
     }
 
@@ -35,7 +34,6 @@ namespace cuda_device
         Vec3 ray_origin = cam.camera_origin;
         Vec3 ray_direction = pixel_sample - ray_origin;
 
-        // A time of 0 for a static scene.
         return Ray{ray_origin, ray_direction, 0.0f};
     }
 

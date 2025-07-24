@@ -4,6 +4,8 @@
 #include "vec3_pod.cuh"
 #include "interval_pod.cuh"
 #include "ray_pod.cuh"
+#include <iostream>
+
 namespace cuda_device
 {
 
@@ -85,6 +87,10 @@ namespace cuda_device
                 return false;
         }
         return true;
+    }
+    __host__ inline std::ostream &operator<<(std::ostream &out, const aabb &box)
+    {
+        return out << "Box{" << box.x << ", " << box.y << ", " << box.z << "}";
     }
 }
 #endif // AABB_CUH_

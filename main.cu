@@ -87,6 +87,8 @@ int main()
             cuda_device::generate_world();
         cuda_device::BVHBuilder bvh_node(world_hittable);
         std::vector<cuda_device::BVHNode> bvh_nodes = bvh_node.build();
+        // For debug purpose
+        bvh_node.print_tree();
         // Copy scene data to device
         cuda_device::Hittable *d_objects;
         cuda_device::BVHNode *d_nodes;
@@ -160,7 +162,7 @@ int main()
 
         checkCudaErrors(cudaMemcpy(h_pixel_data, d_pixel_data, FRAME_BUFFERING, cudaMemcpyDeviceToHost));
 
-        generate_ppm_6((char*)h_pixel_data);
+        generate_ppm_6((char *)h_pixel_data);
 
         // Free resource
         checkCudaErrors(cudaFree(d_objects));
