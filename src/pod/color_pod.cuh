@@ -5,6 +5,7 @@
 #include "interval_pod.cuh"
 #include "vec3_pod.cuh"
 #include <iostream>
+
 namespace cuda_device
 {
 

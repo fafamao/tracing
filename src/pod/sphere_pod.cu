@@ -30,7 +30,7 @@ namespace cuda_device
     }
 
     // Gets the center of the sphere at a specific time for motion blur
-    __device__ Vec3 sphere_center(const Sphere& s, float time)
+    __device__ Vec3 sphere_center(const Sphere &s, float time)
     {
         if (!s.is_moving)
         {
@@ -40,7 +40,7 @@ namespace cuda_device
     }
 
     // Calculates the bounding box for a sphere
-    aabb bounding_box_sphere(const Sphere &s)
+    __device__ __host__ aabb bounding_box_sphere(const Sphere &s)
     {
         Vec3 rvec = Vec3{s.radius, s.radius, s.radius};
         if (!s.is_moving)
