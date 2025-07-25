@@ -2,7 +2,7 @@
 
 A high-performance ray tracer built with C++ and CUDA to generate photorealistic images. This project simulates the physics of light to render scenes with complex interactions, including reflections, refractions, and soft shadows.
 
-![Rendered Image Placeholder]([https://via.placeholder.com/800x400.png?text=Your+Amazing+Render+Goes+Here](https://github.com/fafamao/tracing/blob/main/figure/image.png))
+![Rendered Image](./figure/image_pod.png)
 
 ***
 
