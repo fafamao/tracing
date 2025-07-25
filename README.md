@@ -31,6 +31,7 @@ Here is a comparison of the final render times for a 1280x720 image with 10 samp
 | CPU (Multi-threaded)    |   **11586 ms**   | Optimized with a thread pool.       |
 | GPU (Initial CUDA Port) |   **1137.9 ms**       | A direct port of the C++ classes.   |
 | GPU (POD Refactor)      |   **311.445496 ms** | Fully optimized with a POD design.  |
+| GPU (POD Refactor + Texture Cache)      |   **341.315582 ms** | Texture cache is slowing it down.  |
 
 The final POD-based GPU implementation demonstrates a significant speedup over both the multi-threaded CPU version and the initial, non-optimized CUDA port.
 
