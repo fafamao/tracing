@@ -22,8 +22,17 @@ The final and most significant optimization was a complete refactor of the data 
 
 ***
 
-## Benchmark data
-TBD
+## 🚀 Performance
+
+Here is a comparison of the final render times for a 1280x720 image with 10 samples per pixel, running on an NVIDIA RTX 3060 and Intel(R) Xeon(R) CPU E5-2683 v4 @ 2.10GHz.
+
+| Implementation          | Time to Render | Notes                               |
+| ----------------------- | :------------: | ----------------------------------- |
+| CPU (Multi-threaded)    |   **11586 ms**   | Optimized with a thread pool.       |
+| GPU (Initial CUDA Port) |   **1137.9 ms**       | A direct port of the C++ classes.   |
+| GPU (POD Refactor)      |   **311.445496 ms** | Fully optimized with a POD design.  |
+
+The final POD-based GPU implementation demonstrates a significant speedup over both the multi-threaded CPU version and the initial, non-optimized CUDA port.
 
 ## 🛠️ Getting Started
 
@@ -55,6 +64,4 @@ Make sure you have the following installed:
     xmake run tracing
     ```
 ***
-
-## 🏃‍♀️ Usage
 
