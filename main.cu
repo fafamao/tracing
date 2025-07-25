@@ -88,7 +88,7 @@ int main()
         cuda_device::BVHBuilder bvh_node(world_hittable);
         std::vector<cuda_device::BVHNode> bvh_nodes = bvh_node.build();
         // For debug purpose
-        bvh_node.print_tree();
+        // bvh_node.print_tree();
         // Copy scene data to device
         cuda_device::Hittable *d_objects;
         cuda_device::BVHNode *d_nodes;
@@ -110,12 +110,6 @@ int main()
         cuda_device::Vec3 camera_up = cuda_device::Vec3{0, 1, 0};
         cuda_device::CameraData camera =
             cuda_device::construct_camera(camera_origin, camera_dest, camera_up);
-
-        /* CUDA driver will takes a copy of camera data into constant memory */
-        /* cuda_device::CameraData *d_camera;
-        checkCudaErrors(cudaMalloc((void **)&d_camera,
-        sizeof(cuda_device::CameraData))); checkCudaErrors(cudaMemcpy(d_camera,
-        &camera, sizeof(cuda_device::CameraData), cudaMemcpyHostToDevice)); */
 
         // Initialize random state
         initialize_global_state(PIXEL_WIDTH * PIXEL_HEIGHT);

@@ -12,25 +12,20 @@ namespace cuda_device
         {
         case SPHERE:
             return hit_sphere(object.sphere, r, ray_t, rec);
-        case BVH_NODE:
-            return hit_bvh(object.bvh->nodes, object.bvh->objects, 0, r, ray_t, rec);
+        default:
             break;
         }
         return false;
     }
 
-    // --- The 'bounding_box' Dispatcher Function ---
     __device__ __host__ aabb hittable_bounding_box(const Hittable &object)
     {
         switch (object.type)
         {
         case SPHERE:
             return bounding_box_sphere(object.sphere);
-        case HITTABLE_LIST:
-            // return bounding_box_hittable_list(object.list);
-            break;
-        case BVH_NODE:
-            return object.bvh->nodes[0].bbox;
+
+        default:
             break;
         }
         // Return an empty box for unknown types

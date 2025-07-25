@@ -10,7 +10,6 @@ namespace cuda_device
 {
 
   // Forward declaration to break circular dependency
-  struct BVHNode;
   struct Sphere;
 
   // The POD struct now contains the material data directly.
@@ -23,30 +22,16 @@ namespace cuda_device
     bool front_face;
   };
 
-  // Nodes for index and objects for real data
-  // For memory efficiency and cache performance
-  struct BVH
-  {
-    BVHNode *nodes;    // Pointer to the flat array of BVH nodes of index
-    Hittable *objects; // Pointer to the flat array of all scene objects
-  };
-
   // An enum to identify every possible hittable object
   enum ObjectType
   {
-    SPHERE,
-    HITTABLE_LIST,
-    BVH_NODE
+    SPHERE
   };
 
   struct Hittable
   {
     ObjectType type;
-    union
-    {
-      Sphere sphere;
-      BVH *bvh;
-    };
+    Sphere sphere;
   };
 
   __device__ bool hittable_hit(const Hittable &object, const Ray &r,
