@@ -35,6 +35,9 @@ inline constexpr int FRAME_BUFFERING = FRAME_SIZE_RGB;
 // Total ray bouncing
 inline constexpr int MAX_DEPTH = 40;
 
+// BVH node level
+inline constexpr int MAX_NODE_LEVEL = 64;
+
 // Camera tilt angle
 inline constexpr float VFOV = 90;
 

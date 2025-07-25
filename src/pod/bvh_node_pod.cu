@@ -2,16 +2,34 @@
 
 namespace cuda_device
 {
+    __device__ inline Hittable fetch_hittable(cudaTextureObject_t texture, int index)
+    {
+        // A 64-byte Hittable is exactly four float4's.
+        int base_idx = index * 4;
+
+        // --- Create a temporary, local array to hold the raw data ---
+        float4 data[4];
+
+        // --- Fetch all four 16-byte chunks that make up the Hittable ---
+        data[0] = tex1Dfetch<float4>(texture, base_idx + 0);
+        data[1] = tex1Dfetch<float4>(texture, base_idx + 1);
+        data[2] = tex1Dfetch<float4>(texture, base_idx + 2);
+        data[3] = tex1Dfetch<float4>(texture, base_idx + 3);
+
+        // --- Reinterpret the raw data as a Hittable object ---
+        // This is now safe and extremely fast because you've guaranteed
+        // that the data layout and alignment are correct.
+        return *(reinterpret_cast<Hittable *>(data));
+    }
 
     __device__ bool hit_bvh(const BVHNode *bvh_nodes,
-                            const Hittable *objects, int node_idx,
+                            cudaTextureObject_t objects_texture, int node_idx,
                             const Ray &r, Interval ray_t, HitRecord &rec)
     {
         bool hit_anything = false;
-        // TODO: dynamic stack
-        int to_visit_stack[64];
+        int to_visit_stack[MAX_NODE_LEVEL];
         int stack_idx = 0;
-        to_visit_stack[stack_idx++] = node_idx; // Start with the root node
+        to_visit_stack[stack_idx++] = node_idx;
 
         while (stack_idx > 0)
         {
@@ -32,7 +50,8 @@ namespace cuda_device
 
                 for (int i = 0; i < count; ++i)
                 {
-                    if (hittable_hit(objects[start_idx + i], r, ray_t, rec))
+                    const Hittable &obj = fetch_hittable(objects_texture, start_idx + i);
+                    if (hittable_hit(obj, r, ray_t, rec))
                     {
                         hit_anything = true;
                         ray_t.max = rec.t;

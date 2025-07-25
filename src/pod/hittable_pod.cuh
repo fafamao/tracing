@@ -32,6 +32,7 @@ namespace cuda_device
   {
     ObjectType type;
     Sphere sphere;
+    char padding[8];
   };
 
   __device__ bool hittable_hit(const Hittable &object, const Ray &r,

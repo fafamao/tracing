@@ -104,6 +104,25 @@ int main()
                                    bvh_nodes.size() * sizeof(cuda_device::BVHNode),
                                    cudaMemcpyHostToDevice));
 
+        // Construct texture object to use texture cache
+        cudaTextureObject_t d_texture_objects = 0;
+
+        cudaResourceDesc res_desc;
+        memset(&res_desc, 0, sizeof(res_desc));
+        res_desc.resType = cudaResourceTypeLinear;
+        res_desc.res.linear.devPtr = d_objects;
+        res_desc.res.linear.desc = cudaCreateChannelDesc<float4>();
+        res_desc.res.linear.sizeInBytes = world_hittable.size() * sizeof(cuda_device::Hittable);
+
+        cudaTextureDesc tex_desc;
+        memset(&tex_desc, 0, sizeof(tex_desc));
+        tex_desc.readMode = cudaReadModeElementType;
+        tex_desc.addressMode[0] = cudaAddressModeClamp;
+        tex_desc.filterMode = cudaFilterModePoint;
+        tex_desc.normalizedCoords = 0;
+
+        checkCudaErrors(cudaCreateTextureObject(&d_texture_objects, &res_desc, &tex_desc, nullptr));
+
         // Construct camera
         cuda_device::Vec3 camera_origin = cuda_device::Vec3{13, 2, 3};
         cuda_device::Vec3 camera_dest = cuda_device::Vec3{0, 0, 0};
@@ -119,6 +138,8 @@ int main()
         unsigned char *h_pixel_data;
         checkCudaErrors(cudaMalloc((void **)&d_pixel_data, FRAME_BUFFERING));
         checkCudaErrors(cudaMallocHost((void **)&h_pixel_data, FRAME_BUFFERING));
+
+        printf("hittable size %d\n", sizeof(cuda_device::Hittable));
 
         // Initialize random number of each pixel
         render_init<<<1, 1>>>(PIXEL_WIDTH, PIXEL_HEIGHT);
@@ -139,7 +160,7 @@ int main()
         checkCudaErrors(cudaEventRecord(start));
 
         render_kernel<<<blocksPerGrid, threadsPerBlock>>>(
-            d_pixel_data, camera, d_objects, d_nodes, world_hittable.size());
+            d_pixel_data, camera, d_texture_objects, d_nodes, world_hittable.size());
         checkCudaErrors(cudaDeviceSynchronize());
 
         checkCudaErrors(cudaEventRecord(stop));

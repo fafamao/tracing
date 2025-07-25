@@ -13,13 +13,11 @@ namespace cuda_device
 
   struct Sphere
   {
-    Vec3 center0; // Starting center for motion
-    float radius;
-    Material mat; // Material data is embedded directly
-
-    // Data for moving spheres
     bool is_moving;
-    Vec3 center_vec; // The vector of movement (center1 - center0)
+    float radius;
+    Vec3 center0;
+    Vec3 center_vec;
+    Material mat;
   };
 
   Sphere create_static_sphere(const Vec3 &center, float radius,

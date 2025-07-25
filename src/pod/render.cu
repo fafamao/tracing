@@ -5,7 +5,7 @@ namespace cuda_device
     __device__ Color ray_color_device(
         const Ray &r,
         int depth,
-        const Hittable *world,
+        cudaTextureObject_t objects_texture,
         const BVHNode *bvh_nodes,
         int world_size)
     {
@@ -17,14 +17,13 @@ namespace cuda_device
         HitRecord rec;
         Interval ray_t{0.001f, INFINITY};
 
-        if (hit_bvh(bvh_nodes, world, 0, r, ray_t, rec))
+        if (hit_bvh(bvh_nodes, objects_texture, 0, r, ray_t, rec))
         {
             Ray scattered;
             Color attenuation;
             if (scatter(r, rec, attenuation, scattered))
             {
-                // printf("r: %f, g %f and b%f\n", attenuation.x, attenuation.y, attenuation.z);
-                return attenuation * ray_color_device(scattered, depth - 1, world, bvh_nodes, world_size);
+                return attenuation * ray_color_device(scattered, depth - 1, objects_texture, bvh_nodes, world_size);
             }
             return Color{0, 0, 0};
         }
@@ -39,7 +38,7 @@ namespace cuda_device
 extern "C" __global__ void render_kernel(
     unsigned char *framebuffer,
     cuda_device::CameraData cam,
-    const cuda_device::Hittable *world,
+    cudaTextureObject_t objects_texture,
     const cuda_device::BVHNode *bvh_nodes,
     int world_size)
 {
@@ -56,7 +55,7 @@ extern "C" __global__ void render_kernel(
     for (int s = 0; s < PIXEL_NEIGHBOR; ++s)
     {
         cuda_device::Ray r = cuda_device::get_ray_device(cam, i, j);
-        pixel_color += cuda_device::ray_color_device(r, MAX_DEPTH, world, bvh_nodes, world_size);
+        pixel_color += cuda_device::ray_color_device(r, MAX_DEPTH, objects_texture, bvh_nodes, world_size);
     }
 
     float scale = 1.0f / PIXEL_NEIGHBOR;

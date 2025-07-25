@@ -7,7 +7,7 @@ namespace cuda_device
     __device__ Color ray_color_device(
         const Ray &r,
         int depth,
-        const Hittable *world,
+        cudaTextureObject_t objects_texture,
         const BVHNode *bvh_nodes,
         int world_size);
 }
@@ -20,7 +20,7 @@ extern "C"
     __global__ void render_kernel(
         unsigned char *framebuffer,
         cuda_device::CameraData cam,
-        const cuda_device::Hittable *world,
+        cudaTextureObject_t objects_texture,
         const cuda_device::BVHNode *bvh_nodes,
         int world_size);
 
