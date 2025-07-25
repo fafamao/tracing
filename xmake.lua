@@ -40,11 +40,11 @@ end
 
 target("camera_library")
     set_kind("static")
-    add_files("src/camera.cu")
+    add_files("src/legacy/camera.cu")
 
 target("scene_library")
     set_kind("static")
-    add_files("src/scene.cu")
+    add_files("src/legacy/scene.cu")
 
 target("rng_library")
     set_kind("static")
@@ -52,7 +52,11 @@ target("rng_library")
 
 target("render_library")
     set_kind("static")
-    add_files("src/render.cu")
+    add_files("src/legacy/render.cu")
+
+target("ray_tracing_lib")
+    set_kind("static")
+    add_files("src/pod/*.cc", "src/pod/*.cu")
 
 -- == Main Executable Target ==
 
@@ -64,7 +68,7 @@ target("tracing")
     add_files("main.cu")
 
     -- Add dependencies on our static libraries
-    add_deps("camera_library", "scene_library", "rng_library", "render_library")
+    add_deps("camera_library", "scene_library", "rng_library", "render_library", "ray_tracing_lib")
 
     -- Add package dependencies
     add_packages("cuda")

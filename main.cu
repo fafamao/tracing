@@ -1,16 +1,20 @@
-#include "color.h"
-#include "ray.h"
-#include "hittable_list.h"
-#include "sphere.h"
-#include "camera.h"
-#include "material.h"
-#include "mem_pool.h"
-#include "bvh_node.h"
-#include "scene.h"
+#include "legacy/bvh_node.h"
+#include "legacy/camera.h"
+#include "legacy/color.h"
+#include "legacy/hittable_list.h"
+#include "legacy/material.h"
+#include "legacy/ray.h"
+#include "legacy/render.cuh"
+#include "legacy/scene.h"
+#include "legacy/sphere.h"
+#include "pod/bvh_builder.cuh"
+#include "pod/camera_pod.cuh"
+#include "pod/generate_scene.h"
+#include "pod/render.cuh"
 #include "random_number_generator.cuh"
-#include "render.cuh"
-#include <cuda_runtime.h>
+#include "utility/mem_pool.h"
 #include <cstring>
+#include <cuda_runtime.h>
 
 // Global random state
 __device__ curandState *render_rand_state_global;
@@ -30,11 +34,13 @@ bool is_gpu_available()
 
 #define checkCudaErrors(val) check_cuda((val), #val, __FILE__, __LINE__)
 
-void check_cuda(cudaError_t result, char const *const func, const char *const file, int const line)
+void check_cuda(cudaError_t result, char const *const func,
+                const char *const file, int const line)
 {
     if (result)
     {
-        std::cerr << "CUDA error = " << static_cast<unsigned int>(result) << " at " << file << ":" << line << " '" << func << "' \n";
+        std::cerr << "CUDA error = " << static_cast<unsigned int>(result) << " at "
+                  << file << ":" << line << " '" << func << "' \n";
         cudaDeviceReset();
         exit(99);
     }
@@ -43,8 +49,10 @@ void check_cuda(cudaError_t result, char const *const func, const char *const fi
 void initialize_global_state(int num_pixels)
 {
     curandState *d_temp_ptr;
-    checkCudaErrors(cudaMalloc((void **)&d_temp_ptr, num_pixels * sizeof(curandState)));
-    checkCudaErrors(cudaMemcpyToSymbol(render_rand_state_global, &d_temp_ptr, sizeof(d_temp_ptr)));
+    checkCudaErrors(
+        cudaMalloc((void **)&d_temp_ptr, num_pixels * sizeof(curandState)));
+    checkCudaErrors(cudaMemcpyToSymbol(render_rand_state_global, &d_temp_ptr,
+                                       sizeof(d_temp_ptr)));
 }
 
 int main()
@@ -59,7 +67,8 @@ int main()
 
         printf("Device %d: %s\n", 0, prop.name);
         printf("  Compute Capability: %d.%d\n", prop.major, prop.minor);
-        printf("  Total Global Memory: %.2f GB\n", prop.totalGlobalMem / (1024.0 * 1024 * 1024));
+        printf("  Total Global Memory: %.2f GB\n",
+               prop.totalGlobalMem / (1024.0 * 1024 * 1024));
         printf("  Multiprocessors: %d\n", prop.multiProcessorCount);
         printf("  Blocks per SM: %d\n", prop.maxBlocksPerMultiProcessor);
         printf("  Max Threads per Block: %d\n", prop.maxThreadsPerBlock);
@@ -69,98 +78,97 @@ int main()
         cudaDeviceGetLimit(&current_stack_size, cudaLimitStackSize);
         std::cout << "Current stack size = " << current_stack_size << " bytes\n";
 
-        // Dimension
-        int tx = 16;
-        int ty = 16;
-
         size_t new_stack_size = 16384; // 16 * 1024 bytes
         cudaDeviceSetLimit(cudaLimitStackSize, new_stack_size);
         std::cout << "Set new stack size = " << new_stack_size << " bytes\n";
 
-        /* uint8_t *h_buffers[NUM_BUFFERS]; // Host-side pinned buffers
-        uint8_t *d_buffers[NUM_BUFFERS]; // Device-side buffers
-        cudaStream_t streams[NUM_BUFFERS];
+        // Construct scene data
+        std::vector<cuda_device::Hittable> world_hittable =
+            cuda_device::generate_world();
+        cuda_device::BVHBuilder bvh_node(world_hittable);
+        std::vector<cuda_device::BVHNode> bvh_nodes = bvh_node.build();
+        // For debug purpose
+        bvh_node.print_tree();
+        // Copy scene data to device
+        cuda_device::Hittable *d_objects;
+        cuda_device::BVHNode *d_nodes;
+        checkCudaErrors(cudaMalloc(&d_objects, world_hittable.size() *
+                                                   sizeof(cuda_device::Hittable)));
+        checkCudaErrors(
+            cudaMalloc(&d_nodes, bvh_nodes.size() * sizeof(cuda_device::BVHNode)));
+        checkCudaErrors(
+            cudaMemcpy(d_objects, world_hittable.data(),
+                       world_hittable.size() * sizeof(cuda_device::Hittable),
+                       cudaMemcpyHostToDevice));
+        checkCudaErrors(cudaMemcpy(d_nodes, bvh_nodes.data(),
+                                   bvh_nodes.size() * sizeof(cuda_device::BVHNode),
+                                   cudaMemcpyHostToDevice));
 
-        for (int i = 0; i < NUM_BUFFERS; ++i)
-        {
-            // Allocate page-locked (pinned) memory on the host for faster async copies
-            cudaMallocHost(&h_buffers[i], FRAME_SIZE_RGB);
-            // Allocate memory on the device
-            cudaMalloc(&d_buffers[i], FRAME_SIZE_RGB);
-            // Create a stream for each buffer
-            cudaStreamCreate(&streams[i]);
-        } */
+        // Construct camera
+        cuda_device::Vec3 camera_origin = cuda_device::Vec3{13, 2, 3};
+        cuda_device::Vec3 camera_dest = cuda_device::Vec3{0, 0, 0};
+        cuda_device::Vec3 camera_up = cuda_device::Vec3{0, 1, 0};
+        cuda_device::CameraData camera =
+            cuda_device::construct_camera(camera_origin, camera_dest, camera_up);
 
-        // Allocate device memory for RNG
-        size_t num_pixels = PIXEL_HEIGHT * PIXEL_WIDTH;
-        curandState *scene_rand_state;
-        checkCudaErrors(cudaMalloc((void **)&scene_rand_state, 1 * sizeof(curandState)));
-        initialize_global_state(num_pixels);
-        //  RNG kernel launch
-        rand_init<<<1, 1>>>(scene_rand_state);
-        checkCudaErrors(cudaGetLastError());
+        /* CUDA driver will takes a copy of camera data into constant memory */
+        /* cuda_device::CameraData *d_camera;
+        checkCudaErrors(cudaMalloc((void **)&d_camera,
+        sizeof(cuda_device::CameraData))); checkCudaErrors(cudaMemcpy(d_camera,
+        &camera, sizeof(cuda_device::CameraData), cudaMemcpyHostToDevice)); */
+
+        // Initialize random state
+        initialize_global_state(PIXEL_WIDTH * PIXEL_HEIGHT);
+
+        // Allocate pinned host memory for pixel data transfer
+        unsigned char *d_pixel_data;
+        unsigned char *h_pixel_data;
+        checkCudaErrors(cudaMalloc((void **)&d_pixel_data, FRAME_BUFFERING));
+        checkCudaErrors(cudaMallocHost((void **)&h_pixel_data, FRAME_BUFFERING));
+
+        // Initialize random number of each pixel
+        render_init<<<1, 1>>>(PIXEL_WIDTH, PIXEL_HEIGHT);
         checkCudaErrors(cudaDeviceSynchronize());
 
-        // Allocate device memory for scene
-        size_t num_scene_objects = 22 * 22 + 4;
-        int *d_object_count;
-        checkCudaErrors(cudaMalloc((void **)&d_object_count, sizeof(int)));
-        hittable **scene_list;
-        checkCudaErrors(cudaMalloc((void **)&scene_list, num_scene_objects * sizeof(hittable *)));
-        hittable **scene_world;
-        checkCudaErrors(cudaMalloc((void **)&scene_world, sizeof(hittable *)));
-        // Allocate device memory for camera
-        Camera **d_camera;
-        checkCudaErrors(cudaMalloc((void **)&d_camera, sizeof(Camera *)));
-        // Allocate device memory for pixel buffer
-        char *d_pixel;
-        checkCudaErrors(cudaMalloc((void **)&d_pixel, sizeof(char) * FRAME_SIZE_RGB));
-        // Allocate host memory for pixel buffer
-        char *h_pixel;
-        checkCudaErrors(cudaMallocHost((void **)&h_pixel, sizeof(char) * FRAME_SIZE_RGB));
-
-        // Scene kernel launch
-        generate_scene_device<<<1, 1>>>(scene_list, scene_world, scene_rand_state, d_camera, d_object_count);
-        checkCudaErrors(cudaGetLastError());
-        checkCudaErrors(cudaDeviceSynchronize());
+        // Dimension
+        int number_of_thread_x = 16;
+        int number_of_thread_y = 16;
+        dim3 threadsPerBlock(number_of_thread_x, number_of_thread_y);
+        dim3 blocksPerGrid(
+            (PIXEL_WIDTH + number_of_thread_x - 1) / number_of_thread_x,
+            (PIXEL_HEIGHT + number_of_thread_y - 1) / number_of_thread_y);
 
         cudaEvent_t start, stop;
-        cudaEventCreate(&start);
-        cudaEventCreate(&stop);
-        cudaEventRecord(start);
-        //  Render our buffer
-        dim3 blocks(PIXEL_WIDTH / tx + 1, PIXEL_HEIGHT / ty + 1);
-        dim3 threads(tx, ty);
-        render_init<<<blocks, threads>>>(PIXEL_WIDTH, PIXEL_HEIGHT);
-        checkCudaErrors(cudaGetLastError());
+        checkCudaErrors(cudaEventCreate(&start));
+        checkCudaErrors(cudaEventCreate(&stop));
+
+        checkCudaErrors(cudaEventRecord(start));
+
+        render_kernel<<<blocksPerGrid, threadsPerBlock>>>(
+            d_pixel_data, camera, d_objects, d_nodes, world_hittable.size());
         checkCudaErrors(cudaDeviceSynchronize());
 
-        render_device<<<blocks, threads>>>(PIXEL_WIDTH, PIXEL_HEIGHT, d_camera, scene_world, d_pixel);
+        checkCudaErrors(cudaEventRecord(stop));
 
-        cudaEventRecord(stop);
-        cudaEventSynchronize(stop);
+        checkCudaErrors(cudaEventSynchronize(stop));
 
         float milliseconds = 0;
-        cudaEventElapsedTime(&milliseconds, start, stop);
+        checkCudaErrors(cudaEventElapsedTime(&milliseconds, start, stop));
 
-        std::cout << "Kernel execution time: " << milliseconds << " ms" << std::endl;
-        cudaEventDestroy(start);
-        cudaEventDestroy(stop);
+        printf("Kernel execution time: %f ms\n", milliseconds);
 
-        checkCudaErrors(cudaDeviceSynchronize());
-        free_scene<<<1, 1>>>(scene_list, scene_world, d_camera, d_object_count);
-        checkCudaErrors(cudaDeviceSynchronize());
+        checkCudaErrors(cudaEventDestroy(start));
+        checkCudaErrors(cudaEventDestroy(stop));
 
-        cudaMemcpy(h_pixel, d_pixel, sizeof(char) * FRAME_SIZE_RGB, cudaMemcpyDeviceToHost);
-        generate_ppm_6(h_pixel);
+        checkCudaErrors(cudaMemcpy(h_pixel_data, d_pixel_data, FRAME_BUFFERING, cudaMemcpyDeviceToHost));
 
-        checkCudaErrors(cudaGetLastError());
-        checkCudaErrors(cudaFree(d_camera));
-        checkCudaErrors(cudaFree(scene_world));
-        checkCudaErrors(cudaFree(scene_list));
-        checkCudaErrors(cudaFree(scene_rand_state));
-        checkCudaErrors(cudaFree(render_rand_state_global));
-        checkCudaErrors(cudaFree(d_pixel));
+        generate_ppm_6((char *)h_pixel_data);
+
+        // Free resource
+        checkCudaErrors(cudaFree(d_objects));
+        checkCudaErrors(cudaFree(d_nodes));
+        checkCudaErrors(cudaFree(d_pixel_data));
+        checkCudaErrors(cudaFreeHost(h_pixel_data));
     }
     else
     {

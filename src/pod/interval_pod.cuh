@@ -1,0 +1,67 @@
+#ifndef INTERVAL_POD_CUH_
+#define INTERVAL_POD_CUH_
+
+#include "constants.h"
+namespace cuda_device
+{
+
+    // The POD struct only contains the data.
+    struct Interval
+    {
+        float min, max;
+    };
+
+    // Represents an empty interval.
+    extern const Interval EMPTY_INTERVAL;
+    // Represents the entire number line.
+    extern const Interval UNIVERSE_INTERVAL;
+    // The interval for pixel intensity.
+    inline __constant__ Interval PIXEL_INTENSITY_INTERVAL = {0.000f, 0.999f};
+
+    // Calculates the size of the interval.
+    __device__ inline float interval_size(const Interval &interval)
+    {
+        return interval.max - interval.min;
+    }
+
+    __host__ __device__ inline Interval create_empty_interval()
+    {
+        return Interval{RAY_INFINITY, -RAY_INFINITY};
+    }
+
+    // Checks if the interval contains a value (inclusive).
+    __device__ inline bool interval_contains(const Interval &interval, float x)
+    {
+        return interval.min <= x && x <= interval.max;
+    }
+
+    // Checks if the interval surrounds a value (exclusive).
+    __device__ inline bool interval_surrounds(const Interval &interval, float x)
+    {
+        return interval.min < x && x < interval.max;
+    }
+
+    // Clamps a value to the interval.
+    __device__ inline float interval_clamp(const Interval &interval, float x)
+    {
+        if (x < interval.min)
+            return interval.min;
+        if (x > interval.max)
+            return interval.max;
+        return x;
+    }
+
+    // Creates a new interval that contains two other intervals.
+    __host__ __device__ inline Interval create_combined_interval(const Interval &a, const Interval &b)
+    {
+        float new_min = a.min < b.min ? a.min : b.min;
+        float new_max = a.max > b.max ? a.max : b.max;
+        return Interval{new_min, new_max};
+    }
+
+    inline std::ostream &operator<<(std::ostream &out, const Interval &i)
+    {
+        return out << "[" << i.min << ", " << i.max << "]";
+    }
+}
+#endif // INTERVAL_POD_CUH_
