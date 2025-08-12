@@ -19,26 +19,18 @@ namespace cuda_device
 
   // Writes the final color to the pixel buffer
   __device__ inline void write_color(Color &pixel_color, int i, int j,
-                                     char *const ptr)
+                                     uchar3 *ptr)
   {
     float r = linear_to_gamma(pixel_color.x);
     float g = linear_to_gamma(pixel_color.y);
     float b = linear_to_gamma(pixel_color.z);
 
     // Get the clamp interval
-    unsigned char rp = static_cast<unsigned char>(
-        256 * interval_clamp(PIXEL_INTENSITY_INTERVAL, r));
-    unsigned char gp = static_cast<unsigned char>(
-        256 * interval_clamp(PIXEL_INTENSITY_INTERVAL, g));
-    unsigned char bp = static_cast<unsigned char>(
-        256 * interval_clamp(PIXEL_INTENSITY_INTERVAL, b));
+    unsigned char rp = static_cast<unsigned char>(255.999f * interval_clamp(PIXEL_INTENSITY_INTERVAL, r));
+    unsigned char gp = static_cast<unsigned char>(255.999f * interval_clamp(PIXEL_INTENSITY_INTERVAL, g));
+    unsigned char bp = static_cast<unsigned char>(255.999f * interval_clamp(PIXEL_INTENSITY_INTERVAL, b));
 
-    // Calculate buffer position
-    int buff_pos = (j * PIXEL_WIDTH + i) * 3;
-
-    ptr[buff_pos] = rp;
-    ptr[buff_pos + 1] = gp;
-    ptr[buff_pos + 2] = bp;
+    ptr[j * PIXEL_WIDTH + i] = make_uchar3(rp, gp, bp);
   }
 
   // Generates a random color

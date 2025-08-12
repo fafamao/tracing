@@ -18,7 +18,7 @@ extern "C"
 #endif
 
     __global__ void render_kernel(
-        unsigned char *framebuffer,
+        uchar3 *framebuffer,
         cuda_device::CameraData cam,
         const cuda_device::Hittable *world,
         const cuda_device::BVHNode *bvh_nodes,

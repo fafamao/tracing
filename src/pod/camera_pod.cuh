@@ -14,7 +14,6 @@ namespace cuda_device
         Vec3 unit_vec_u;
         Vec3 unit_vec_v;
         Vec3 camera_origin;
-        float pixel_scale;
     };
 
     // Generates a random offset for anti-aliasing.
@@ -27,14 +26,11 @@ namespace cuda_device
     __device__ inline Ray get_ray_device(const CameraData &cam, int i, int j)
     {
         Vec3 offset = sample_square_device();
-        Vec3 pixel_sample = cam.top_left_pixel +
-                            ((float(i) + offset.x) * cam.unit_vec_u) +
-                            ((float(j) + offset.y) * cam.unit_vec_v);
+        Vec3 ray_direction = cam.top_left_pixel +
+                             ((float(i) + offset.x) * cam.unit_vec_u) +
+                             ((float(j) + offset.y) * cam.unit_vec_v) - cam.camera_origin;
 
-        Vec3 ray_origin = cam.camera_origin;
-        Vec3 ray_direction = pixel_sample - ray_origin;
-
-        return Ray{ray_origin, ray_direction, 0.0f};
+        return Ray{cam.camera_origin, ray_direction, 0.0f};
     }
 
     __device__ __host__ inline CameraData
@@ -43,8 +39,6 @@ namespace cuda_device
         Vec3 w = unit_vector(origin - dest);
         Vec3 u = unit_vector(cross(up, w));
         Vec3 v = cross(w, u);
-
-        float pixel_scale = 1.0f / float(PIXEL_NEIGHBOR);
 
         float focal_len = length(origin - dest);
         float theta = degrees_to_radians(VFOV);
@@ -59,8 +53,7 @@ namespace cuda_device
         Vec3 top_left_pixel = origin - focal_len * w - vec_u / 2 - vec_v / 2 +
                               unit_vec_u / 2 + unit_vec_v / 2;
 
-        CameraData camera = {top_left_pixel, unit_vec_u, unit_vec_v, origin,
-                             pixel_scale};
+        CameraData camera = {top_left_pixel, unit_vec_u, unit_vec_v, origin};
         return camera;
     }
 } // namespace cuda_device

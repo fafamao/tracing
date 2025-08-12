@@ -115,10 +115,12 @@ int main()
         initialize_global_state(PIXEL_WIDTH * PIXEL_HEIGHT);
 
         // Allocate pinned host memory for pixel data transfer
-        unsigned char *d_pixel_data;
-        unsigned char *h_pixel_data;
-        checkCudaErrors(cudaMalloc((void **)&d_pixel_data, FRAME_BUFFERING));
-        checkCudaErrors(cudaMallocHost((void **)&h_pixel_data, FRAME_BUFFERING));
+        uchar3 *d_pixel_data = nullptr;
+        uchar3 *h_pixel_data = nullptr;
+        size_t buffer_size = PIXEL_WIDTH * PIXEL_HEIGHT * sizeof(uchar3);
+
+        checkCudaErrors(cudaMalloc((void **)&d_pixel_data, buffer_size));
+        checkCudaErrors(cudaMallocHost((void **)&h_pixel_data, buffer_size));
 
         // Initialize random number of each pixel
         render_init<<<1, 1>>>(PIXEL_WIDTH, PIXEL_HEIGHT);

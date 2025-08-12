@@ -37,7 +37,7 @@ namespace cuda_device
 }
 
 extern "C" __global__ void render_kernel(
-    unsigned char *framebuffer,
+    uchar3 *framebuffer,
     cuda_device::CameraData cam,
     const cuda_device::Hittable *world,
     const cuda_device::BVHNode *bvh_nodes,
@@ -52,16 +52,16 @@ extern "C" __global__ void render_kernel(
         return;
     }
 
-    cuda_device::Color pixel_color{0, 0, 0};
+    const float scale = 1.0f / PIXEL_NEIGHBOR;
+    cuda_device::Color pixel_color{0.0f, 0.0f, 0.0f};
     for (int s = 0; s < PIXEL_NEIGHBOR; ++s)
     {
         cuda_device::Ray r = cuda_device::get_ray_device(cam, i, j);
-        pixel_color += cuda_device::ray_color_device(r, MAX_DEPTH, world, bvh_nodes, world_size);
+        cuda_device::Color contrib = cuda_device::ray_color_device(r, MAX_DEPTH, world, bvh_nodes, world_size);
+        pixel_color.x = fmaf(contrib.x, scale, pixel_color.x);
+        pixel_color.y = fmaf(contrib.y, scale, pixel_color.y);
+        pixel_color.z = fmaf(contrib.z, scale, pixel_color.z);
     }
 
-    float scale = 1.0f / PIXEL_NEIGHBOR;
-    pixel_color *= scale;
-
-    write_color(pixel_color, i, j,
-                (char *)framebuffer);
+    write_color(pixel_color, i, j, framebuffer);
 }
