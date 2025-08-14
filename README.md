@@ -35,6 +35,43 @@ Here is a comparison of the final render times for a 1280x720 image with 10 samp
 
 The final POD-based GPU implementation demonstrates a significant speedup over both the multi-threaded CPU version and the initial, non-optimized CUDA port.
 
+### Bottleneck
+
+After profiling with ncu, the main concern is the low warp occupancy and high register usage which should be the direct cause of the previous issue.
+
+| Item          | Data |
+| ----------------------- | :------------: |
+| Registers Per Thread    |   **92**   |
+| Theoretical Occupancy |   **33.33%**       |
+| Theoretical Active Warps per SM      |   **16** |
+| Achieved Occupancy      |   **27.52** |
+| Achieved Active Warps per SM      |   **13.21** |
+
+RTX 3050 has below capability
+
+* Max Threads per SM: 1536
+* Max Thread Blocks per SM: 16
+* Max Warps per SM: 48
+* Max Register File Size: 65,536 registers
+* Max Shared Memory: 100 KB
+
+The main **render_kernel** has block dimension (16,16) and grid size(80,45), so
+1. warps per block
+   16 * 16 / 32 = 8 warps
+2. maximum blocks per SM
+   1536 / (16 * 16) = 6 blocks
+3. warps per SM
+   8 * 6 = 48 warps
+
+RTX3050 with Compute Capability 8.6 would support 48 warps per SM so threading alone would achieve 100% occupancy. However, registers used per thread is **92** which further limits the occupancy.
+
+1. registers per block
+   92 * 16 * 16 = 23552 registers
+2. blocks per SM
+   65536 / 23552 = 2.78 blocks
+3. new occupancy
+   2 * 8 / 48 = 33.33%
+
 ## 🛠️ Getting Started
 
 Follow these instructions to get a copy of the project up and running on your local machine for development and testing.
