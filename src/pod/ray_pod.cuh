@@ -16,5 +16,10 @@ namespace cuda_device
     {
         return r.origin + t * r.direction;
     }
+
+    __device__ inline Ray operator*(float t, const Ray &r)
+    {
+        return Ray{t * r.origin, t * r.direction, t * r.time};
+    }
 }
 #endif // RAY_POD_CUH_
