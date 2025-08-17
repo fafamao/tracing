@@ -18,6 +18,7 @@
 
 // Global random state
 __device__ curandState *render_rand_state_global;
+__constant__ float SCALE;
 
 bool is_gpu_available()
 {
@@ -103,6 +104,9 @@ int main()
         checkCudaErrors(cudaMemcpy(d_nodes, bvh_nodes.data(),
                                    bvh_nodes.size() * sizeof(cuda_device::BVHNode),
                                    cudaMemcpyHostToDevice));
+
+        float scale_host = 1.0f / PIXEL_NEIGHBOR;
+        cudaMemcpyToSymbol(SCALE, &scale_host, sizeof(scale_host));
 
         // Construct camera
         cuda_device::Vec3 camera_origin = cuda_device::Vec3{13, 2, 3};

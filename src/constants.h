@@ -9,6 +9,9 @@
 #include <curand_kernel.h>
 
 extern __device__ curandState *render_rand_state_global;
+// Constant data for kernel
+#pragma once
+extern __constant__ float SCALE;
 
 // Frame rate
 inline constexpr int FRAME_RATE = 30;
@@ -43,6 +46,8 @@ inline constexpr float PI = 3.1415926535897932385;
 inline constexpr float RAY_INFINITY = std::numeric_limits<float>::infinity();
 
 // Generate random data with random distribution between 0,1
+// render_rand_state_global is dragging down the memory performance in line #60
+// Use stateless RNG instead
 __device__ __host__ inline float random_float()
 {
 #ifdef __CUDA_ARCH__
@@ -51,10 +56,24 @@ __device__ __host__ inline float random_float()
     int i = threadIdx.x + blockIdx.x * blockDim.x;
     int j = threadIdx.y + blockIdx.y * blockDim.y;
 
+    if (i >= PIXEL_WIDTH || j >= PIXEL_HEIGHT)
+    {
+        return;
+    }
+
     size_t pixel_index = j * PIXEL_WIDTH + i;
 
     // Use the thread's personal generator state to get a random float [0,1)
-    return curand_uniform(&render_rand_state_global[pixel_index]);
+    // return curand_uniform(&render_rand_state_global[pixel_index]);
+    unsigned seed = pixel_index * 2654435761u;
+    seed ^= seed >> 16;
+    // XOR-shift scrambling
+    seed *= 0x85ebca6b;
+    seed ^= seed >> 13;
+    seed *= 0xc2b2ae35;
+    // [0, 1)
+    float result = (seed & 0xFFFFFF) / 16777216.0f;
+    return result;
 
 #else
     // --- HOST (CPU) IMPLEMENTATION ---

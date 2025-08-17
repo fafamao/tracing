@@ -27,7 +27,7 @@ if is_mode("release") then
     set_symbols("hidden")
     set_optimize("fastest")
     set_strip("all")
-    add_cuflags("--ptxas-options=--maxrregcount=60")
+    --add_cuflags("--ptxas-options=--maxrregcount=60")
 elseif is_mode("debug") then
     set_symbols("debug")
     set_optimize("none")

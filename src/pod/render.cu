@@ -1,4 +1,5 @@
 #include "render.cuh"
+#include "constants.h"
 
 namespace cuda_device
 {
@@ -72,15 +73,14 @@ extern "C" __global__ void render_kernel(
         return;
     }
 
-    const float scale = 1.0f / PIXEL_NEIGHBOR;
     cuda_device::Color pixel_color{0.0f, 0.0f, 0.0f};
     for (int s = 0; s < PIXEL_NEIGHBOR; ++s)
     {
         cuda_device::Ray r = cuda_device::get_ray_device(cam, i, j);
         cuda_device::Color contrib = cuda_device::ray_color_device(r, MAX_DEPTH, world, bvh_nodes, world_size);
-        pixel_color.x = fmaf(contrib.x, scale, pixel_color.x);
-        pixel_color.y = fmaf(contrib.y, scale, pixel_color.y);
-        pixel_color.z = fmaf(contrib.z, scale, pixel_color.z);
+        pixel_color.x = fmaf(contrib.x, SCALE, pixel_color.x);
+        pixel_color.y = fmaf(contrib.y, SCALE, pixel_color.y);
+        pixel_color.z = fmaf(contrib.z, SCALE, pixel_color.z);
     }
 
     write_color(pixel_color, i, j, framebuffer);
